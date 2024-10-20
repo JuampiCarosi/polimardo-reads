@@ -2,13 +2,16 @@ import Head from "next/head";
 import { useQuery } from "react-query";
 import { type Database } from "@/types/supabase";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 
 export default function Home() {
+  const [count, setCount] = useState(0);
+
   const { data } = useQuery<Database["public"]["Tables"]["test"]["Row"]>({
     queryKey: ["hello"],
   });
 
-  const [count, setCount] = useState(0);
+  const session = useSession();
 
   return (
     <>
@@ -25,6 +28,11 @@ export default function Home() {
           <div className="text-white">
             <pre className="font-mono">
               <code>{JSON.stringify(data, null, 2)}</code>
+            </pre>
+          </div>
+          <div className="text-white">
+            <pre className="font-mono">
+              <code>{JSON.stringify(session, null, 2)}</code>
             </pre>
           </div>
 

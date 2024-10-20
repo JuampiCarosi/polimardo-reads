@@ -5,10 +5,7 @@ const handler: NextApiHandler = async (req, res) => {
   if (req.method !== "GET")
     return res.status(405).json({ error: "Method not allowed" });
 
-  const { data, error } = await supabase
-    .from("test")
-    .select("name, id")
-    .eq("name", "juampi");
+  const { data, error } = await supabase.from("test").select("*");
 
   if (error) {
     console.error(error);

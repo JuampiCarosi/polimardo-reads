@@ -4,6 +4,7 @@ import { type AppType } from "next/app";
 import "@/styles/globals.css";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Toaster } from "sonner";
+import { SessionProvider } from "next-auth/react";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,10 +24,12 @@ const queryClient = new QueryClient({
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <div className={GeistSans.className}>
-      <QueryClientProvider client={queryClient}>
-        <Toaster richColors />
-        <Component {...pageProps} />
-      </QueryClientProvider>
+      <SessionProvider>
+        <QueryClientProvider client={queryClient}>
+          <Toaster richColors />
+          <Component {...pageProps} />
+        </QueryClientProvider>
+      </SessionProvider>
     </div>
   );
 };

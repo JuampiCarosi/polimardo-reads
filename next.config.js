@@ -18,6 +18,10 @@ const config = {
     defaultLocale: "en",
   },
   transpilePackages: ["geist"],
+
+  images: {
+    domains: ["cdn.pixabay.com"],
+  },
 };
 
 export default config;
