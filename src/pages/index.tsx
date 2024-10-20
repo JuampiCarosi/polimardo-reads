@@ -3,6 +3,8 @@ import { useQuery } from "react-query";
 import { type Database } from "@/types/supabase";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
+import { getServerAuthSession } from "@/server/auth";
+import { type GetServerSideProps } from "next";
 
 export default function Home() {
   const [count, setCount] = useState(0);
@@ -47,3 +49,18 @@ export default function Home() {
     </>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const session = await getServerAuthSession(ctx);
+  if (!session?.user.welcome_completed) {
+    return {
+      redirect: {
+        destination: "/welcome",
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: {},
+  };
+};

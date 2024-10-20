@@ -8,6 +8,7 @@ import {
 import { env } from "@/env";
 import { SupabaseAdapter } from "@auth/supabase-adapter";
 import Google from "next-auth/providers/google";
+import { type Database as NextAuthDB } from "@/types/nextauth.supabase";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -20,7 +21,7 @@ declare module "next-auth" {
     user: DefaultSession["user"] & {
       id: string;
       supabaseAccessToken?: string;
-    };
+    } & NextAuthDB["next_auth"]["Tables"]["users"]["Row"];
   }
 }
 
@@ -35,6 +36,7 @@ export const authOptions: NextAuthOptions = {
     session: ({ session, user }) => ({
       ...session,
       user: {
+        ...user,
         ...session.user,
         id: user.id,
       },
