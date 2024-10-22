@@ -285,7 +285,6 @@ export default function Page() {
     );
   }
 
-
   function validateStep1() {
     return (
       name !== undefined &&
@@ -296,7 +295,7 @@ export default function Page() {
     );
   }
 
-  function Step2(){
+  function Step2() {
     const genres = [
       "Arte",
       "Biografía",
@@ -337,93 +336,107 @@ export default function Page() {
       "Deportes",
       "Thriller",
       "Viajes",
-      "Jóvenes adultos"
+      "Jóvenes adultos",
     ];
 
-    
     return (
       <div>
         <h1>Elegí tus géneros favoritos</h1>
         <div className="grid grid-cols-5 gap-3 py-7">
           {genres.map((genre) => (
-            <div className={cn("py-3 bg-slate-100 rounded-md text-center text-sm border border-slate-200 cursor-pointer hover:bg-slate-200", favoriteGenres.includes(genre) && "bg-blue-500 text-white hover:bg-blue-600")}
-             onClick={() => {
-              if (favoriteGenres.includes(genre)) {
-                setFavoriteGenres(favoriteGenres.filter((g) => g !== genre));
-              } else {
-                setFavoriteGenres([...favoriteGenres, genre]);
-              }
-             }}
-             key={genre}>
+            <div
+              className={cn(
+                "cursor-pointer rounded-md border border-slate-200 bg-slate-50 py-3 text-center text-sm hover:bg-slate-100",
+                favoriteGenres.includes(genre) &&
+                  "bg-blue-500 text-white hover:bg-blue-500",
+              )}
+              onClick={() => {
+                if (favoriteGenres.includes(genre)) {
+                  setFavoriteGenres(favoriteGenres.filter((g) => g !== genre));
+                } else {
+                  setFavoriteGenres([...favoriteGenres, genre]);
+                }
+              }}
+              key={genre}
+            >
               {genre}
             </div>
           ))}
-          </div>
+        </div>
       </div>
-      );
-    }
+    );
+  }
 
   function validateStep2() {
     return favoriteGenres.length > 0;
   }
 
-  const steps = [{ component: Step1, validator: validateStep1, errorMessage: "Por favor completá todos los campos" }, { component: Step2, validator: validateStep2, errorMessage: "Por favor seleccioná al menos un género" }];
+  const steps = [
+    {
+      component: Step1,
+      validator: validateStep1,
+      errorMessage: "Por favor completá todos los campos",
+    },
+    {
+      component: Step2,
+      validator: validateStep2,
+      errorMessage: "Por favor seleccioná al menos un género",
+    },
+  ];
 
   const currentStep = steps[step]!;
 
-
-
   return (
-    <div className="min-h-screen bg-slate-100 py-5">
-      <div className="mx-auto max-w-3xl rounded-xl border border-slate-200 bg-white p-4 shadow shadow-slate-200">
-        <div>
-          <div className="z-0 h-1 rounded-full bg-slate-100 transition-all duration-500 ease-in-out" />
-          <div
-            style={{
-              width: `${(step / maxSteps) * 100}%`,
-            }}
-            className="z-10 -mt-1 h-1 rounded-full bg-blue-500 transition-all duration-500 ease-in-out"
-          />
-          <div className="flex items-baseline justify-between pt-2 text-xl text-slate-800">
-            <h2>
-              Responde estas preguntas para terminar de completar tu perfil
-            </h2>
-            <span className="text-xs text-slate-500">
-              {step + 1} / {maxSteps}
-            </span>
-          </div>
-          {<currentStep.component />}
-          <div className="flex justify-end gap-3 pt-2">
-            {step > 0 && (
+    <div className={`bg-book-pattern bg-slate-100 bg-repeat`}>
+      <div className={`min-h-screen w-full bg-slate-100/80 py-5`}>
+        <div className="mx-auto max-w-3xl rounded-xl border border-slate-200 bg-white p-4 shadow shadow-slate-200">
+          <div>
+            <div className="h-1 rounded-full bg-slate-100 transition-all duration-500 ease-in-out" />
+            <div
+              style={{
+                width: `${(step / maxSteps) * 100}%`,
+              }}
+              className="z-10 -mt-1 h-1 rounded-full bg-blue-500 transition-all duration-500 ease-in-out"
+            />
+            <div className="flex items-baseline justify-between pt-2 text-xl text-slate-800">
+              <h2>
+                Responde estas preguntas para terminar de completar tu perfil
+              </h2>
+              <span className="text-xs text-slate-500">
+                {step + 1} / {maxSteps}
+              </span>
+            </div>
+            {<currentStep.component />}
+            <div className="flex justify-end gap-3 pt-2">
+              {step > 0 && (
+                <Button
+                  variant="outline"
+                  onClick={() => setStep(step - 1)}
+                  size="sm"
+                >
+                  Anterior
+                </Button>
+              )}
               <Button
-                variant="outline"
-                onClick={() => setStep(step - 1)}
+                onClick={() => {
+                  const isValid = currentStep.validator();
+                  if (!isValid) {
+                    toast.error(currentStep.errorMessage);
+                    return;
+                  }
+                  setStep(step + 1);
+                }}
                 size="sm"
               >
-                Anterior
+                Siguiente
               </Button>
-            )}
-            <Button
-              onClick={() => {
-                const isValid = currentStep.validator();
-                if (!isValid) {
-                  toast.error(currentStep.errorMessage);
-                  return;
-                }
-                setStep(step + 1);
-              }}
-              size="sm"
-            >
-              Siguiente
-            </Button>
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
 }
-
-
 
 // import { useEffect, useState } from "react";
 // import { type UserInfo, UserInfoFilterBy, type UserInfoFilter } from "../types";
