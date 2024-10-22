@@ -7,6 +7,167 @@ export type Json =
   | Json[]
 
 export type Database = {
+  next_auth: {
+    Tables: {
+      accounts: {
+        Row: {
+          access_token: string | null
+          expires_at: number | null
+          id: string
+          id_token: string | null
+          oauth_token: string | null
+          oauth_token_secret: string | null
+          provider: string
+          providerAccountId: string
+          refresh_token: string | null
+          scope: string | null
+          session_state: string | null
+          token_type: string | null
+          type: string
+          userId: string | null
+        }
+        Insert: {
+          access_token?: string | null
+          expires_at?: number | null
+          id?: string
+          id_token?: string | null
+          oauth_token?: string | null
+          oauth_token_secret?: string | null
+          provider: string
+          providerAccountId: string
+          refresh_token?: string | null
+          scope?: string | null
+          session_state?: string | null
+          token_type?: string | null
+          type: string
+          userId?: string | null
+        }
+        Update: {
+          access_token?: string | null
+          expires_at?: number | null
+          id?: string
+          id_token?: string | null
+          oauth_token?: string | null
+          oauth_token_secret?: string | null
+          provider?: string
+          providerAccountId?: string
+          refresh_token?: string | null
+          scope?: string | null
+          session_state?: string | null
+          token_type?: string | null
+          type?: string
+          userId?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "accounts_userId_fkey"
+            columns: ["userId"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sessions: {
+        Row: {
+          expires: string
+          id: string
+          sessionToken: string
+          userId: string | null
+        }
+        Insert: {
+          expires: string
+          id?: string
+          sessionToken: string
+          userId?: string | null
+        }
+        Update: {
+          expires?: string
+          id?: string
+          sessionToken?: string
+          userId?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sessions_userId_fkey"
+            columns: ["userId"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          birth_date: string | null
+          country: string | null
+          email: string | null
+          emailVerified: string | null
+          gender: string | null
+          id: string
+          image: string | null
+          name: string | null
+          onboarding_completed: boolean
+        }
+        Insert: {
+          birth_date?: string | null
+          country?: string | null
+          email?: string | null
+          emailVerified?: string | null
+          gender?: string | null
+          id?: string
+          image?: string | null
+          name?: string | null
+          onboarding_completed?: boolean
+        }
+        Update: {
+          birth_date?: string | null
+          country?: string | null
+          email?: string | null
+          emailVerified?: string | null
+          gender?: string | null
+          id?: string
+          image?: string | null
+          name?: string | null
+          onboarding_completed?: boolean
+        }
+        Relationships: []
+      }
+      verification_tokens: {
+        Row: {
+          expires: string
+          identifier: string | null
+          token: string
+        }
+        Insert: {
+          expires: string
+          identifier?: string | null
+          token: string
+        }
+        Update: {
+          expires?: string
+          identifier?: string | null
+          token?: string
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      uid: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+    }
+    Enums: {
+      gender: "male" | "female"
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       test: {
