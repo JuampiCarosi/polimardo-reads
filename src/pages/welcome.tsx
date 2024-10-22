@@ -8,6 +8,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -228,6 +229,7 @@ export default function Page() {
   const [country, setCountry] = useState("Argentina");
   const [gender, setGender] = useState<string>();
   const [birthDate, setBirthDate] = useState<string>();
+  const [favoriteGenres, setFavoriteGenres] = useState<string[]>([]);
 
   const { data } = useSession();
   useEffect(() => {
@@ -283,6 +285,7 @@ export default function Page() {
     );
   }
 
+
   function validateStep1() {
     return (
       name !== undefined &&
@@ -293,12 +296,85 @@ export default function Page() {
     );
   }
 
-  const steps = [{ component: Step1, validator: validateStep1 }];
+  function Step2(){
+    const genres = [
+      "Arte",
+      "Biografía",
+      "Negocios",
+      "Chick Lit",
+      "Infantil",
+      "Cristiano",
+      "Clásicos",
+      "Cómics",
+      "Contemporáneo",
+      "Libros de cocina",
+      "Crimen",
+      "Ebooks",
+      "Fantasía",
+      "Ficción",
+      "Gay y lésbico",
+      "Novelas gráficas",
+      "Ficción histórica",
+      "Historia",
+      "Terror",
+      "Humor y comedia",
+      "Manga",
+      "Memorias",
+      "Música",
+      "Misterio",
+      "No ficción",
+      "Paranormal",
+      "Filosofía",
+      "Poesía",
+      "Psicología",
+      "Religión",
+      "Romance",
+      "Ciencia",
+      "Ciencia ficción",
+      "Autoayuda",
+      "Suspenso",
+      "Espiritualidad",
+      "Deportes",
+      "Thriller",
+      "Viajes",
+      "Jóvenes adultos"
+    ];
+
+    
+    return (
+      <div>
+        <h1>Elegí tus géneros favoritos</h1>
+        <div className="grid grid-cols-5 gap-3 py-7">
+          {genres.map((genre) => (
+            <div className={cn("py-3 bg-slate-100 rounded-md text-center text-sm border border-slate-200 cursor-pointer hover:bg-slate-200", favoriteGenres.includes(genre) && "bg-blue-500 text-white hover:bg-blue-600")}
+             onClick={() => {
+              if (favoriteGenres.includes(genre)) {
+                setFavoriteGenres(favoriteGenres.filter((g) => g !== genre));
+              } else {
+                setFavoriteGenres([...favoriteGenres, genre]);
+              }
+             }}
+             key={genre}>
+              {genre}
+            </div>
+          ))}
+          </div>
+      </div>
+      );
+    }
+
+  function validateStep2() {
+    return favoriteGenres.length > 0;
+  }
+
+  const steps = [{ component: Step1, validator: validateStep1, errorMessage: "Por favor completá todos los campos" }, { component: Step2, validator: validateStep2, errorMessage: "Por favor seleccioná al menos un género" }];
 
   const currentStep = steps[step]!;
 
+
+
   return (
-    <div className="h-screen bg-slate-100 pt-20">
+    <div className="min-h-screen bg-slate-100 py-5">
       <div className="mx-auto max-w-3xl rounded-xl border border-slate-200 bg-white p-4 shadow shadow-slate-200">
         <div>
           <div className="z-0 h-1 rounded-full bg-slate-100 transition-all duration-500 ease-in-out" />
@@ -331,7 +407,7 @@ export default function Page() {
               onClick={() => {
                 const isValid = currentStep.validator();
                 if (!isValid) {
-                  toast.error("Por favor completa todos los campos");
+                  toast.error(currentStep.errorMessage);
                   return;
                 }
                 setStep(step + 1);
@@ -346,6 +422,8 @@ export default function Page() {
     </div>
   );
 }
+
+
 
 // import { useEffect, useState } from "react";
 // import { type UserInfo, UserInfoFilterBy, type UserInfoFilter } from "../types";
