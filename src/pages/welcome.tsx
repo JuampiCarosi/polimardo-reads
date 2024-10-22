@@ -221,6 +221,48 @@ const country_list = [
   "Zambia",
   "Zimbabue",
 ];
+const genres = [
+  "Arte",
+  "Biografía",
+  "Negocios",
+  "Chick Lit",
+  "Infantil",
+  "Cristiano",
+  "Clásicos",
+  "Cómics",
+  "Contemporáneo",
+  "Libros de cocina",
+  "Crimen",
+  "Ebooks",
+  "Fantasía",
+  "Ficción",
+  "Gay y lésbico",
+  "Novelas gráficas",
+  "Ficción histórica",
+  "Historia",
+  "Terror",
+  "Humor y comedia",
+  "Manga",
+  "Memorias",
+  "Música",
+  "Misterio",
+  "No ficción",
+  "Paranormal",
+  "Filosofía",
+  "Poesía",
+  "Psicología",
+  "Religión",
+  "Romance",
+  "Ciencia",
+  "Ciencia ficción",
+  "Autoayuda",
+  "Suspenso",
+  "Espiritualidad",
+  "Deportes",
+  "Thriller",
+  "Viajes",
+  "Jóvenes adultos",
+];
 
 export default function Page() {
   const [step, setStep] = useState(0);
@@ -296,49 +338,6 @@ export default function Page() {
   }
 
   function Step2() {
-    const genres = [
-      "Arte",
-      "Biografía",
-      "Negocios",
-      "Chick Lit",
-      "Infantil",
-      "Cristiano",
-      "Clásicos",
-      "Cómics",
-      "Contemporáneo",
-      "Libros de cocina",
-      "Crimen",
-      "Ebooks",
-      "Fantasía",
-      "Ficción",
-      "Gay y lésbico",
-      "Novelas gráficas",
-      "Ficción histórica",
-      "Historia",
-      "Terror",
-      "Humor y comedia",
-      "Manga",
-      "Memorias",
-      "Música",
-      "Misterio",
-      "No ficción",
-      "Paranormal",
-      "Filosofía",
-      "Poesía",
-      "Psicología",
-      "Religión",
-      "Romance",
-      "Ciencia",
-      "Ciencia ficción",
-      "Autoayuda",
-      "Suspenso",
-      "Espiritualidad",
-      "Deportes",
-      "Thriller",
-      "Viajes",
-      "Jóvenes adultos",
-    ];
-
     return (
       <div>
         <h1>Elegí tus géneros favoritos</h1>
@@ -398,8 +397,8 @@ export default function Page() {
               }}
               className="z-10 -mt-1 h-1 rounded-full bg-blue-500 transition-all duration-500 ease-in-out"
             />
-            <div className="flex items-baseline justify-between pt-2 text-xl text-slate-800">
-              <h2>
+            <div className="flex items-baseline justify-between pt-2">
+              <h2 className="text-lg font-semibold text-slate-800">
                 Responde estas preguntas para terminar de completar tu perfil
               </h2>
               <span className="text-xs text-slate-500">
