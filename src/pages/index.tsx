@@ -59,7 +59,16 @@ export default function Home() {
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const session = await getServerAuthSession(ctx);
-  if (!session?.user.onboarding_completed) {
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/auth/signin",
+        permanent: false,
+      },
+    };
+  }
+
+  if (!session.user.onboarding_completed) {
     return {
       redirect: {
         destination: "/welcome",
