@@ -257,6 +257,7 @@ export type Database = {
           input_book_title: string
         }
         Returns: {
+          id: string
           book_title: string
           book_author: string
           image_url_1: string
