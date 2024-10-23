@@ -15,31 +15,53 @@ const favoriteGenresSchema = z.array(
 );
 
 const handler: NextApiHandler = async (req, res) => {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  const user = userSchema.parse(req.body.user as never);
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  const genres = favoriteGenresSchema.parse(req.body.favoriteGenres);
 
-  const { data, error } = await authDB
-    .from("users")
-    .update({ ...user, onboarding_completed: true })
-    .eq("email", user.email)
-    .select();
+  if (req.method === "POST") {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const user = userSchema.parse(req.body.user as never);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const genres = favoriteGenresSchema.parse(req.body.favoriteGenres);
 
-  if (error) {
-    throw Error(error.message);
+    const { data, error } = await authDB
+      .from("users")
+      .update({ ...user, onboarding_completed: true })
+      .eq("email", user.email)
+      .select();
+
+    if (error) {
+      throw Error(error.message);
+    }
+    const createdUser = data[0]!;
+
+    genres.forEach((genre) => {
+      supabase
+        .from("user_favorite_genres")
+        .insert({ genre_id: genre.id, user_id: createdUser.id })
+        .then();
+    });
+
+    return res.status(201).json(user);
   }
-  const createdUser = data[0]!;
 
-  genres.forEach((genre) => {
-    supabase
-      .from("user_favorite_genres")
-      .insert({ genre_id: genre.id, user_id: createdUser.id })
-      .then();
-  });
+  if (req.method === "PUT") {
 
-  res.status(201).json(user);
+    const user = userSchema.parse(req.body.user as never);
+
+    const { data, error } = await authDB
+          .from("users")
+          .update({ ...user } as any)
+          .eq("email", user.email)
+          .select();
+
+    if (error) {
+        throw Error(error.message);
+    }
+
+    const updatedUser = data[0]!;
+    return res.status(201).json(updatedUser);
+  }
+
+  res.status(405).json({ error: "Method not allowed" });
 };
 
 export default handler;
-export {userSchema};
