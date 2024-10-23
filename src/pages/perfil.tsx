@@ -24,6 +24,7 @@ import { cn } from "@/lib/utils";
 import { country_list } from "@/pages/welcome";
 import { useRouter } from "next/router";
 import axios from "axios";
+import { toast } from "sonner";
 
 export default function UserProfileEdit() {
   const { data: session } = useSession();
@@ -136,7 +137,7 @@ export default function UserProfileEdit() {
                       console.log(response);
                       await router.push("/");
                     } catch (error) {
-                      console.error("Error creating user:", error);
+                      toast.error("Ocurrio un error al actualizar el perfil.");
                     }
                   }}
                 >
