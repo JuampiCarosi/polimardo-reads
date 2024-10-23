@@ -40,7 +40,8 @@ const handler: NextApiHandler = async (req, res) => {
         .then();
     });
 
-    return res.status(201).json(user);
+    res.status(201).json(user);
+    return;
   }
 
   if (req.method === "PUT") {
@@ -58,7 +59,8 @@ const handler: NextApiHandler = async (req, res) => {
     }
 
     const updatedUser = data[0]!;
-    return res.status(201).json(updatedUser);
+    res.status(201).json(updatedUser);
+    return;
   }
 
   res.status(405).json({ error: "Method not allowed" });
