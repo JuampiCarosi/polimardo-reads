@@ -23,6 +23,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogHeader,
+  DialogTrigger,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import Image from "next/image";
 
 export default function Home() {
   const router = useRouter();
@@ -42,7 +51,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="min-h-screen bg-slate-100">
-        <div className="flex items-center justify-between bg-slate-800 px-4 py-4 text-slate-200 shadow shadow-slate-200 h-[70px]">
+        <div className="flex h-[70px] items-center justify-between bg-slate-800 px-4 py-4 text-slate-200 shadow shadow-slate-200">
           <h1 className="text-xl font-semibold">Polimardo Reads</h1>
           <div>
             <DropdownMenu>
@@ -95,24 +104,52 @@ export default function Home() {
               </TableHeader>
               <TableBody>
                 {data?.map((item) => (
-                  <TableRow
-                    className="cursor-pointer"
-                    onClick={() => router.push(`/libro/${item.id}`)}
-                    key={item.id}
-                  >
-                    <TableCell>
-                      {item.image_url_3 && (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={item.image_url_3}
-                          alt={item.book_title}
-                          className="h-14 w-14"
-                        />
-                      )}
-                    </TableCell>
-                    <TableCell>{item.book_title}</TableCell>
-                    <TableCell>{item.book_author}</TableCell>
-                  </TableRow>
+                  <Dialog key={item.id}>
+                    <DialogTrigger asChild>
+                      <TableRow
+                        className="cursor-pointer"
+                        // onClick={() => router.push(`/libro/${item.id}`)}
+                      >
+                        <TableCell>
+                          {item.image_url_3 && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={item.image_url_3}
+                              alt={item.book_title}
+                              className="h-14 w-14"
+                            />
+                          )}
+                        </TableCell>
+                        <TableCell>{item.book_title}</TableCell>
+                        <TableCell>{item.book_author}</TableCell>
+                      </TableRow>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>{item.book_title}</DialogTitle>
+                        <DialogDescription>
+                          by {item.book_author}
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="flex items-start gap-4 pt-2">
+                        {item.image_url_3 && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            alt={item.book_title}
+                            src={item.image_url_3}
+                            className="size-56 rounded-lg border"
+                          />
+                        )}
+                        <p className="text-sm text-slate-800">
+                          Lorem ipsum dolor sit amet consectetur adipisicing
+                          elit. Ea debitis officia minus. Repudiandae ea
+                          doloremque et repellat veritatis animi quam? Nulla,
+                          suscipit similique. Repellendus, eveniet voluptas iste
+                          consectetur dolore assumenda.
+                        </p>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 ))}
               </TableBody>
             </Table>

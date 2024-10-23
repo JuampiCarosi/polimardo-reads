@@ -140,6 +140,7 @@ export default function UserProfileEdit() {
         </div>
         <div className="position-relative mx-auto mt-14 items-center">
           {session && <Form user={session.user} />}
+
         </div>
       </div>
     </div>
