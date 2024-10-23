@@ -30,9 +30,11 @@ export default function UserProfileEdit() {
   const { data: session } = useSession();
   const [name, setName] = useState(session?.user?.name || "");
   const [email, setEmail] = useState(session?.user?.email || "");
-  const [gender, setGender] = useState("");
-  const [country, setCountry] = useState("");
-  const [birthdate, setBirthdate] = useState<Date>();
+  const [gender, setGender] = useState(session?.user?.gender || "Masculino");
+  const [country, setCountry] = useState(session?.user?.country || "Argentina");
+  const [birthdate, setBirthdate] = useState<Date>(
+    session?.user?.birth_date ? new Date(session.user.birth_date) : new Date(),
+  );
   const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent) => {
