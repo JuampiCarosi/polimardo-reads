@@ -23,6 +23,7 @@ import { Undo2, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { country_list } from "@/pages/welcome";
 import { useRouter } from "next/router";
+import axios from "axios";
 
 export default function UserProfileEdit() {
   const { data: session } = useSession();
@@ -74,16 +75,6 @@ export default function UserProfileEdit() {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="gender">Genero</Label>
@@ -127,7 +118,27 @@ export default function UserProfileEdit() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button type="submit" className="w-full">
+                <Button
+                  type="submit"
+                  className="w-full"
+                  onClick={async () => {
+                    try {
+                      const user = {
+                        name,
+                        country,
+                        gender,
+                        birth_date: birthdate,
+                        email,
+                      };
+                      const response = await axios.put("/api/profile", {
+                        user,
+                      });
+                      await router.push("/");
+                    } catch (error) {
+                      console.error("Error creating user:", error);
+                    }
+                  }}
+                >
                   Guardar Cambios
                 </Button>
               </CardFooter>
