@@ -429,4 +429,4 @@ export default function Page() {
   );
 }
 
-export {country_list};
+export { country_list };
