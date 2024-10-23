@@ -29,7 +29,7 @@ const handler: NextApiHandler = async (req, res) => {
   if (error) {
     throw Error(error.message);
   }
-  const createdUser = data[0];
+  const createdUser = data[0]!;
 
   genres.forEach((genre) => {
     supabase

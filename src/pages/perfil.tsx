@@ -133,6 +133,7 @@ export default function UserProfileEdit() {
                       const response = await axios.put("/api/profile", {
                         user,
                       });
+                      console.log(response);
                       await router.push("/");
                     } catch (error) {
                       console.error("Error creating user:", error);

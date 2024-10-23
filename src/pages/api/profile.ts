@@ -1,7 +1,6 @@
-import { supabase, authDB } from "@/server/supabase";
+import { authDB } from "@/server/supabase";
 import { type NextApiHandler } from "next";
 import {userSchema} from "@/pages/api/users";
-import { json } from "stream/consumers";
 
 const handler: NextApiHandler = async (req, res) => {
 
