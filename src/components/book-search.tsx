@@ -1,10 +1,9 @@
 import { cn } from "@/lib/utils";
-import { useState, useMemo, useRef } from "react";
-import { data } from "tailwindcss/defaultTheme";
+import { useState, useRef } from "react";
 import { Button } from "./ui/button";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Check, ChevronDown, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import {
   Command,
   CommandEmpty,
@@ -14,17 +13,15 @@ import {
   CommandList,
 } from "./ui/command";
 import { useRouter } from "next/router";
+import Image from "next/image";
 
-export function ComitenteCombobox({
+export function BookSearch({
   className,
   modal = false,
   open,
   setOpen,
-  placeholder,
 }: {
   className?: string;
-  comitenteId: number | undefined;
-  onComitenteChange: (v: number | undefined) => void;
   modal?: boolean;
   open?: boolean;
   setOpen?: (v: boolean) => void;
@@ -130,7 +127,7 @@ export function ComitenteCombobox({
           />
           {/* {  <CommandEmpty>Cargando...</CommandEmpty>} */}
 
-          <CommandEmpty>No hay comitente.</CommandEmpty>
+          <CommandEmpty>No hay libros.</CommandEmpty>
           <CommandList className="p-0" ref={parentRef}>
             <CommandGroup>
               <div
@@ -161,18 +158,13 @@ export function ComitenteCombobox({
                         openFn(false);
                       }}
                     >
-                      <Image src={book.image_url_1} />
-                      <div className="max-w-sm truncate text-ellipsis text-xs font-normal">
-                        {comitente.comitenteId} - {comitente.comitente}
+                      <div className="">
+                        {/*  eslint-disable-next-line @next/next/no-img-element */}
+                        {/* <img src={book.image_url_1} alt={book.book_title} /> */}
+                        <div className="max-w-sm truncate text-ellipsis text-xs font-normal">
+                          {book.book_title}
+                        </div>
                       </div>
-                      <Check
-                        className={cn(
-                          "ml-auto h-4 w-4",
-                          comitenteId === comitente.comitenteId
-                            ? "opacity-100"
-                            : "opacity-0",
-                        )}
-                      />
                     </CommandItem>
                   );
                 })}

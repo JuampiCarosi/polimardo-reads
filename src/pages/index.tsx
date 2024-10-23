@@ -10,6 +10,7 @@ import {
   DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/router";
+import { BookSearch } from "@/components/book-search";
 
 export default function Home() {
   const router = useRouter();
@@ -25,6 +26,7 @@ export default function Home() {
         <div className="flex items-center justify-between bg-slate-800 px-4 py-4 text-slate-200 shadow shadow-slate-200">
           <h1 className="text-xl font-semibold">Polimardo Reads</h1>
           <div>
+            <BookSearch />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Avatar>
