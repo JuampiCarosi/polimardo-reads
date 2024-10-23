@@ -103,6 +103,7 @@ export type Database = {
           country: string | null
           email: string | null
           emailVerified: string | null
+          favorite_genres: string | null
           gender: string | null
           id: string
           image: string | null
@@ -114,6 +115,7 @@ export type Database = {
           country?: string | null
           email?: string | null
           emailVerified?: string | null
+          favorite_genres?: string | null
           gender?: string | null
           id?: string
           image?: string | null
@@ -125,6 +127,7 @@ export type Database = {
           country?: string | null
           email?: string | null
           emailVerified?: string | null
+          favorite_genres?: string | null
           gender?: string | null
           id?: string
           image?: string | null
@@ -179,7 +182,7 @@ export type Database = {
           image_url_1: string | null
           image_url_2: string | null
           image_url_3: string | null
-          isbn: number
+          isbn: string
           publish_year: number
           publisher: string
         }
@@ -191,7 +194,7 @@ export type Database = {
           image_url_1?: string | null
           image_url_2?: string | null
           image_url_3?: string | null
-          isbn: number
+          isbn: string
           publish_year: number
           publisher: string
         }
@@ -203,7 +206,7 @@ export type Database = {
           image_url_1?: string | null
           image_url_2?: string | null
           image_url_3?: string | null
-          isbn?: number
+          isbn?: string
           publish_year?: number
           publisher?: string
         }

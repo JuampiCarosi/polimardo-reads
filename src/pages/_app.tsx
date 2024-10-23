@@ -1,5 +1,7 @@
 import { GeistSans } from "geist/font/sans";
 import { type AppType } from "next/app";
+import { Inter as FontSans } from "next/font/google";
+import { Poppins as BrandSans } from "next/font/google";
 
 import "@/styles/globals.css";
 import { QueryClient, QueryClientProvider } from "react-query";
@@ -22,9 +24,28 @@ const queryClient = new QueryClient({
   },
 });
 
+const fontSans = FontSans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
+
+const brandSans = BrandSans({
+  subsets: ["latin"],
+  weight: ["400", "700", "900", "500", "600"],
+  variable: "--brand-sans",
+  display: "swap",
+});
+
 const MyApp: AppType = ({ Component, pageProps }) => {
   return (
-    <div className={cn(GeistSans.className, "antialiased")}>
+    <div>
+      <style jsx global>{`
+				:root {
+          --font-sans: ${fontSans.style.fontFamily};
+          --brand-sans: ${brandSans.style.fontFamily};
+				}
+			}`}</style>
       <SessionProvider>
         <QueryClientProvider client={queryClient}>
           <Toaster richColors />
