@@ -1,12 +1,8 @@
 import Head from "next/head";
-import { useQuery } from "react-query";
-import { type Database } from "@/types/supabase";
-import { useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { getServerAuthSession } from "@/server/auth";
 import { type GetServerSideProps } from "next";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -45,6 +41,7 @@ export default function Home() {
                 >
                   Editar perfil
                 </DropdownMenuCheckboxItem>
+
                 <DropdownMenuCheckboxItem onClick={() => signOut()}>
                   Cerrar sesión
                 </DropdownMenuCheckboxItem>
