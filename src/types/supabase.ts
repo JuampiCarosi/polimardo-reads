@@ -209,6 +209,54 @@ export type Database = {
         }
         Relationships: []
       }
+      books_detailed: {
+        Row: {
+          author: string
+          cover_img: string | null
+          created_at: string
+          description: string
+          edition: string | null
+          genres: string
+          id: string
+          isbn: string
+          language: string
+          publish_year: number | null
+          publisher: string | null
+          series: string
+          title: string
+        }
+        Insert: {
+          author: string
+          cover_img?: string | null
+          created_at?: string
+          description: string
+          edition?: string | null
+          genres: string
+          id?: string
+          isbn: string
+          language: string
+          publish_year?: number | null
+          publisher?: string | null
+          series: string
+          title: string
+        }
+        Update: {
+          author?: string
+          cover_img?: string | null
+          created_at?: string
+          description?: string
+          edition?: string | null
+          genres?: string
+          id?: string
+          isbn?: string
+          language?: string
+          publish_year?: number | null
+          publisher?: string | null
+          series?: string
+          title?: string
+        }
+        Relationships: []
+      }
       books_genres: {
         Row: {
           id: string
@@ -261,6 +309,26 @@ export type Database = {
           book_title: string
           book_author: string
           image_url_3: string
+        }[]
+      }
+      get_similar_books_v2: {
+        Args: {
+          input_book_title: string
+        }
+        Returns: {
+          id: string
+          author: string
+          cover_img: string
+          created_at: string
+          description: string
+          edition: string
+          genres: string
+          isbn: string
+          language: string
+          publish_year: number
+          publisher: string
+          series: string
+          title: string
         }[]
       }
       gtrgm_compress: {

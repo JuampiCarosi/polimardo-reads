@@ -1,10 +1,10 @@
 import { supabase } from "@/server/supabase";
 import { type NextApiHandler } from "next";
 
-export type Genres =  {
+export type Genres = {
   id: string;
   name: string;
-}
+};
 
 const handler: NextApiHandler = async (req, res) => {
   if (req.method !== "GET")

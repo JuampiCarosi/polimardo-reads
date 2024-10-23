@@ -14,7 +14,6 @@ import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "sonner";
 import axios from "axios";
-import { type Database } from "@/types/supabase";
 import { type Genres } from "./api/books/genres";
 import { useRouter } from "next/router";
 

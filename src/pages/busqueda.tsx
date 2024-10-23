@@ -34,7 +34,7 @@ export default function Page() {
   const [search, setSearch] = useState("");
   const session = useSession();
 
-  const { data } = useQuery<Books[]>({
+  const { data } = useQuery<Books>({
     queryKey: ["books", `search/?book=${search}`],
     staleTime: 1000 * 60 * 5,
   });
@@ -111,41 +111,37 @@ export default function Page() {
                       // onClick={() => router.push(`/libro/${item.id}`)}
                     >
                       <TableCell>
-                        {item.image_url_3 && (
+                        {item.cover_img && (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
-                            src={item.image_url_3}
-                            alt={item.book_title}
+                            src={item.cover_img}
+                            alt={item.title}
                             className="h-14 w-14"
                           />
                         )}
                       </TableCell>
-                      <TableCell>{item.book_title}</TableCell>
-                      <TableCell>{item.book_author}</TableCell>
+                      <TableCell>{item.title}</TableCell>
+                      <TableCell>{item.author}</TableCell>
                     </TableRow>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>{item.book_title}</DialogTitle>
+                      <DialogTitle>{item.title}</DialogTitle>
                       <DialogDescription>
-                        by {item.book_author}
+                        by {item.author} #{item.isbn}
                       </DialogDescription>
                     </DialogHeader>
                     <div className="flex items-start gap-4 pt-2">
-                      {item.image_url_3 && (
+                      {item.cover_img && (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
-                          alt={item.book_title}
-                          src={item.image_url_3}
+                          alt={item.title}
+                          src={item.cover_img}
                           className="size-56 rounded-lg border"
                         />
                       )}
                       <p className="text-sm text-slate-800">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                        Ea debitis officia minus. Repudiandae ea doloremque et
-                        repellat veritatis animi quam? Nulla, suscipit
-                        similique. Repellendus, eveniet voluptas iste
-                        consectetur dolore assumenda.
+                        {item.description}
                       </p>
                     </div>
                   </DialogContent>
