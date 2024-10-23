@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils";
 import { country_list } from "@/pages/welcome";
 import { useRouter } from "next/router";
 
-export default function EnhancedUserProfileEdit() {
+export default function UserProfileEdit() {
   const { data: session } = useSession();
   const [name, setName] = useState(session?.user?.name || "");
   const [email, setEmail] = useState(session?.user?.email || "");
@@ -89,7 +89,7 @@ export default function EnhancedUserProfileEdit() {
                   <Label htmlFor="gender">Genero</Label>
                   <Select value={gender} onValueChange={setGender}>
                     <SelectTrigger id="gender">
-                      <SelectValue placeholder="Select gender" />
+                      <SelectValue placeholder="Seleccionar genero" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="male">Masculino</SelectItem>
@@ -102,7 +102,7 @@ export default function EnhancedUserProfileEdit() {
                   <Label htmlFor="country">Pais</Label>
                   <Select value={country} onValueChange={setCountry}>
                     <SelectTrigger id="country">
-                      <SelectValue placeholder="Select country" />
+                      <SelectValue placeholder="Seleccionar pais" />
                     </SelectTrigger>
                     <SelectContent>
                       {country_list.map((country: string) => (
