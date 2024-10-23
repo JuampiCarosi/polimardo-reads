@@ -26,8 +26,8 @@ import { useRouter } from "next/router";
 
 export default function UserProfileEdit() {
   const { data: session } = useSession();
-  const [name, setName] = useState(session?.user?.name || "");
-  const [email, setEmail] = useState(session?.user?.email || "");
+  const [name, setName] = useState(session?.user?.name ?? "");
+  const [email, setEmail] = useState(session?.user?.email ?? "");
   const [gender, setGender] = useState("");
   const [country, setCountry] = useState("");
   const [birthdate, setBirthdate] = useState<Date>();
@@ -43,14 +43,14 @@ export default function UserProfileEdit() {
       <div className="min-h-screen bg-slate-100">
         <div className="flex h-[70px] items-center justify-between bg-slate-800 px-4 py-4 text-slate-200 shadow shadow-slate-200">
           <h1 className="text-xl font-semibold">Polimardo Reads</h1>
-          <Undo2 onClick={() => router.push("/")} />
+          <Undo2 className="cursor-pointer" onClick={() => router.back()} />
         </div>
-        <div className="position-relative mx-auto mt-20 items-center">
+        <div className="position-relative mx-auto mt-14 items-center">
           <Card className="mx-auto max-w-2xl pb-10 pl-10 pr-10 pt-10">
             <CardHeader>
               <div className="flex items-center space-x-4">
                 <Avatar className="h-20 w-20">
-                  <AvatarImage src={session?.user?.image || ""} alt={name} />
+                  <AvatarImage src={session?.user?.image ?? ""} alt={name} />
                   <AvatarFallback>
                     <User className="h-10 w-10" />
                   </AvatarFallback>
