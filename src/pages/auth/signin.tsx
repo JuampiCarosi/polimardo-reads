@@ -89,7 +89,7 @@ export function SplitLayout({ children }: { children: React.ReactNode }) {
         <Image
           className="h-full w-full object-cover"
           fill
-          alt="Imagen de fondo con la bolsa celebrando el 100º aniversario de Aldazabal & cia."
+          alt="Imagen de libros en una estantería"
           src="/books-3.jpg"
         />
         <div className="absolute inset-0 bg-stone-800/60" />
