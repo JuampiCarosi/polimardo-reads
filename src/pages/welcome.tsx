@@ -13,11 +13,12 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "sonner";
-import { createUser } from "./api/user";
+import axios from "axios";
 import { type Database } from "@/types/supabase";
 import { type Genres } from "./api/books/genres";
+import { useRouter } from "next/router";
 
-const maxSteps = 3;
+const maxSteps = 1;
 const country_list = [
   "Afganistán",
   "Albania",
@@ -191,7 +192,6 @@ const country_list = [
   "España",
   "Sri Lanka",
   "San Cristóbal y Nieves",
-  "Santa Lucía",
   "San Vicente",
   "Santa Lucía",
   "Sudán",
@@ -226,6 +226,11 @@ const country_list = [
   "Zimbabue",
 ];
 
+interface FavoriteGenres {
+  id: string;
+  name: string;
+}
+
 export default function Page() {
   const [step, setStep] = useState(0);
   const { data: genres } = useQuery<Genres[]>({
@@ -235,10 +240,11 @@ export default function Page() {
   const [country, setCountry] = useState("Argentina");
   const [gender, setGender] = useState<string>();
   const [birthDate, setBirthDate] = useState<string>();
-  const [favoriteGenres, setFavoriteGenres] = useState<
-    Array<Database["public"]["Tables"]["books_genres"]["Row"]>
-  >([]);
+  const [favoriteGenres, setFavoriteGenres] = useState<Array<FavoriteGenres>>(
+    [],
+  );
 
+  const router = useRouter();
   const { data } = useSession();
   useEffect(() => {
     if (data?.user?.name) {
@@ -368,7 +374,7 @@ export default function Page() {
                 Responde estas preguntas para terminar de completar tu perfil
               </h2>
               <span className="text-xs text-slate-500">
-                {step + 1} / {maxSteps}
+                {step + 1} / {maxSteps + 1}
               </span>
             </div>
             {<currentStep.component />}
@@ -390,15 +396,23 @@ export default function Page() {
                     return;
                   }
                   if (step == maxSteps) {
-                    await createUser(
-                      {
+                    try {
+                      const user = {
                         name,
                         country,
                         gender,
                         birth_date: birthDate,
-                      },
-                      favoriteGenres,
-                    );
+                        email: data?.user.email,
+                      };
+                      const response = await axios.post("/api/users", {
+                        user,
+                        favoriteGenres,
+                      });
+                      console.log("response:", response);
+                      await router.push("/");
+                    } catch (error) {
+                      console.error("Error creating user:", error);
+                    }
                   } else {
                     setStep(step + 1);
                   }
