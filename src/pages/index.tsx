@@ -9,9 +9,9 @@ import { type GetServerSideProps } from "next";
 export default function Home() {
   const [count, setCount] = useState(0);
 
-  const { data } = useQuery<Database["public"]["Tables"]["test"]["Row"]>({
-    queryKey: ["hello"],
-  });
+  // const { data } = useQuery<Database["public"]["Tables"]["test"]["Row"]>({
+  //   queryKey: ["hello"],
+  // });
 
   const session = useSession();
 
@@ -27,16 +27,7 @@ export default function Home() {
           <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
             Polimardo Reads
           </h1>
-          <div className="text-white">
-            <pre className="font-mono">
-              <code>{JSON.stringify(data, null, 2)}</code>
-            </pre>
-          </div>
-          <div className="text-white">
-            <pre className="font-mono">
-              <code>{JSON.stringify(session, null, 2)}</code>
-            </pre>
-          </div>
+          
 
           <button
             className="rounded-lg bg-blue-500 px-4 py-2 text-white"

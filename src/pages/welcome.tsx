@@ -9,8 +9,10 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { Database } from "@/types/supabase";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import { toast } from "sonner";
 
 const maxSteps = 3;
@@ -221,52 +223,13 @@ const country_list = [
   "Zambia",
   "Zimbabue",
 ];
-const genres = [
-  "Arte",
-  "Biografía",
-  "Negocios",
-  "Chick Lit",
-  "Infantil",
-  "Cristiano",
-  "Clásicos",
-  "Cómics",
-  "Contemporáneo",
-  "Libros de cocina",
-  "Crimen",
-  "Ebooks",
-  "Fantasía",
-  "Ficción",
-  "Gay y lésbico",
-  "Novelas gráficas",
-  "Ficción histórica",
-  "Historia",
-  "Terror",
-  "Humor y comedia",
-  "Manga",
-  "Memorias",
-  "Música",
-  "Misterio",
-  "No ficción",
-  "Paranormal",
-  "Filosofía",
-  "Poesía",
-  "Psicología",
-  "Religión",
-  "Romance",
-  "Ciencia",
-  "Ciencia ficción",
-  "Autoayuda",
-  "Suspenso",
-  "Espiritualidad",
-  "Deportes",
-  "Thriller",
-  "Viajes",
-  "Jóvenes adultos",
-];
+
 
 export default function Page() {
   const [step, setStep] = useState(0);
-
+  const {data: genres} = useQuery<Database["public"]["Tables"]["books_genres"]["Row"][]>({
+    queryKey: ["books/genres"],
+  }); 
   const [name, setName] = useState<string>();
   const [country, setCountry] = useState("Argentina");
   const [gender, setGender] = useState<string>();
@@ -342,23 +305,23 @@ export default function Page() {
       <div>
         <h1>Elegí tus géneros favoritos</h1>
         <div className="grid grid-cols-5 gap-3 py-7">
-          {genres.map((genre) => (
+          {genres?.map((genre) => (
             <div
               className={cn(
                 "cursor-pointer rounded-md border border-slate-200 bg-slate-50 py-3 text-center text-sm hover:bg-slate-100",
-                favoriteGenres.includes(genre) &&
+                favoriteGenres.includes(genre.name) &&
                   "bg-blue-500 text-white hover:bg-blue-500",
               )}
               onClick={() => {
-                if (favoriteGenres.includes(genre)) {
-                  setFavoriteGenres(favoriteGenres.filter((g) => g !== genre));
+                if (favoriteGenres.includes(genre.name)) {
+                  setFavoriteGenres(favoriteGenres.filter((g) => g !== genre.name));
                 } else {
-                  setFavoriteGenres([...favoriteGenres, genre]);
+                  setFavoriteGenres([...favoriteGenres, genre.name]);
                 }
               }}
-              key={genre}
+              key={genre.id}
             >
-              {genre}
+              {genre.name}
             </div>
           ))}
         </div>

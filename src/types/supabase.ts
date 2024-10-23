@@ -170,21 +170,57 @@ export type Database = {
   }
   public: {
     Tables: {
-      test: {
+      books: {
         Row: {
+          book_author: string
+          book_title: string
           created_at: string
-          id: number
-          name: string | null
+          id: string
+          image_url_1: string | null
+          image_url_2: string | null
+          image_url_3: string | null
+          isbn: number
+          publish_year: number
+          publisher: string
         }
         Insert: {
+          book_author: string
+          book_title: string
           created_at?: string
-          id?: number
-          name?: string | null
+          id?: string
+          image_url_1?: string | null
+          image_url_2?: string | null
+          image_url_3?: string | null
+          isbn: number
+          publish_year: number
+          publisher: string
         }
         Update: {
+          book_author?: string
+          book_title?: string
           created_at?: string
-          id?: number
-          name?: string | null
+          id?: string
+          image_url_1?: string | null
+          image_url_2?: string | null
+          image_url_3?: string | null
+          isbn?: number
+          publish_year?: number
+          publisher?: string
+        }
+        Relationships: []
+      }
+      books_genres: {
+        Row: {
+          id: string
+          name: string
+        }
+        Insert: {
+          id?: string
+          name: string
+        }
+        Update: {
+          id?: string
+          name?: string
         }
         Relationships: []
       }
