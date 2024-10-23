@@ -9,11 +9,11 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { Database } from "@/types/supabase";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "sonner";
+import { type Genres } from "./api/books/genres";
 
 const maxSteps = 3;
 const country_list = [
@@ -224,12 +224,11 @@ const country_list = [
   "Zimbabue",
 ];
 
-
 export default function Page() {
   const [step, setStep] = useState(0);
-  const {data: genres} = useQuery<Database["public"]["Tables"]["books_genres"]["Row"][]>({
+  const { data: genres } = useQuery<Genres[]>({
     queryKey: ["books/genres"],
-  }); 
+  });
   const [name, setName] = useState<string>();
   const [country, setCountry] = useState("Argentina");
   const [gender, setGender] = useState<string>();
@@ -314,7 +313,9 @@ export default function Page() {
               )}
               onClick={() => {
                 if (favoriteGenres.includes(genre.name)) {
-                  setFavoriteGenres(favoriteGenres.filter((g) => g !== genre.name));
+                  setFavoriteGenres(
+                    favoriteGenres.filter((g) => g !== genre.name),
+                  );
                 } else {
                   setFavoriteGenres([...favoriteGenres, genre.name]);
                 }
