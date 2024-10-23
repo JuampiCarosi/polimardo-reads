@@ -26,7 +26,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="min-h-screen bg-slate-100">
-        <div className="flex items-center justify-between bg-slate-800 px-4 py-4 text-slate-200 shadow shadow-slate-200">
+        <div className="flex items-center justify-between bg-slate-800 px-4 py-4 text-slate-200 shadow shadow-slate-200 h-[70px]">
           <h1 className="text-xl font-semibold">Polimardo Reads</h1>
           <div>
             <DropdownMenu>
