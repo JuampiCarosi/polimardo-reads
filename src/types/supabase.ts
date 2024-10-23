@@ -103,7 +103,6 @@ export type Database = {
           country: string | null
           email: string | null
           emailVerified: string | null
-          favorite_genres: string | null
           gender: string | null
           id: string
           image: string | null
@@ -115,7 +114,6 @@ export type Database = {
           country?: string | null
           email?: string | null
           emailVerified?: string | null
-          favorite_genres?: string | null
           gender?: string | null
           id?: string
           image?: string | null
@@ -127,7 +125,6 @@ export type Database = {
           country?: string | null
           email?: string | null
           emailVerified?: string | null
-          favorite_genres?: string | null
           gender?: string | null
           id?: string
           image?: string | null
@@ -227,12 +224,90 @@ export type Database = {
         }
         Relationships: []
       }
+      user_favorite_genres: {
+        Row: {
+          genre_id: string
+          user_id: string
+        }
+        Insert: {
+          genre_id: string
+          user_id: string
+        }
+        Update: {
+          genre_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_favorite_genres_genre_id_fkey"
+            columns: ["genre_id"]
+            isOneToOne: false
+            referencedRelation: "books_genres"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_similar_books: {
+        Args: {
+          input_book_title: string
+        }
+        Returns: {
+          book_title: string
+          book_author: string
+          image_url_1: string
+        }[]
+      }
+      gtrgm_compress: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      gtrgm_decompress: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      gtrgm_in: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      gtrgm_options: {
+        Args: {
+          "": unknown
+        }
+        Returns: undefined
+      }
+      gtrgm_out: {
+        Args: {
+          "": unknown
+        }
+        Returns: unknown
+      }
+      set_limit: {
+        Args: {
+          "": number
+        }
+        Returns: number
+      }
+      show_limit: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
+      show_trgm: {
+        Args: {
+          "": string
+        }
+        Returns: string[]
+      }
     }
     Enums: {
       [_ in never]: never
