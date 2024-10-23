@@ -20,7 +20,7 @@ const config = {
   transpilePackages: ["geist"],
 
   images: {
-    domains: ["cdn.pixabay.com"],
+    domains: ["cdn.pixabay.com", "images.amazon.com"],
   },
 };
 

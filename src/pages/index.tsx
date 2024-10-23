@@ -1,12 +1,8 @@
 import Head from "next/head";
-import { useQuery } from "react-query";
-import { type Database } from "@/types/supabase";
-import { useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { getServerAuthSession } from "@/server/auth";
 import { type GetServerSideProps } from "next";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -14,10 +10,30 @@ import {
   DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/router";
+import { useState } from "react";
+import { useQuery } from "react-query";
+import { type Books } from "./api/books/search";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 export default function Home() {
   const router = useRouter();
   const session = useSession();
+
+  const [search, setSearch] = useState("");
+
+  const { data } = useQuery<Books[]>({
+    queryKey: ["books", `search/?book=${search}`],
+    staleTime: 1000 * 60 * 5,
+  });
 
   return (
     <>
@@ -45,6 +61,7 @@ export default function Home() {
                 >
                   Editar perfil
                 </DropdownMenuCheckboxItem>
+
                 <DropdownMenuCheckboxItem onClick={() => signOut()}>
                   Cerrar sesión
                 </DropdownMenuCheckboxItem>
@@ -52,6 +69,58 @@ export default function Home() {
             </DropdownMenu>
           </div>
         </div>
+
+        <Card className="mx-auto mt-4 w-full max-w-4xl">
+          <CardHeader>
+            <CardTitle>Buscar Libros</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="mb-6 flex">
+              <Input
+                type="text"
+                placeholder="Search items..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="mr-2"
+              />
+            </div>
+
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Preview</TableHead>
+                  <TableHead>Nombre</TableHead>
+                  <TableHead>Autor</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data?.map((item) => (
+                  <TableRow
+                    className="cursor-pointer"
+                    onClick={() => router.push(`/libro/${item.id}`)}
+                    key={item.id}
+                  >
+                    <TableCell>
+                      {item.image_url_3 && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={item.image_url_3}
+                          alt={item.book_title}
+                          className="h-14 w-14"
+                        />
+                      )}
+                    </TableCell>
+                    <TableCell>{item.book_title}</TableCell>
+                    <TableCell>{item.book_author}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            {data?.length === 0 && (
+              <p className="mt-4 text-center text-gray-500">No results found</p>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </>
   );
