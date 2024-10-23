@@ -124,25 +124,43 @@ export default function Page() {
                       <TableCell>{item.author}</TableCell>
                     </TableRow>
                   </DialogTrigger>
-                  <DialogContent>
+                  <DialogContent className="max-w-2xl">
                     <DialogHeader>
-                      <DialogTitle>{item.title}</DialogTitle>
-                      <DialogDescription>
-                        by {item.author} #{item.isbn}
-                      </DialogDescription>
+                      <DialogTitle>
+                        {item.title}{" "}
+                        <span className="text-slate-600">#{item.isbn}</span>
+                      </DialogTitle>
+                      <DialogDescription>by {item.author}</DialogDescription>
                     </DialogHeader>
-                    <div className="flex items-start gap-4 pt-2">
+                    <div className="flex items-start gap-6 pt-2">
                       {item.cover_img && (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                           alt={item.title}
                           src={item.cover_img}
-                          className="size-56 rounded-lg border"
+                          className="my-auto size-56 rounded-lg border"
                         />
                       )}
-                      <p className="text-sm text-slate-800">
-                        {item.description}
-                      </p>
+                      <div>
+                        <div className="flex flex-col pb-2 text-sm font-medium text-slate-600">
+                          <div>
+                            <span className="font-semibold text-slate-800">
+                              Publicado por:
+                            </span>{" "}
+                            {item.publisher}
+                          </div>
+                          <div>
+                            <span className="font-semibold text-slate-800">
+                              Año de publicación:
+                            </span>{" "}
+                            {item.publish_year}
+                          </div>
+                        </div>
+
+                        <p className="max-h-56 overflow-y-auto text-sm text-slate-800">
+                          {item.description}
+                        </p>
+                      </div>
                     </div>
                   </DialogContent>
                 </Dialog>
