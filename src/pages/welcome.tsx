@@ -13,9 +13,12 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "sonner";
+import axios from "axios";
+import { type Database } from "@/types/supabase";
 import { type Genres } from "./api/books/genres";
+import { useRouter } from "next/router";
 
-const maxSteps = 3;
+const maxSteps = 1;
 const country_list = [
   "Afganistán",
   "Albania",
@@ -189,7 +192,6 @@ const country_list = [
   "España",
   "Sri Lanka",
   "San Cristóbal y Nieves",
-  "Santa Lucía",
   "San Vicente",
   "Santa Lucía",
   "Sudán",
@@ -224,6 +226,11 @@ const country_list = [
   "Zimbabue",
 ];
 
+interface FavoriteGenres {
+  id: string;
+  name: string;
+}
+
 export default function Page() {
   const [step, setStep] = useState(0);
   const { data: genres } = useQuery<Genres[]>({
@@ -233,8 +240,11 @@ export default function Page() {
   const [country, setCountry] = useState("Argentina");
   const [gender, setGender] = useState<string>();
   const [birthDate, setBirthDate] = useState<string>();
-  const [favoriteGenres, setFavoriteGenres] = useState<string[]>([]);
+  const [favoriteGenres, setFavoriteGenres] = useState<Array<FavoriteGenres>>(
+    [],
+  );
 
+  const router = useRouter();
   const { data } = useSession();
   useEffect(() => {
     if (data?.user?.name) {
@@ -308,16 +318,14 @@ export default function Page() {
             <div
               className={cn(
                 "cursor-pointer rounded-md border border-slate-200 bg-slate-50 py-3 text-center text-sm hover:bg-slate-100",
-                favoriteGenres.includes(genre.name) &&
+                favoriteGenres.includes(genre) &&
                   "bg-blue-500 text-white hover:bg-blue-500",
               )}
               onClick={() => {
-                if (favoriteGenres.includes(genre.name)) {
-                  setFavoriteGenres(
-                    favoriteGenres.filter((g) => g !== genre.name),
-                  );
+                if (favoriteGenres.includes(genre)) {
+                  setFavoriteGenres(favoriteGenres.filter((g) => g !== genre));
                 } else {
-                  setFavoriteGenres([...favoriteGenres, genre.name]);
+                  setFavoriteGenres([...favoriteGenres, genre]);
                 }
               }}
               key={genre.id}
@@ -366,7 +374,7 @@ export default function Page() {
                 Responde estas preguntas para terminar de completar tu perfil
               </h2>
               <span className="text-xs text-slate-500">
-                {step + 1} / {maxSteps}
+                {step + 1} / {maxSteps + 1}
               </span>
             </div>
             {<currentStep.component />}
@@ -381,13 +389,33 @@ export default function Page() {
                 </Button>
               )}
               <Button
-                onClick={() => {
+                onClick={async () => {
                   const isValid = currentStep.validator();
                   if (!isValid) {
                     toast.error(currentStep.errorMessage);
                     return;
                   }
-                  setStep(step + 1);
+                  if (step == maxSteps) {
+                    try {
+                      const user = {
+                        name,
+                        country,
+                        gender,
+                        birth_date: birthDate,
+                        email: data?.user.email,
+                      };
+                      const response = await axios.post("/api/users", {
+                        user,
+                        favoriteGenres,
+                      });
+                      console.log("response:", response);
+                      await router.push("/");
+                    } catch (error) {
+                      console.error("Error creating user:", error);
+                    }
+                  } else {
+                    setStep(step + 1);
+                  }
                 }}
                 size="sm"
               >
@@ -401,203 +429,4 @@ export default function Page() {
   );
 }
 
-export { country_list };
-
-// import { useEffect, useState } from "react";
-// import { type UserInfo, UserInfoFilterBy, type UserInfoFilter } from "../types";
-// import usersService from "../services/usersService";
-// import {
-//   Accordion,
-//   AccordionDetails,
-//   AccordionSummary,
-//   Box,
-//   Button,
-//   InputLabel,
-//   MenuItem,
-//   Select,
-//   TextField,
-//   Typography,
-// } from "@mui/material";
-// import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-// import { useFormik } from "formik";
-// import * as Yup from "yup";
-
-// const Users = () => {
-//   const [users, setUsers] = useState<Array<UserInfo>>([]);
-//   const [originalUsers, setOriginalUsers] = useState<Array<UserInfo>>([]);
-
-//   useEffect(() => {
-//     try {
-//       console.log("fetching...");
-//       usersService.getAllUsers().then((fetchedUsers) => {
-//         setUsers(fetchedUsers);
-//         setOriginalUsers(fetchedUsers);
-//       });
-//     } catch (err) {
-//       if (err instanceof Error) {
-//         console.error(err.message);
-//         // TODO: Show an error notification
-//       }
-//     }
-//   }, []);
-
-//   const onSubmit = async (
-//     values: UserInfoFilter,
-//     { resetForm }: { resetForm: () => void },
-//   ) => {
-//     console.log("🚀 ~ TwitSnaps ~ values:", values);
-//     const filter = values.filter;
-//     const filterBy = values.filterBy;
-
-//     if (originalUsers.length === 0 || filter.trim() === "") {
-//       return;
-//     }
-
-//     const filteredTwits = originalUsers.filter((twit) => {
-//       const value = String(twit[filterBy]);
-//       return value.toLowerCase().includes(filter.toLowerCase());
-//     });
-
-//     setUsers(filteredTwits);
-
-//     resetForm();
-//   };
-
-//   const onReset = () => {
-//     setUsers(originalUsers);
-//     formik.resetForm();
-//   };
-
-//   const validationSchema = Yup.object({
-//     filter: Yup.string().required("Filter value is required"),
-//     filterBy: Yup.mixed<UserInfoFilterBy>()
-//       .oneOf(Object.values(UserInfoFilterBy))
-//       .required("Filter by is required"),
-//   });
-
-//   const formik = useFormik({
-//     initialValues: {
-//       filterBy: UserInfoFilterBy.id,
-//       filter: "",
-//     },
-//     validationSchema: validationSchema,
-//     onSubmit: onSubmit,
-//   });
-
-//   return (
-//     <>
-//       <form className="mt-3 px-3" onSubmit={formik.handleSubmit}>
-//         <Box sx={{ display: "flex", gap: 1 }}>
-//           <TextField
-//             sx={{ mt: 2, width: "70%", justifyContent: "end" }}
-//             name="filter"
-//             label="Enter something"
-//             value={formik.values.filter}
-//             onChange={formik.handleChange}
-//           ></TextField>
-//           <Box sx={{ width: "30%" }}>
-//             <InputLabel id="filter-by-label">Filter By</InputLabel>
-//             <Select
-//               labelId="filter-by-label"
-//               id="filter-by-select"
-//               label="Filter by"
-//               name="filterBy"
-//               sx={{ width: "100%" }}
-//               defaultValue={formik.values.filterBy}
-//               onChange={formik.handleChange}
-//               value={formik.values.filterBy}
-//             >
-//               <MenuItem value={"id"}>ID</MenuItem>
-//               <MenuItem value={"email"}>Email</MenuItem>
-//               <MenuItem value={"user"}>User</MenuItem>
-//               <MenuItem value={"name"}>Name</MenuItem>
-//               <MenuItem value={"location"}>Location</MenuItem>
-//               <MenuItem value={"interests"}>Interests</MenuItem>
-//               <MenuItem value={"goals"}>Goals</MenuItem>
-//               <MenuItem value={"followers"}>Followers</MenuItem>
-//               <MenuItem value={"followeds"}>Followeds</MenuItem>
-//               <MenuItem value={"twitsnaps"}>Twitsnaps</MenuItem>
-//             </Select>
-//           </Box>
-//         </Box>
-//         <Button
-//           type="submit"
-//           sx={{
-//             mt: 1,
-//             width: "100%",
-//             bgcolor: "#112334",
-//             color: "white",
-//           }}
-//         >
-//           Filter
-//         </Button>
-//         <Button
-//           onClick={onReset}
-//           sx={{
-//             mt: 1,
-//             width: "100%",
-//             bgcolor: "#112334",
-//             color: "white",
-//           }}
-//         >
-//           Reset Filter
-//         </Button>
-//       </form>
-//       <Box sx={{ mt: 10 }}>
-//         {users.length > 0 &&
-//           users.map((user) => (
-//             <Accordion key={user.id}>
-//               <AccordionSummary
-//                 expandIcon={<ExpandMoreIcon />}
-//                 aria-controls="panel1-content"
-//                 id="panel1-header"
-//                 className="mt-10 flex h-10 gap-3"
-//               >
-//                 <Typography className="flex items-center">
-//                   {user.user}
-//                 </Typography>
-//               </AccordionSummary>
-//               <AccordionDetails>
-//                 <Typography>ID: {user.id}</Typography>
-//                 <Typography>Name: {user.name}</Typography>
-//                 <Typography>Email: {user.email}</Typography>
-//                 <Typography>Location: {user.location}</Typography>
-//                 <Typography>
-//                   interests:{" "}
-//                   {user.interests.map((interest) => (
-//                     <Typography>{interest}</Typography>
-//                   ))}
-//                 </Typography>
-//                 <Typography>
-//                   Goals:{" "}
-//                   {user.goals.map((goal) => (
-//                     <Typography>{goal}</Typography>
-//                   ))}
-//                 </Typography>
-//                 <Typography>
-//                   Followers:{" "}
-//                   {user.followers.map((follower) => (
-//                     <Typography>{follower}</Typography>
-//                   ))}
-//                 </Typography>
-//                 <Typography>
-//                   Followeds:{" "}
-//                   {user.followeds.map((followed) => (
-//                     <Typography>{followed}</Typography>
-//                   ))}
-//                 </Typography>
-//                 <Typography>
-//                   Twitsnaps:{" "}
-//                   {user.twitsnaps.map((twitsnap) => (
-//                     <Typography>{twitsnap}</Typography>
-//                   ))}
-//                 </Typography>
-//               </AccordionDetails>
-//             </Accordion>
-//           ))}
-//       </Box>
-//     </>
-//   );
-// };
-
-// export default Users;
+export {country_list};
