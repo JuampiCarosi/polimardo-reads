@@ -131,7 +131,7 @@ export default function UserProfileEdit() {
                         birth_date: birthdate,
                         email,
                       };
-                      const response = await axios.put("/api/profile", {
+                      const response = await axios.put("/api/users", {
                         user,
                       });
                       console.log(response);
