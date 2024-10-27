@@ -1,21 +1,7 @@
 import { supabase } from "@/server/supabase";
 import { type NextApiHandler } from "next";
 import { z } from "zod";
-
-export type Books = {
-  author: string;
-  cover_img: string | null;
-  description: string;
-  edition: string | null;
-  genres: string;
-  id: string;
-  isbn: string;
-  language: string;
-  publish_year: number | null;
-  publisher: string | null;
-  series: string;
-  title: string;
-}[];
+import { type Book } from "./[id]";
 
 const search_schema = z.object({
   book: z.string(),
@@ -36,7 +22,7 @@ const handler: NextApiHandler = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 
-  res.status(200).json(data satisfies Books);
+  res.status(200).json(data satisfies Book[]);
 };
 
 export default handler;

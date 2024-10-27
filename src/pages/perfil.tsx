@@ -19,14 +19,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Undo2, User } from "lucide-react";
+import { User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { country_list } from "@/pages/welcome";
-import { useRouter } from "next/router";
 import { type Session } from "next-auth";
-import Link from "next/link";
 import axios from "axios";
 import { toast } from "sonner";
+import { Header } from "@/components/header";
 
 function Form({ user }: { user: Session["user"] }) {
   const [name, setName] = useState(user.name!);
@@ -142,27 +141,11 @@ function Form({ user }: { user: Session["user"] }) {
 export default function UserProfileEdit() {
   const { data: session } = useSession();
 
-  const router = useRouter();
-
   return (
     <div>
       <div className="min-h-screen bg-slate-100">
-        <div className="flex h-[70px] items-center justify-between bg-slate-800 px-4 py-4 text-slate-200 shadow shadow-slate-200">
-          <div className="flex items-center gap-7">
-            <Link href="/" className="text-xl font-semibold">
-              Polimardo Reads
-            </Link>
-            <div className="space-x-3 font-medium">
-              <Link className="hover:underline" href="/">
-                Home
-              </Link>
-              <Link className="hover:underline" href="/busqueda">
-                Buscar
-              </Link>
-            </div>
-          </div>
-          <Undo2 className="cursor-pointer" onClick={() => router.back()} />
-        </div>
+        <Header />
+
         <div className="position-relative mx-auto mt-14 items-center">
           {session && <Form user={session.user} />}
         </div>

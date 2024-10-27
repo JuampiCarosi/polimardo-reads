@@ -272,6 +272,38 @@ export type Database = {
         }
         Relationships: []
       }
+      books_library: {
+        Row: {
+          book_id: string
+          created_at: string
+          id: string
+          status: Database["public"]["Enums"]["library_status"]
+          user_id: string
+        }
+        Insert: {
+          book_id: string
+          created_at?: string
+          id?: string
+          status: Database["public"]["Enums"]["library_status"]
+          user_id: string
+        }
+        Update: {
+          book_id?: string
+          created_at?: string
+          id?: string
+          status?: Database["public"]["Enums"]["library_status"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "books_library_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books_detailed"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_favorite_genres: {
         Row: {
           genre_id: string
@@ -319,7 +351,6 @@ export type Database = {
           id: string
           author: string
           cover_img: string
-          created_at: string
           description: string
           edition: string
           genres: string
@@ -379,7 +410,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      library_status: "read" | "wantToRead" | "reading"
     }
     CompositeTypes: {
       [_ in never]: never
