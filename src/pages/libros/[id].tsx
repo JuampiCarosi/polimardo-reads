@@ -19,10 +19,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const statusLabels = {
+export const statusLabels = {
   reading: "leyendo",
   read: "leído",
   wantToRead: "quiero leer",
+} as const;
+
+export const statusColors = {
+  reading: "yellow",
+  read: "green",
+  wantToRead: "blue",
 } as const;
 
 export default function Home() {

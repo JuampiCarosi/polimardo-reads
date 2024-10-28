@@ -26,6 +26,9 @@ export function Header() {
           <Link className="hover:underline" href="/busqueda">
             Buscar
           </Link>
+          <Link className="hover:underline" href="/libros/biblioteca">
+            Mis libros
+          </Link>
         </div>
       </div>
       <div>
