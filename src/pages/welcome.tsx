@@ -233,7 +233,7 @@ interface FavoriteGenres {
 export default function Page() {
   const [step, setStep] = useState(0);
   const { data: genres } = useQuery<Genres[]>({
-    queryKey: ["books/genres"],
+    queryKey: ["books", "genres"],
   });
   const [name, setName] = useState<string>();
   const [country, setCountry] = useState("Argentina");

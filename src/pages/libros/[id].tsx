@@ -35,7 +35,7 @@ export default function Home() {
   const router = useRouter();
   const id = router.query.id;
   const { data: book } = useQuery<BookWithStatus>({
-    queryKey: [`books/${id as string}`],
+    queryKey: ["books", id],
     enabled: typeof id === "string",
     staleTime: 1000 * 60,
   });

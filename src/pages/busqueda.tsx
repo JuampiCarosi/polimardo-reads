@@ -28,7 +28,7 @@ export default function Page() {
   const [search, setSearch] = useState("");
 
   const { data, isLoading } = useQuery<Book[]>({
-    queryKey: ["books", `search/?book=${search}`],
+    queryKey: ["books", "search", `?book=${search}`],
   });
 
   return (
