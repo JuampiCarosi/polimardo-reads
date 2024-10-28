@@ -37,6 +37,7 @@ export default function Home() {
   const { data: book } = useQuery<BookWithStatus>({
     queryKey: [`books/${id as string}`],
     enabled: typeof id === "string",
+    staleTime: 1000 * 60,
   });
 
   return (
