@@ -139,12 +139,12 @@ export default function Home() {
               </p>
             </div>
           </div>
-          <div className="flex items-center justify-center">
+          <div>
             <a
               href={`https://www.amazon.com/s?k=${book?.title}`}
               target="_blank"
               rel="noreferrer"
-              className="mt-4 inline-block justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+              className="font-small mt-4 inline-block justify-center text-wrap rounded-lg bg-blue-600 px-3 py-1 text-xs text-white hover:bg-blue-700"
             >
               Comprar en Amazon
             </a>
