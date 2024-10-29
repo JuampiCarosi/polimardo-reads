@@ -108,6 +108,7 @@ export type Database = {
           image: string | null
           name: string | null
           onboarding_completed: boolean
+          role: string | null
         }
         Insert: {
           birth_date?: string | null
@@ -119,6 +120,7 @@ export type Database = {
           image?: string | null
           name?: string | null
           onboarding_completed?: boolean
+          role?: string | null
         }
         Update: {
           birth_date?: string | null
@@ -130,6 +132,7 @@ export type Database = {
           image?: string | null
           name?: string | null
           onboarding_completed?: boolean
+          role?: string | null
         }
         Relationships: []
       }
@@ -297,6 +300,38 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "books_library_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books_detailed"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      books_ratings: {
+        Row: {
+          book_id: string
+          created_at: string
+          id: string
+          rating: number
+          user_id: string
+        }
+        Insert: {
+          book_id: string
+          created_at?: string
+          id?: string
+          rating: number
+          user_id: string
+        }
+        Update: {
+          book_id?: string
+          created_at?: string
+          id?: string
+          rating?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "books_ratings_book_id_fkey"
             columns: ["book_id"]
             isOneToOne: false
             referencedRelation: "books_detailed"

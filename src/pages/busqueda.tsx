@@ -23,6 +23,8 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/header";
 import { type Book } from "./api/books/[id]";
+import { GetServerSideProps } from "next";
+import { getServerAuthSession } from "@/server/auth";
 
 export default function Page() {
   const [search, setSearch] = useState("");
@@ -41,7 +43,6 @@ export default function Page() {
         <CardContent>
           <div className="mb-6 flex">
             <Input
-              type="text"
               placeholder="Search items..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -164,3 +165,18 @@ function BookDialog({ item }: { item: Book }) {
     </Dialog>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const session = await getServerAuthSession(ctx);
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/auth/signin",
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: {},
+  }
+};

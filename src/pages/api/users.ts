@@ -8,6 +8,7 @@ const userSchema = z.object({
   country: z.string(),
   gender: z.string(),
   name: z.string(),
+  role: z.string(),
 });
 
 const favoriteGenresSchema = z.array(

@@ -13,6 +13,8 @@ import {
 import Image from "next/image";
 import { Pill } from "@/components/pill";
 import { statusColors, statusLabels } from "./[id]";
+import { GetServerSideProps } from "next";
+import { getServerAuthSession } from "@/server/auth";
 
 export default function Page() {
   const { data } = useQuery<BookWithStatus[]>({
@@ -68,3 +70,18 @@ export default function Page() {
     </div>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const session = await getServerAuthSession(ctx);
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/auth/signin",
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: {},
+  }
+};

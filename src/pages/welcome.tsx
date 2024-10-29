@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Toggle } from "@/components/ui/toggle";
 import {
   Select,
   SelectTrigger,
@@ -17,7 +18,8 @@ import axios from "axios";
 import { type Genres } from "./api/books/genres";
 import { useRouter } from "next/router";
 
-const maxSteps = 1;
+
+const maxSteps = 2;
 const country_list = [
   "Afganistán",
   "Albania",
@@ -239,6 +241,7 @@ export default function Page() {
   const [country, setCountry] = useState("Argentina");
   const [gender, setGender] = useState<string>();
   const [birthDate, setBirthDate] = useState<string>();
+  const [role, setRole] = useState<string>();
   const [favoriteGenres, setFavoriteGenres] = useState<Array<FavoriteGenres>>(
     [],
   );
@@ -341,6 +344,38 @@ export default function Page() {
     return favoriteGenres.length > 0;
   }
 
+  function Step3() {
+    return (
+      <div>
+        <h1>Seleccioná tu rol</h1>
+        <div className="grid grid-cols-2 gap-3 py-7">
+          <div
+            className={cn(
+              "cursor-pointer rounded-md border border-slate-200 bg-slate-50 py-3 text-center text-sm hover:bg-slate-100",
+              role === "reader" && "bg-blue-500 text-white hover:bg-blue-500",
+            )}
+            onClick={() => setRole("reader")}
+          >
+            Lector
+          </div>
+          <div
+            className={cn(
+              "cursor-pointer rounded-md border border-slate-200 bg-slate-50 py-3 text-center text-sm hover:bg-slate-100",
+              role === "author" && "bg-blue-500 text-white hover:bg-blue-500",
+            )}
+            onClick={() => setRole("author")}
+          >
+            Autor
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  function validateStep3() {
+    return role == "reader" || role == "author";
+  }
+
   const steps = [
     {
       component: Step1,
@@ -351,6 +386,11 @@ export default function Page() {
       component: Step2,
       validator: validateStep2,
       errorMessage: "Por favor seleccioná al menos un género",
+    },
+    {
+      component: Step3,
+      validator: () => validateStep3,
+      errorMessage: "Por favor seleccioná un rol",
     },
   ];
 
@@ -402,6 +442,7 @@ export default function Page() {
                         gender,
                         birth_date: birthDate,
                         email: data?.user.email,
+                        role
                       };
                       const response = await axios.post("/api/users", {
                         user,
