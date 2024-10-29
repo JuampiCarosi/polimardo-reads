@@ -20,7 +20,6 @@ const postSchema = z.object({
 
 const handler: NextApiHandler = async (req, res) => {
   if (req.method === "POST") {
-    console.log("BODY", req.body);
     const result = postSchema.safeParse(req.body);
     if (!result.success) {
       return res.status(400).json({ error: result.error });
