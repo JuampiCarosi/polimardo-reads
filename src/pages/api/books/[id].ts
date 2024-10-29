@@ -3,7 +3,7 @@ import { supabase } from "@/server/supabase";
 import { type NextApiHandler } from "next";
 import { z } from "zod";
 
-export type Book = {
+export type BookRaw = {
   author: string;
   cover_img: string | null;
   description: string;
@@ -18,8 +18,9 @@ export type Book = {
   title: string;
 };
 
-export type BookWithStatus = Book & {
+export type Book = BookRaw & {
   status: "reading" | "read" | "wantToRead" | null;
+  selfRating: number | null;
 };
 
 const schema = z.object({
@@ -43,7 +44,7 @@ const handler: NextApiHandler = async (req, res) => {
 
   const { data, error } = await supabase
     .from("books_detailed")
-    .select("*, books_library(status)")
+    .select("*, books_library(status), books_ratings(rating)")
     .eq("id", result.data.id)
     .eq("books_library.user_id", session.user.id);
 
@@ -60,10 +61,11 @@ const handler: NextApiHandler = async (req, res) => {
 
   const book = {
     ...data[0]!,
-    status: data[0]!.books_library[0]?.status ?? null,
+    status: data[0]?.books_library[0]?.status ?? null,
+    selfRating: data[0]?.books_ratings[0]?.rating ?? null,
   };
 
-  res.status(200).json(book satisfies BookWithStatus);
+  res.status(200).json(book satisfies Book);
 };
 
 export default handler;

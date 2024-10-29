@@ -1,6 +1,5 @@
 import { getServerAuthSession } from "@/server/auth";
 import { supabase } from "@/server/supabase";
-import { type Database } from "@/types/supabase";
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { z } from "zod";
 
@@ -8,14 +7,14 @@ const querySchema = z.object({
   id: z.string(),
 });
 const bodySchema = z.object({
-  status: z.enum(["reading", "read", "wantToRead"]).nullable(),
+  rating: z.number().min(1).max(5).nullable(),
 });
 
-export type BookStatus = {
+export type BookRating = {
   book_id: string;
   created_at: string;
   id: string;
-  status: Database["public"]["Enums"]["library_status"];
+  rating: number;
   user_id: string;
 } | null;
 
@@ -47,9 +46,9 @@ export default async function handler(
     return res.status(401).json({ error: "Unauthorized" });
   }
 
-  if (!bodyResult.data.status) {
+  if (!bodyResult.data.rating) {
     const { error } = await supabase
-      .from("books_library")
+      .from("books_ratings")
       .delete()
       .eq("user_id", session.user.id)
       .eq("book_id", queryResult.data.id);
@@ -68,12 +67,15 @@ export default async function handler(
   }
 
   const { data, error } = await supabase
-    .from("books_library")
-    .upsert({
-      user_id: session.user.id,
-      book_id: queryResult.data.id,
-      status: bodyResult.data.status,
-    })
+    .from("books_ratings")
+    .upsert(
+      {
+        user_id: session.user.id,
+        book_id: queryResult.data.id,
+        rating: bodyResult.data.rating,
+      },
+      { onConflict: "user_id, book_id" },
+    )
     .select("*");
 
   if (error || !data) {
@@ -93,5 +95,5 @@ export default async function handler(
     return;
   }
 
-  res.status(200).json(data[0]! satisfies BookStatus);
+  res.status(200).json(data[0]! satisfies BookRating);
 }

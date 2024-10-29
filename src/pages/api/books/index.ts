@@ -1,6 +1,6 @@
 import { supabase } from "@/server/supabase";
 import { type NextApiHandler } from "next";
-import { type Book } from "./[id]";
+import { type BookRaw } from "./[id]";
 
 const handler: NextApiHandler = async (req, res) => {
   if (req.method !== "GET")
@@ -17,7 +17,7 @@ const handler: NextApiHandler = async (req, res) => {
   console.log("COUNT", count);
   console.log("STATUS", status);
 
-  res.status(200).json(data satisfies Book[]);
+  res.status(200).json(data satisfies BookRaw[]);
 };
 
 export default handler;

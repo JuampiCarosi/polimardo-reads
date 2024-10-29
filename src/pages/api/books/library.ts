@@ -1,7 +1,7 @@
 import { getServerAuthSession } from "@/server/auth";
 import { supabase } from "@/server/supabase";
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { type BookWithStatus } from "./[id]";
+import { type Book } from "./[id]";
 
 export default async function handler(
   req: NextApiRequest,
@@ -18,8 +18,9 @@ export default async function handler(
 
   const { data, error } = await supabase
     .from("books_library")
-    .select("status, books_detailed(*)")
-    .eq("user_id", session.user.id);
+    .select("status, books_detailed(*, books_ratings(rating)) ")
+    .eq("user_id", session.user.id)
+    .eq("books_detailed.books_ratings.user_id", session.user.id);
 
   if (error) {
     console.error(error);
@@ -30,8 +31,9 @@ export default async function handler(
     .filter((b) => b.books_detailed !== null)
     .map(({ books_detailed, status }) => ({
       status,
+      selfRating: books_detailed?.books_ratings?.[0]?.rating ?? null,
       ...books_detailed!,
     }));
 
-  res.status(200).json(books satisfies BookWithStatus[]);
+  res.status(200).json(books satisfies Book[]);
 }

@@ -304,6 +304,38 @@ export type Database = {
           },
         ]
       }
+      books_ratings: {
+        Row: {
+          book_id: string
+          created_at: string
+          id: string
+          rating: number
+          user_id: string
+        }
+        Insert: {
+          book_id: string
+          created_at?: string
+          id?: string
+          rating: number
+          user_id: string
+        }
+        Update: {
+          book_id?: string
+          created_at?: string
+          id?: string
+          rating?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "books_ratings_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books_detailed"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_favorite_genres: {
         Row: {
           genre_id: string
