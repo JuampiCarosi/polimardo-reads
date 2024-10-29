@@ -28,6 +28,8 @@ import { type GetServerSideProps } from "next";
 import { getServerAuthSession } from "@/server/auth";
 import { MultiSelect } from "@/components/multi-select";
 import { type Session } from "next-auth";
+import { useRouter } from "next/router";
+
 
 interface FavoriteGenres {
     id: string;
@@ -38,6 +40,7 @@ function Form({ user }: { user: Session["user"] }) {
     const { data: all_genres } = useQuery<Genres[]>({
         queryKey: ["books", "genres"],
       });
+    const router = useRouter();
     const  [title, setTitle] = useState<string>();
     const [series, setSeries] = useState<string>();
     const [description, setDescription] = useState<string>();
@@ -46,6 +49,7 @@ function Form({ user }: { user: Session["user"] }) {
     const [cover_img, setCoverImg] = useState<string>();
     const [publish_year, setPublishYear] = useState<string>();
     const [genres, setGenres] = useState<Array<FavoriteGenres>>();
+    const [publisher, setPublisher] = useState<string>();
 
     const handleSubmit = async () => {
       const book = {
@@ -58,11 +62,13 @@ function Form({ user }: { user: Session["user"] }) {
         author: user.name,
         publish_year: publish_year ? new Date(publish_year).getFullYear() : undefined,
         genres: "[" + genres?.map((genre) => genre.name).join(", ") + "]",
+        publisher,
       };
       try {
-        console.log(book);
         await axios.post("/api/books", book);
         toast.success("Libro publicado correctamente");
+        await router.push("/");
+
       } catch (err) {
         console.error(err);
         toast.error("Error al publicar libro. Asegurate de llenar todos los campos correctamente.");
@@ -89,13 +95,24 @@ function Form({ user }: { user: Session["user"] }) {
             />
           </div>
   
-          <div className="space-y-2">
-            <Label htmlFor="series">Nombre de colección</Label>
-            <Input
-              id="series"
-              value={series}
-              onChange={(e) => setSeries(e.target.value)}
-            />
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="series">Nombre de colección</Label>
+              <Input
+                id="series"
+                value={series}
+                onChange={(e) => setSeries(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="publisher">Editorial</Label>
+              <Input
+                id="publisher"
+                value={publisher}
+                onChange={(e) => setPublisher(e.target.value)}
+              />
+              </div>
+
           </div>
 
           <div className="space-y-2">
@@ -195,7 +212,7 @@ export default function PostNewBook() {
       <div>
         <div className="min-h-screen bg-slate-100">
           <Header />
-          {session && <Form user={session.user} />}
+          {session && <Form user={session.user}  />}
           <div className="position-relative mx-auto mt-14 items-center">
 
           </div>

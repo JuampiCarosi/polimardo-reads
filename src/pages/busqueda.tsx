@@ -23,7 +23,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/header";
 import { type Book } from "./api/books/[id]";
-import { GetServerSideProps } from "next";
+import { type GetServerSideProps } from "next";
 import { getServerAuthSession } from "@/server/auth";
 import { type BookRaw } from "./api/books/[id]";
 

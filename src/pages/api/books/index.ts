@@ -15,6 +15,7 @@ const postSchema = z.object({
       publish_year: z.number(),
       author: z.string(),
       genres: z.string(),
+      publisher: z.string(),
 });
 
 const handler: NextApiHandler = async (req, res) => {
