@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useQuery, useQueryClient } from "react-query";
 import { Header } from "@/components/header";
-import { type BookWithStatus } from "../api/books/[id]";
+import { type Book } from "../api/books/[id]";
 import {
   Card,
   CardContent,
@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { toast } from "sonner";
-import { type BookStatus } from "../api/books/[id]/setStatus";
+import { type BookStatus } from "../api/books/[id]/status";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +18,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Stars } from "@/components/stars-rating";
+import { type BookRating } from "../api/books/[id]/rating";
+import { cn } from "@/lib/utils";
 
 export const statusLabels = {
   reading: "leyendo",
@@ -34,11 +37,46 @@ export const statusColors = {
 export default function Home() {
   const router = useRouter();
   const id = router.query.id;
-  const { data: book } = useQuery<BookWithStatus>({
+  const { data: book } = useQuery<Book>({
     queryKey: ["books", id],
     enabled: typeof id === "string",
     staleTime: 1000 * 60,
   });
+
+  const queryClient = useQueryClient();
+
+  async function handleRatingChange(rating: number | null) {
+    if (!book) return;
+    queryClient.setQueryData<Book | undefined>(
+      ["books", `${book.id}`],
+      (oldData) => {
+        if (!oldData) return oldData;
+        return { ...oldData, selfRating: rating };
+      },
+    );
+    const response = await fetch(`/api/books/${book.id}/rating`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ rating }),
+    });
+
+    if (!response.ok) {
+      console.error("Error adding book rating", response);
+      toast.error("Error agregando valoración al libro");
+      return;
+    }
+
+    const data = (await response.json()) as BookRating;
+    toast.success(
+      data
+        ? `Valoración del libro actualizada a ${rating} estrellas`
+        : "Valoración eliminada",
+    );
+
+    await queryClient.invalidateQueries(["books", `${book.id}`]);
+  }
 
   return (
     <div className="min-h-screen bg-slate-100">
@@ -58,14 +96,28 @@ export default function Home() {
         </CardHeader>
         <CardContent>
           <div className="flex items-start gap-6 pt-2">
-            {book?.cover_img && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                alt={book?.title}
-                src={book?.cover_img}
-                className="my-auto size-56 rounded-lg border"
+            <div className="space-y-2">
+              {book?.cover_img && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  alt={book?.title}
+                  src={book?.cover_img}
+                  className="my-auto w-64 rounded-lg border"
+                />
+              )}
+              <Stars
+                rating={book?.selfRating ?? undefined}
+                onClick={handleRatingChange}
               />
-            )}
+              <span
+                className={cn(
+                  "text-xs text-gray-500 transition-colors",
+                  book?.selfRating && "text-white",
+                )}
+              >
+                Deja tu opinión!
+              </span>
+            </div>
             <div>
               <div className="flex flex-col pb-2 text-sm font-medium text-slate-600">
                 <div>
@@ -93,13 +145,13 @@ export default function Home() {
   );
 }
 
-function BookStatusPill({ book }: { book: BookWithStatus }) {
+function BookStatusPill({ book }: { book: Book }) {
   const queryClient = useQueryClient();
 
   const updateStatus = async (
     status: "reading" | "read" | "wantToRead" | null,
   ) => {
-    const response = await fetch(`/api/books/${book.id}/setStatus`, {
+    const response = await fetch(`/api/books/${book.id}/status`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -119,7 +171,7 @@ function BookStatusPill({ book }: { book: BookWithStatus }) {
         ? `Estado del libro actualizado a ${statusLabels[data.status]} `
         : "Libro eliminado de la biblioteca",
     );
-    void queryClient.invalidateQueries(`books/${book.id}`);
+    await queryClient.invalidateQueries(["books", `${book.id}`]);
   };
 
   const pill = {

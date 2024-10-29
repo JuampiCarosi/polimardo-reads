@@ -25,11 +25,12 @@ import { Header } from "@/components/header";
 import { type Book } from "./api/books/[id]";
 import { GetServerSideProps } from "next";
 import { getServerAuthSession } from "@/server/auth";
+import { type BookRaw } from "./api/books/[id]";
 
 export default function Page() {
   const [search, setSearch] = useState("");
 
-  const { data, isLoading } = useQuery<Book[]>({
+  const { data, isLoading } = useQuery<BookRaw[]>({
     queryKey: ["books", "search", `?book=${search}`],
   });
 
@@ -91,7 +92,7 @@ export default function Page() {
   );
 }
 
-function BookDialog({ item }: { item: Book }) {
+function BookDialog({ item }: { item: BookRaw }) {
   const queryClient = useQueryClient();
 
   return (
