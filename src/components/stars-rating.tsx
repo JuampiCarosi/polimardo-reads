@@ -45,7 +45,7 @@ export function Stars({
           </div>
         </TooltipTrigger>
         <TooltipContent>
-          <div className="text-xs text-gray-500">
+          <div className="text-xs">
             {rating ? `Tu calificación: ${rating}` : "Sin calificar"}
           </div>
         </TooltipContent>
