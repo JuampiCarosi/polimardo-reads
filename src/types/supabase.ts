@@ -108,6 +108,7 @@ export type Database = {
           image: string | null
           name: string | null
           onboarding_completed: boolean
+          role: string | null
         }
         Insert: {
           birth_date?: string | null
@@ -119,6 +120,7 @@ export type Database = {
           image?: string | null
           name?: string | null
           onboarding_completed?: boolean
+          role?: string | null
         }
         Update: {
           birth_date?: string | null
@@ -130,6 +132,7 @@ export type Database = {
           image?: string | null
           name?: string | null
           onboarding_completed?: boolean
+          role?: string | null
         }
         Relationships: []
       }

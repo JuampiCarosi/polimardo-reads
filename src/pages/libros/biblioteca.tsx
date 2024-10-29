@@ -13,6 +13,8 @@ import {
 import Image from "next/image";
 import { Pill } from "@/components/pill";
 import { statusColors, statusLabels } from "./[id]";
+import { GetServerSideProps } from "next";
+import { getServerAuthSession } from "@/server/auth";
 import { toast } from "sonner";
 import { type BookRating } from "../api/books/[id]/rating";
 import { Stars } from "@/components/stars-rating";
@@ -113,3 +115,18 @@ export default function Page() {
     </div>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const session = await getServerAuthSession(ctx);
+  if (!session) {
+    return {
+      redirect: {
+        destination: "/auth/signin",
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: {},
+  }
+};

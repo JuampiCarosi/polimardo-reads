@@ -12,6 +12,8 @@ import Link from "next/link";
 export function Header() {
   const router = useRouter();
   const session = useSession();
+  const user = session.data?.user;
+
 
   return (
     <div className="flex h-[70px] items-center justify-between bg-slate-800 px-4 py-4 text-slate-200 shadow shadow-slate-200">
@@ -47,6 +49,11 @@ export function Header() {
               Editar perfil
             </DropdownMenuCheckboxItem>
 
+            {user?.role === "author" && 
+            (<DropdownMenuCheckboxItem onClick={() => router.push("/publicar-libro")} >
+              Publicar libro
+            </DropdownMenuCheckboxItem>)
+            }
             <DropdownMenuCheckboxItem onClick={() => signOut()}>
               Cerrar sesión
             </DropdownMenuCheckboxItem>
