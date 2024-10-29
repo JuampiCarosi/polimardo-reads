@@ -102,7 +102,7 @@ export default function Home() {
                 <img
                   alt={book?.title}
                   src={book?.cover_img}
-                  className="my-auto w-64 rounded-lg border"
+                  className="my-auto w-80 rounded-lg border"
                 />
               )}
               <Stars
@@ -117,6 +117,14 @@ export default function Home() {
               >
                 Deja tu opinión!
               </span>
+              <a
+                href={`https://www.amazon.com/s?k=${book?.title}`}
+                target="_blank"
+                rel="noreferrer"
+                className="font-small mt-4 inline-block justify-center text-wrap rounded-lg bg-blue-600 px-3 py-1 text-xs text-white hover:bg-blue-700"
+              >
+                Ver en Amazon
+              </a>
             </div>
             <div>
               <div className="flex flex-col pb-2 text-sm font-medium text-slate-600">
@@ -134,7 +142,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <p className="max-h-56 overflow-y-auto text-sm text-slate-800">
+              <p className="max-h-72 overflow-y-auto text-sm text-slate-800">
                 {book?.description}
               </p>
             </div>
