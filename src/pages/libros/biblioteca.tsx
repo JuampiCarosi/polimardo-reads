@@ -25,6 +25,15 @@ export default function Page() {
   const queryClient = useQueryClient();
 
   async function handleRatingChange(bookId: string, rating: number | null) {
+    queryClient.setQueryData<Book[] | undefined>(
+      ["books", `library`],
+      (oldData) => {
+        const book = oldData?.find((b) => b.id === bookId);
+        if (!oldData || !book) return oldData;
+        book.selfRating = rating;
+        return oldData;
+      },
+    );
     const response = await fetch(`/api/books/${bookId}/rating`, {
       method: "POST",
       headers: {

@@ -47,6 +47,13 @@ export default function Home() {
 
   async function handleRatingChange(rating: number | null) {
     if (!book) return;
+    queryClient.setQueryData<Book | undefined>(
+      ["books", `${book.id}`],
+      (oldData) => {
+        if (!oldData) return oldData;
+        return { ...oldData, selfRating: rating };
+      },
+    );
     const response = await fetch(`/api/books/${book.id}/rating`, {
       method: "POST",
       headers: {
@@ -67,6 +74,7 @@ export default function Home() {
         ? `Valoración del libro actualizada a ${rating} estrellas`
         : "Valoración eliminada",
     );
+
     await queryClient.invalidateQueries(["books", `${book.id}`]);
   }
 
