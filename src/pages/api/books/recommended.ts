@@ -30,8 +30,6 @@ export default async function handler(
 
   const genreIds = favoriteGenres.map((genre) => genre.genre_id);
 
-  console.log(genreIds);
-
   const { data: bookIdsData, error: bookIdsError } = await supabase
     .from("book_genres")
     .select("book_id")
@@ -44,12 +42,11 @@ export default async function handler(
   }
   
   const bookIds = bookIdsData.map((book) => book.book_id);
-  
-  console.log(bookIds);
 
   const { data, error } = await supabase
     .from("books_detailed")
-    .select("*")
+    .select("*, books_library(status, user_id)")
+    .eq("books_library.user_id", userId)
     .in("id", bookIds);
 
   if (error || !data) {
@@ -57,9 +54,15 @@ export default async function handler(
     return res.status(500).json({ error: error.message });
   }
 
-  const books = data.map((book) => ({
-    ...book,
-  }));
+  console.log(data);
+
+
+
+  const books = data
+    .filter((b) => b.books_library.length === 0)
+    .map((book) => ({
+      ...book,
+    }));
 
   res.status(200).json(books);
 }
