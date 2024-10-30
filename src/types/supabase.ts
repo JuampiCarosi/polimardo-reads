@@ -173,6 +173,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      book_genres: {
+        Row: {
+          book_id: string
+          genre_id: string
+        }
+        Insert: {
+          book_id?: string
+          genre_id?: string
+        }
+        Update: {
+          book_id?: string
+          genre_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "book_genres_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books_detailed"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "book_genres_genre_id_fkey"
+            columns: ["genre_id"]
+            isOneToOne: false
+            referencedRelation: "genres"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       books: {
         Row: {
           book_author: string
@@ -260,21 +290,6 @@ export type Database = {
         }
         Relationships: []
       }
-      books_genres: {
-        Row: {
-          id: string
-          name: string
-        }
-        Insert: {
-          id?: string
-          name: string
-        }
-        Update: {
-          id?: string
-          name?: string
-        }
-        Relationships: []
-      }
       books_library: {
         Row: {
           book_id: string
@@ -339,6 +354,21 @@ export type Database = {
           },
         ]
       }
+      genres: {
+        Row: {
+          id: string
+          name: string
+        }
+        Insert: {
+          id?: string
+          name: string
+        }
+        Update: {
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       user_favorite_genres: {
         Row: {
           genre_id: string
@@ -352,15 +382,7 @@ export type Database = {
           genre_id?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "user_favorite_genres_genre_id_fkey"
-            columns: ["genre_id"]
-            isOneToOne: false
-            referencedRelation: "books_genres"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Views: {

@@ -17,7 +17,6 @@ import axios from "axios";
 import { type Genres } from "./api/books/genres";
 import { useRouter } from "next/router";
 
-
 const maxSteps = 2;
 const country_list = [
   "Afganistán",
@@ -441,7 +440,7 @@ export default function Page() {
                         gender,
                         birth_date: birthDate,
                         email: data?.user.email,
-                        role
+                        role,
                       };
                       const response = await axios.post("/api/users", {
                         user,
