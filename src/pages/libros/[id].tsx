@@ -21,6 +21,7 @@ import {
 import { Stars } from "@/components/stars-rating";
 import { type BookRating } from "../api/books/[id]/rating";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 export const statusLabels = {
   reading: "leyendo",
@@ -96,7 +97,7 @@ export default function Home() {
         </CardHeader>
         <CardContent>
           <div className="flex items-start gap-6 pt-2">
-            <div className="space-y-2">
+            <div className="flex flex-col items-center space-y-2">
               {book?.cover_img && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -105,6 +106,20 @@ export default function Home() {
                   className="my-auto w-80 rounded-lg border"
                 />
               )}
+              <a
+                href={`https://www.amazon.com/s?k=${book?.title}`}
+                target="_blank"
+                rel="noreferrer"
+                className="w-full"
+              >
+                <Button
+                  size="sm"
+                  className="h-auto w-full py-1"
+                  variant="outline"
+                >
+                  Ver en Amazon
+                </Button>
+              </a>
               <Stars
                 rating={book?.selfRating ?? undefined}
                 onClick={handleRatingChange}
@@ -117,14 +132,6 @@ export default function Home() {
               >
                 Deja tu opinión!
               </span>
-              <a
-                href={`https://www.amazon.com/s?k=${book?.title}`}
-                target="_blank"
-                rel="noreferrer"
-                className="font-small mt-4 inline-block justify-center text-wrap rounded-lg bg-blue-600 px-3 py-1 text-xs text-white hover:bg-blue-700"
-              >
-                Ver en Amazon
-              </a>
             </div>
             <div>
               <div className="flex flex-col pb-2 text-sm font-medium text-slate-600">
