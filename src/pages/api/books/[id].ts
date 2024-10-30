@@ -21,6 +21,7 @@ export type BookRaw = {
 export type Book = BookRaw & {
   status: "reading" | "read" | "wantToRead" | null;
   selfRating: number | null;
+  cover_blob?: string;
 };
 
 const schema = z.object({
@@ -63,9 +64,21 @@ const handler: NextApiHandler = async (req, res) => {
     ...data[0]!,
     status: data[0]?.books_library[0]?.status ?? null,
     selfRating: data[0]?.books_ratings[0]?.rating ?? null,
+    cover_blob: await getCoverBlob(data[0]),
   };
 
   res.status(200).json(book satisfies Book);
 };
 
 export default handler;
+
+export async function getCoverBlob(
+  book?: BookRaw,
+): Promise<string | undefined> {
+  if (!book) return;
+  if (!book.cover_img) return;
+  const image = await fetch(book.cover_img, { method: "GET" });
+  if (!image.ok) return;
+  const buffer = await image.arrayBuffer();
+  return `data:image/png;base64,${Buffer.from(buffer).toString("base64")}`;
+}

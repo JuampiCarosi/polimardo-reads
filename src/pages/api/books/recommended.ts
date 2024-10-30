@@ -1,7 +1,9 @@
 import { getServerAuthSession } from "@/server/auth";
 import { supabase } from "@/server/supabase";
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { type Book } from "./[id]";
+import { getCoverBlob, type BookRaw } from "./[id]";
+
+export type BookWithBlob = BookRaw & { cover_blob?: string };
 
 export default async function handler(
   req: NextApiRequest,
@@ -30,17 +32,33 @@ export default async function handler(
 
   const genreIds = favoriteGenres.map((genre) => genre.genre_id);
 
+  const { error: countError, count } = await supabase
+    .from("book_genres")
+    .select("genre_id", { count: "exact" })
+    .in("genre_id", genreIds);
+
+  if (countError) {
+    console.error(countError);
+    res.status(500).json({ error: countError.message });
+    return;
+  }
+
+  const recommendedAmount = 5;
+  const randomRange = Math.floor(
+    Math.random() * (count ?? 0 - recommendedAmount),
+  );
+
   const { data: bookIdsData, error: bookIdsError } = await supabase
     .from("book_genres")
     .select("book_id")
     .in("genre_id", genreIds)
-    .limit(20);
+    .range(randomRange, randomRange + recommendedAmount);
 
   if (bookIdsError || !bookIdsData) {
     console.error(bookIdsError);
     return res.status(500).json({ error: bookIdsError.message });
   }
-  
+
   const bookIds = bookIdsData.map((book) => book.book_id);
 
   const { data, error } = await supabase
@@ -54,15 +72,15 @@ export default async function handler(
     return res.status(500).json({ error: error.message });
   }
 
-  console.log(data);
-
-
-
-  const books = data
+  const promises = data
     .filter((b) => b.books_library.length === 0)
-    .map((book) => ({
-      ...book,
-    }));
+    .map(async (book) => {
+      return {
+        ...book,
+        cover_blob: await getCoverBlob(book),
+      };
+    });
+  const books = await Promise.all(promises);
 
-  res.status(200).json(books);
+  res.status(200).json(books satisfies BookWithBlob[]);
 }

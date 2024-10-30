@@ -26,7 +26,7 @@ import { type Session } from "next-auth";
 import axios from "axios";
 import { toast } from "sonner";
 import { Header } from "@/components/header";
-import { GetServerSideProps } from "next";
+import { type GetServerSideProps } from "next";
 import { getServerAuthSession } from "@/server/auth";
 
 function Form({ user }: { user: Session["user"] }) {
@@ -35,8 +35,6 @@ function Form({ user }: { user: Session["user"] }) {
   const [gender, setGender] = useState(user.gender);
   const [country, setCountry] = useState(user.country);
   const [birthdate, setBirthdate] = useState(user.birth_date);
-
-  
 
   const handleSubmit = async () => {
     const user = {
@@ -170,5 +168,5 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   }
   return {
     props: {},
-  }
+  };
 };

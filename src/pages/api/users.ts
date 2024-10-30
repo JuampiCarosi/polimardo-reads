@@ -16,7 +16,6 @@ const favoriteGenresSchema = z.array(
 );
 
 const handler: NextApiHandler = async (req, res) => {
-
   if (req.method === "POST") {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const user = userSchema.parse(req.body.user as never);
@@ -46,17 +45,17 @@ const handler: NextApiHandler = async (req, res) => {
   }
 
   if (req.method === "PUT") {
-
-    const user = userSchema.parse(req.body.user as never);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const user = userSchema.parse(req.body.user);
 
     const { data, error } = await authDB
-          .from("users")
-          .update({ ...user } as any)
-          .eq("email", user.email)
-          .select();
+      .from("users")
+      .update({ ...user })
+      .eq("email", user.email)
+      .select();
 
     if (error) {
-        throw Error(error.message);
+      throw Error(error.message);
     }
 
     const updatedUser = data[0]!;

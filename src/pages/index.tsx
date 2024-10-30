@@ -1,13 +1,11 @@
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { useQuery, useQueryClient } from "react-query";
-import { type Book } from "./api/books/[id]";
 import Head from "next/head";
 import { getServerAuthSession } from "@/server/auth";
 import { type GetServerSideProps } from "next";
 import Link from "next/link";
 import { Header } from "@/components/header";
 import Image from "next/image";
-import { supabase } from "@/server/supabase";
 import {
   TableHeader,
   TableRow,
@@ -16,18 +14,26 @@ import {
   TableCell,
   Table,
 } from "@/components/ui/table";
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { BookRaw } from "./api/books/[id]";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import router from "next/router";
-
-
+import { type BookWithBlob } from "./api/books/recommended";
+import { LoadingSpinner } from "@/components/loading-spinner";
 
 export default function Home() {
-  const { data } = useQuery<Book[]>({
+  const { data, isLoading, refetch, isFetching } = useQuery<BookWithBlob[]>({
     queryKey: ["books", "recommended"],
+    refetchOnWindowFocus: false,
   });
-  
+
   return (
     <>
       <Head>
@@ -40,32 +46,57 @@ export default function Home() {
           href={"/busqueda"}
           className="flex w-full select-none items-center justify-center gap-1 pt-4 text-sm font-medium text-blue-700/90"
         ></Link>
-        <Card className="mx-auto mt-4 w-full max-w-4xl">
-          <CardHeader>
-            <CardTitle>Recomendados en base a tus preferencias</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Preview</TableHead>
-                  <TableHead>Titulo</TableHead>
-                  <TableHead>Autor</TableHead>
-                  <TableHead>Géneros</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {data?.map((item) => <BookDialog key={item.isbn} item={item} />)}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+        <div className="mx-auto mt-4 w-full max-w-4xl">
+          <h3 className="text- pb-3 pl-2 font-medium text-slate-900">
+            No sabes que leer? Mira nuestras recomendaciones personalizadas para
+            vos!
+          </h3>
+          <Card className="pt-2">
+            <div className="flex justify-end pr-3 pt-1">
+              <Button disabled={isFetching} onClick={() => refetch()} size="sm">
+                {isFetching ? (
+                  <>
+                    <span>Buscando nuevas </span>
+                    <LoadingSpinner />
+                  </>
+                ) : (
+                  "Pedir nuevas"
+                )}
+              </Button>
+            </div>
+
+            <CardContent>
+              {isLoading ? (
+                <div className="flex items-center justify-center gap-2 pt-4 text-center text-sm font-medium text-slate-500">
+                  <span>Analizando tus preferencias </span>
+                  <LoadingSpinner />
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Preview</TableHead>
+                      <TableHead>Titulo</TableHead>
+                      <TableHead>Autor</TableHead>
+                      <TableHead>Géneros</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {data?.map((item) => (
+                      <BookDialog key={item.isbn} item={item} />
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </>
   );
 }
 
-function BookDialog({ item }: { item: BookRaw }) {
+function BookDialog({ item }: { item: BookWithBlob }) {
   const queryClient = useQueryClient();
 
   return (
@@ -74,15 +105,16 @@ function BookDialog({ item }: { item: BookRaw }) {
         <TableRow className="cursor-pointer">
           <TableCell>
             <Image
-              src={item.cover_img ?? "/default-cover.png"}
+              src={item.cover_blob ?? ""}
               alt={item.title}
-              width={40}
-              height={40}
+              className="my-auto rounded-md border"
+              width={70}
+              height={44}
             />
           </TableCell>
           <TableCell>{item.title}</TableCell>
           <TableCell>{item.author}</TableCell>
-          <TableCell>{item.genres.replace(/[\[\]']/g, '')}</TableCell>
+          <TableCell>{item.genres.replace(/[\[\]']/g, "")}</TableCell>
         </TableRow>
       </DialogTrigger>
       <DialogContent className="max-w-2xl">
@@ -94,11 +126,12 @@ function BookDialog({ item }: { item: BookRaw }) {
         </DialogHeader>
         <div className="flex items-start gap-6 pt-2">
           {item.cover_img && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               alt={item.title}
-              src={item.cover_img}
-              className="my-auto size-56 rounded-lg border"
+              src={item.cover_blob ?? item.cover_img}
+              className="my-auto rounded-lg border"
+              width={120}
+              height={180}
             />
           )}
           <div>
