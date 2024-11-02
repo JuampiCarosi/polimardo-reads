@@ -20,9 +20,11 @@ import {
 import { Label } from "@radix-ui/react-label";
 import { toast } from "sonner";
 import { GenresSelector } from "@/components/genres-selector";
+import { useRouter } from "next/router";
 
 export default function Listas() {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -100,12 +102,19 @@ export default function Listas() {
           <div className="flex items-center justify-between">
             <div className="relative w-full">
               <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-              <Input
-                className="w-full max-w-xl border-slate-200 bg-white pl-9 focus:border-slate-400 focus:ring-slate-400"
-                placeholder="Search tags"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  router.push("/listas/busqueda?search=" + searchQuery);
+                }}
+              >
+                <Input
+                  className="w-full max-w-xl border-slate-200 bg-white pl-9 focus:border-slate-400 focus:ring-slate-400"
+                  placeholder="Search tags"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </form>
             </div>
             <div>
               <Dialog modal={false} open={open} onOpenChange={setOpen}>

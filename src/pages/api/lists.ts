@@ -10,6 +10,18 @@ const postSchema = z.object({
   genres: z.string().array(),
 });
 
+const getSchema = z.object({
+  search: z.string(),
+});
+
+interface List {
+  id: string;
+  name: string;
+  description: string;
+  created_by: string;
+  genres: string[];
+}
+
 const handler: NextApiHandler = async (req, res) => {
   if (req.method === "POST") {
     const result = postSchema.safeParse(req.body);
@@ -29,7 +41,7 @@ const handler: NextApiHandler = async (req, res) => {
       .insert({
         name: list.title,
         description: list.description,
-        createdBy: list_creator,
+        created_by: list_creator,
       })
       .select("id");
 
@@ -58,7 +70,30 @@ const handler: NextApiHandler = async (req, res) => {
     await Promise.all(promies);
 
     res.status(201).json(data);
+    return;
   }
+
+  if (req.method === "GET") {
+    const search = getSchema.safeParse(req.query);
+
+    if (!search.success) {
+      return res.status(400).json({ error: search.error });
+    }
+
+    const { data, error } = await supabase.rpc("get_similar_lists", {search_input: search.data.search});
+    console.log(data);
+
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.status(200).json(data satisfies List[]);
+    return;
+  }
+  
+  res.status(405).json({ error: "Method not allowed" });
 };
 
 export default handler;
+export type { List };
