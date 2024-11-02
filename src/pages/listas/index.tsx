@@ -9,18 +9,18 @@ import { useState } from "react";
 import { useQuery } from "react-query";
 import { type Genres } from "../api/books/genres";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { GenresSelector } from "@/components/genres-selector";
+import { toast } from "sonner";
 import {
   Dialog,
+  DialogTrigger,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog";
-import { Label } from "@radix-ui/react-label";
-import { toast } from "sonner";
-import { GenresSelector } from "@/components/genres-selector";
 import { useRouter } from "next/router";
+import { Label } from "@/components/ui/label";
 
 export default function Listas() {
   const [open, setOpen] = useState(false);
@@ -103,9 +103,9 @@ export default function Listas() {
             <div className="relative w-full">
               <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
               <form
-                onSubmit={(e) => {
+                onSubmit={async (e) => {
                   e.preventDefault();
-                  router.push("/listas/busqueda?search=" + searchQuery);
+                  await router.push("/listas/busqueda?search=" + searchQuery);
                 }}
               >
                 <Input
