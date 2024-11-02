@@ -10,9 +10,21 @@ import { useState } from "react";
 import { useQuery } from "react-query";
 import { type Genres } from "../api/books/genres";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@radix-ui/react-label";
 
 export default function Listas() {
   const [search, setSearch] = useState("");
+
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
 
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -69,9 +81,33 @@ export default function Listas() {
               />
             </div>
             <div>
-              <Link href="/listas/nueva">
-                <Button size="sm">Crear nueva</Button>
-              </Link>
+              <Dialog>
+                <DialogTrigger>
+                  <Button size="sm">Crear nueva lista</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle className="text-2xl">Crear Lista</DialogTitle>
+                    <DialogDescription>
+                      Añade un nombre, una descripción y etiquetas para tu
+                      lista.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <Label htmlFor="title">Título</Label>
+                  <Input
+                    className="w-full"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                  />
+                  <Label htmlFor="description">Descripción</Label>
+                  <Input
+                    className="w-full"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
+                  <Button>Crear Lista</Button>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
 
