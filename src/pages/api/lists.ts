@@ -1,6 +1,7 @@
 import { getServerAuthSession } from "@/server/auth";
 import { supabase } from "@/server/supabase";
 import { type NextApiHandler } from "next";
+import { toast } from "sonner";
 
 import { z } from "zod";
 
@@ -20,7 +21,7 @@ const handler: NextApiHandler = async (req, res) => {
     const list = result.data;
     const list_creator_session = await getServerAuthSession({ req, res });
     const list_creator = list_creator_session?.user.id;
-    
+
     if (!list_creator) {
       return res.status(401).json({ error: "Unauthorized" });
     }

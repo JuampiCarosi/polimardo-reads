@@ -20,9 +20,12 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@radix-ui/react-label";
 import { toast } from "sonner";
+import { useRouter } from "next/router";
 
 export default function Listas() {
+  const router = useRouter();
   const [search, setSearch] = useState("");
+  const [open, setOpen] = useState(true);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -82,6 +85,8 @@ export default function Listas() {
       toast.error("Error al crear la lista");
       return;
     }
+
+    toast.success("Lista creada correctamente");
   };
 
   return (
@@ -102,7 +107,7 @@ export default function Listas() {
               />
             </div>
             <div>
-              <Dialog>
+              <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger>
                   <Button size="sm">Crear nueva lista</Button>
                 </DialogTrigger>
@@ -126,7 +131,14 @@ export default function Listas() {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                   />
-                  <Button onClick={handleSubmit}>Crear Lista</Button>
+                  <Button
+                    onClick={() => {
+                      handleSubmit();
+                      setOpen(false);
+                    }}
+                  >
+                    Crear Lista
+                  </Button>
                 </DialogContent>
               </Dialog>
             </div>
