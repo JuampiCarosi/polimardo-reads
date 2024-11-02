@@ -5,7 +5,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ChevronRight, Search } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
 import { useQuery } from "react-query";
 import { type Genres } from "../api/books/genres";
@@ -33,7 +32,7 @@ export default function Listas() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data: genres } = useQuery<Genres[]>({
-    queryKey: ["books", "genres"],
+    queryKey: ["books", "mainGenres"],
   });
 
   const featuredBooks = [
@@ -133,7 +132,7 @@ export default function Listas() {
                   />
                   <Button
                     onClick={() => {
-                      handleSubmit();
+                      void handleSubmit();
                       setOpen(false);
                     }}
                   >
