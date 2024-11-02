@@ -29,7 +29,7 @@ export default function Busqueda() {
       <div className="container mx-auto p-6">
         <header className="mb-8">
           <h1 className="mb-6 text-3xl font-bold text-slate-800">
-            Listopia &gt; {search}
+            Listardas &gt; {search}
           </h1>
         </header>
 

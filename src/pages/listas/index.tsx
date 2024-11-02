@@ -97,7 +97,7 @@ export default function Listas() {
       <Header />
       <div className="min-h-screen bg-slate-50">
         <main className="container mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
-          <h1 className="mb-6 text-3xl font-bold text-slate-800">Listopia</h1>
+          <h1 className="mb-6 text-3xl font-bold text-slate-800">Listardas</h1>
 
           <div className="flex items-center justify-between">
             <div className="relative w-full">
