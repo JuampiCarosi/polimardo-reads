@@ -10,6 +10,8 @@ import { useState } from "react";
 import { useQuery } from "react-query";
 import { type Genres } from "../api/books/genres";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { MultipleSelect } from "@/components/ui/multiple-select";
+import { GenresSelector } from "@/components/genres-selector";
 
 export default function Listas() {
   const [search, setSearch] = useState("");
@@ -17,7 +19,7 @@ export default function Listas() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data: genres } = useQuery<Genres[]>({
-    queryKey: ["books", "genres"],
+    queryKey: ["books", "mainGenres"],
   });
 
   const featuredBooks = [
