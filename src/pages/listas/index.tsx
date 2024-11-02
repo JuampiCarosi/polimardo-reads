@@ -5,20 +5,32 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ChevronRight, Search } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
 import { useQuery } from "react-query";
 import { type Genres } from "../api/books/genres";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { MultipleSelect } from "@/components/ui/multiple-select";
 import { GenresSelector } from "@/components/genres-selector";
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 export default function Listas() {
-  const [search, setSearch] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [genres, setGenres] = useState<string[]>([]);
 
   const [searchQuery, setSearchQuery] = useState("");
 
-  const { data: genres } = useQuery<Genres[]>({
+  const { data } = useQuery<Genres[]>({
     queryKey: ["books", "mainGenres"],
   });
 
@@ -49,9 +61,34 @@ export default function Listas() {
     },
   ];
 
-  // const { data, isLoading } = useQuery<BookRaw[]>({
-  //   queryKey: ["books", "search", `?book=${search}`],
-  // });
+  const handleSubmit = async () => {
+    if (title.length === 0 || description.length === 0 || genres.length === 0) {
+      toast.error("Por favor llene todos los campos");
+      return;
+    }
+
+    const list = {
+      title,
+      description,
+      genres,
+    };
+
+    const response = await fetch(`/api/lists`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(list),
+    });
+    if (!response.ok) {
+      console.error(response);
+      toast.error("Error al crear la lista");
+      return;
+    }
+
+    toast.success("Lista creada correctamente");
+    setOpen(false);
+  };
 
   return (
     <div className="min-h-screen bg-slate-100">
@@ -71,14 +108,67 @@ export default function Listas() {
               />
             </div>
             <div>
-              <Link href="/listas/nueva">
-                <Button size="sm">Crear nueva</Button>
-              </Link>
+              <Dialog modal={false} open={open} onOpenChange={setOpen}>
+                <div
+                  className={
+                    open
+                      ? "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+                      : "hidden"
+                  }
+                />
+                <DialogTrigger asChild>
+                  <Button size="sm">Crear nueva lista</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Crear Lista</DialogTitle>
+                    <DialogDescription>
+                      Añade un nombre, una descripción y etiquetas para tu
+                      lista.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div>
+                    <Label
+                      className="text-sm font-semibold text-slate-800"
+                      htmlFor="title"
+                    >
+                      Título
+                    </Label>
+                    <Input
+                      className="w-full"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label
+                      className="text-sm font-semibold text-slate-800"
+                      htmlFor="description"
+                    >
+                      Descripción
+                    </Label>
+                    <Input
+                      className="w-full"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                    />
+                  </div>
+                  <GenresSelector
+                    className="w-full"
+                    genres={genres}
+                    setGenres={setGenres}
+                    valuesClassName="max-w-[400px]"
+                  />
+                  <Button onClick={async () => await handleSubmit()}>
+                    Crear Lista
+                  </Button>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
 
           <div className="my-6 flex flex-wrap gap-2">
-            {genres?.slice(0, 12)?.map((genre) => (
+            {data?.slice(0, 12)?.map((genre) => (
               <Badge
                 key={genre.id}
                 variant="secondary"
