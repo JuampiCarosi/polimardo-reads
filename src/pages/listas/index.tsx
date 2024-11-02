@@ -9,17 +9,17 @@ import { useState } from "react";
 import { useQuery } from "react-query";
 import { type Genres } from "../api/books/genres";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { GenresSelector } from "@/components/genres-selector";
+import { toast } from "sonner";
 import {
   Dialog,
+  DialogTrigger,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog";
-import { Label } from "@radix-ui/react-label";
-import { toast } from "sonner";
-import { GenresSelector } from "@/components/genres-selector";
+import { Label } from "@/components/ui/label";
 
 export default function Listas() {
   const [open, setOpen] = useState(false);
