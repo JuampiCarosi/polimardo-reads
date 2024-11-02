@@ -1,20 +1,18 @@
 import { getServerAuthSession } from "@/server/auth";
 import { supabase } from "@/server/supabase";
 import { type NextApiHandler } from "next";
-import { toast } from "sonner";
 
 import { z } from "zod";
 
 const postSchema = z.object({
-    title: z.string(),
-    description: z.string(),
+  title: z.string(),
+  description: z.string(),
+  genres: z.string().array(),
 });
 
 const handler: NextApiHandler = async (req, res) => {
   if (req.method === "POST") {
-    console.log("BODY", req.body);
     const result = postSchema.safeParse(req.body);
-    console.log("RESULT", result);
     if (!result.success) {
       return res.status(400).json({ error: result.error });
     }
@@ -26,16 +24,38 @@ const handler: NextApiHandler = async (req, res) => {
       return res.status(401).json({ error: "Unauthorized" });
     }
 
-    const { data, error } = await supabase.from("lists").insert({
+    const { data, error } = await supabase
+      .from("lists")
+      .insert({
         name: list.title,
         description: list.description,
         createdBy: list_creator,
-    });
+      })
+      .select("id");
 
     if (error) {
       console.error(error);
       return res.status(500).json({ error: error.message });
     }
+
+    const id = data[0]?.id;
+    if (!id) {
+      return res.status(500).json({ error: "No id returned" });
+    }
+
+    const promies = result.data.genres.map(async (genre) => {
+      const { error } = await supabase.from("lists_tags").insert({
+        list_id: id,
+        genre_id: genre,
+      });
+
+      if (error) {
+        console.error(error);
+        return res.status(500).json({ error: error.message });
+      }
+    });
+
+    await Promise.all(promies);
 
     res.status(201).json(data);
   }

@@ -31,12 +31,14 @@ export function MultipleSelect({
   className,
   values,
   setValues,
+  valuesClassName,
 }: {
   options: Options[];
   placeholder?: string;
   className?: string;
   values?: string[];
   setValues?: React.Dispatch<React.SetStateAction<string[]>>;
+  valuesClassName?: string;
 }) {
   const [open, setOpen] = React.useState(false);
   const [_values, _setValues] = React.useState<string[]>([]);
@@ -47,7 +49,7 @@ export function MultipleSelect({
   const selectedOptions = React.useMemo(
     () =>
       valuesToUse.map((value) => options.find((o) => o.value === value)?.label),
-    [options, values],
+    [options, valuesToUse],
   );
 
   function toggleValue(value: string) {
@@ -57,7 +59,7 @@ export function MultipleSelect({
   }
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover modal={false} open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -65,7 +67,12 @@ export function MultipleSelect({
           aria-expanded={open}
           className={cn("w-[200px] justify-between text-slate-700", className)}
         >
-          <span className="max-w-[150px] overflow-hidden text-ellipsis">
+          <span
+            className={cn(
+              "max-w-[150px] overflow-hidden text-ellipsis",
+              valuesClassName,
+            )}
+          >
             {valuesToUse.length > 0
               ? selectedOptions.join(", ")
               : (placeholder ?? "Seleccione una")}

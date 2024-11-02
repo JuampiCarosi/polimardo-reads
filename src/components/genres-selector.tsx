@@ -5,9 +5,13 @@ import { MultipleSelect } from "./ui/multiple-select";
 export function GenresSelector({
   genres,
   setGenres,
+  className,
+  valuesClassName,
 }: {
   genres: Array<string>;
   setGenres: React.Dispatch<React.SetStateAction<string[]>>;
+  className?: string;
+  valuesClassName?: string;
 }) {
   const { data } = useQuery<Genres[]>({
     queryKey: ["books", "genres"],
@@ -24,6 +28,8 @@ export function GenresSelector({
       values={genres}
       setValues={setGenres}
       options={genresOptions}
+      valuesClassName={valuesClassName}
+      className={className}
     />
   );
 }

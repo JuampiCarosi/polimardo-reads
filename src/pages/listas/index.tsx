@@ -19,19 +19,18 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@radix-ui/react-label";
 import { toast } from "sonner";
-import { useRouter } from "next/router";
+import { GenresSelector } from "@/components/genres-selector";
 
 export default function Listas() {
-  const router = useRouter();
-  const [search, setSearch] = useState("");
   const [open, setOpen] = useState(false);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [genres, setGenres] = useState<string[]>([]);
 
   const [searchQuery, setSearchQuery] = useState("");
 
-  const { data: genres } = useQuery<Genres[]>({
+  const { data } = useQuery<Genres[]>({
     queryKey: ["books", "mainGenres"],
   });
 
@@ -62,14 +61,16 @@ export default function Listas() {
     },
   ];
 
-  // const { data, isLoading } = useQuery<BookRaw[]>({
-  //   queryKey: ["books", "search", `?book=${search}`],
-  // });
-
   const handleSubmit = async () => {
+    if (title.length === 0 || description.length === 0 || genres.length === 0) {
+      toast.error("Por favor llene todos los campos");
+      return;
+    }
+
     const list = {
       title,
       description,
+      genres,
     };
 
     const response = await fetch(`/api/lists`, {
@@ -86,6 +87,7 @@ export default function Listas() {
     }
 
     toast.success("Lista creada correctamente");
+    setOpen(false);
   };
 
   return (
@@ -106,36 +108,58 @@ export default function Listas() {
               />
             </div>
             <div>
-              <Dialog open={open} onOpenChange={setOpen}>
-                <DialogTrigger>
+              <Dialog modal={false} open={open} onOpenChange={setOpen}>
+                <div
+                  className={
+                    open
+                      ? "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+                      : "hidden"
+                  }
+                />
+                <DialogTrigger asChild>
                   <Button size="sm">Crear nueva lista</Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle className="text-2xl">Crear Lista</DialogTitle>
+                    <DialogTitle>Crear Lista</DialogTitle>
                     <DialogDescription>
                       Añade un nombre, una descripción y etiquetas para tu
                       lista.
                     </DialogDescription>
                   </DialogHeader>
-                  <Label htmlFor="title">Título</Label>
-                  <Input
+                  <div>
+                    <Label
+                      className="text-sm font-semibold text-slate-800"
+                      htmlFor="title"
+                    >
+                      Título
+                    </Label>
+                    <Input
+                      className="w-full"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label
+                      className="text-sm font-semibold text-slate-800"
+                      htmlFor="description"
+                    >
+                      Descripción
+                    </Label>
+                    <Input
+                      className="w-full"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                    />
+                  </div>
+                  <GenresSelector
                     className="w-full"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                    genres={genres}
+                    setGenres={setGenres}
+                    valuesClassName="max-w-[400px]"
                   />
-                  <Label htmlFor="description">Descripción</Label>
-                  <Input
-                    className="w-full"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                  />
-                  <Button
-                    onClick={() => {
-                      void handleSubmit();
-                      setOpen(false);
-                    }}
-                  >
+                  <Button onClick={async () => await handleSubmit()}>
                     Crear Lista
                   </Button>
                 </DialogContent>
@@ -144,7 +168,7 @@ export default function Listas() {
           </div>
 
           <div className="my-6 flex flex-wrap gap-2">
-            {genres?.slice(0, 12)?.map((genre) => (
+            {data?.slice(0, 12)?.map((genre) => (
               <Badge
                 key={genre.id}
                 variant="secondary"
