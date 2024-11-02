@@ -25,7 +25,7 @@ import { useRouter } from "next/router";
 export default function Listas() {
   const router = useRouter();
   const [search, setSearch] = useState("");
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
