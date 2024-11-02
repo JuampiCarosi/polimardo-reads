@@ -19,6 +19,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@radix-ui/react-label";
+import { toast } from "sonner";
 
 export default function Listas() {
   const [search, setSearch] = useState("");
@@ -63,6 +64,26 @@ export default function Listas() {
   //   queryKey: ["books", "search", `?book=${search}`],
   // });
 
+  const handleSubmit = async () => {
+    const list = {
+      title,
+      description,
+    };
+
+    const response = await fetch(`/api/lists`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(list),
+    });
+    if (!response.ok) {
+      console.error(response);
+      toast.error("Error al crear la lista");
+      return;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-100">
       <Header />
@@ -105,7 +126,7 @@ export default function Listas() {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                   />
-                  <Button>Crear Lista</Button>
+                  <Button onClick={handleSubmit}>Crear Lista</Button>
                 </DialogContent>
               </Dialog>
             </div>
