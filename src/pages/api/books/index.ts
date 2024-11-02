@@ -6,16 +6,16 @@ import { type Book } from "./[id]";
 import { z } from "zod";
 
 const postSchema = z.object({
-      title: z.string(),
-      series: z.string(),
-      description: z.string(),
-      language: z.string(),
-      isbn: z.string(),
-      cover_img: z.string(),
-      publish_year: z.number(),
-      author: z.string(),
-      genres: z.string(),
-      publisher: z.string(),
+  title: z.string(),
+  series: z.string(),
+  description: z.string(),
+  language: z.string(),
+  isbn: z.string(),
+  cover_img: z.string(),
+  publish_year: z.number(),
+  author: z.string(),
+  genres: z.string(),
+  publisher: z.string(),
 });
 
 const handler: NextApiHandler = async (req, res) => {
@@ -26,8 +26,6 @@ const handler: NextApiHandler = async (req, res) => {
     }
     const book = result.data;
 
-    
-
     const { data, error } = await supabase.from("books_detailed").insert(book);
 
     if (error) {
@@ -37,7 +35,6 @@ const handler: NextApiHandler = async (req, res) => {
 
     res.status(201).json(data);
   }
-  
 
   if (req.method !== "GET")
     return res.status(405).json({ error: "Method not allowed" });
