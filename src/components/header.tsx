@@ -14,13 +14,14 @@ export function Header() {
   const session = useSession();
   const user = session.data?.user;
 
-
   return (
     <div className="flex h-[70px] items-center justify-between bg-slate-800 px-4 py-4 text-slate-200 shadow shadow-slate-200">
       <div className="flex items-center gap-7">
         <Link href="/" className="text-xl font-semibold">
           Polimardo Reads
         </Link>
+      </div>
+      <div className="flex items-center gap-10">
         <div className="space-x-3 font-medium">
           <Link className="hover:underline" href="/">
             Home
@@ -31,9 +32,10 @@ export function Header() {
           <Link className="hover:underline" href="/libros/biblioteca">
             Mis libros
           </Link>
+          <Link className="hover:underline" href="/listas">
+            Listas
+          </Link>
         </div>
-      </div>
-      <div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Avatar>
@@ -49,11 +51,13 @@ export function Header() {
               Editar perfil
             </DropdownMenuCheckboxItem>
 
-            {user?.role === "author" && 
-            (<DropdownMenuCheckboxItem onClick={() => router.push("/publicar-libro")} >
-              Publicar libro
-            </DropdownMenuCheckboxItem>)
-            }
+            {user?.role === "author" && (
+              <DropdownMenuCheckboxItem
+                onClick={() => router.push("/publicar-libro")}
+              >
+                Publicar libro
+              </DropdownMenuCheckboxItem>
+            )}
             <DropdownMenuCheckboxItem onClick={() => signOut()}>
               Cerrar sesión
             </DropdownMenuCheckboxItem>
