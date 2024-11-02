@@ -99,7 +99,7 @@ export default async function handler(
   const { data: bookLibrary, error: bookError } = await supabase
     .from("books_library")
     .select("*")
-    .eq("id", queryResult.data.id)
+    .eq("book_id", queryResult.data.id)
     .eq("user_id", session.user.id);
 
   if (bookError) {

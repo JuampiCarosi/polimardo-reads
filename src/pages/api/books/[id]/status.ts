@@ -63,6 +63,22 @@ export default async function handler(
       return;
     }
 
+    const { error: errorRating } = await supabase
+      .from("books_ratings")
+      .delete()
+      .eq("user_id", session.user.id)
+      .eq("book_id", queryResult.data.id);
+
+    if (errorRating) {
+      console.error(errorRating);
+      res.status(500).json({
+        error:
+          errorRating?.message ??
+          "Unexpected error happend deleting book rating",
+      });
+      return;
+    }
+
     res.status(200).json(null);
     return;
   }

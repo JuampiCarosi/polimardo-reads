@@ -9,6 +9,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useQuery } from "react-query";
 import { type Genres } from "../api/books/genres";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 export default function Listas() {
   const [search, setSearch] = useState("");
@@ -57,17 +58,24 @@ export default function Listas() {
         <main className="container mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
           <h1 className="mb-6 text-3xl font-bold text-slate-800">Listopia</h1>
 
-          <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-            <Input
-              className="max-w-xl border-slate-200 bg-white pl-9 focus:border-slate-400 focus:ring-slate-400"
-              placeholder="Search tags"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+          <div className="flex items-center justify-between">
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+              <Input
+                className="w-full max-w-xl border-slate-200 bg-white pl-9 focus:border-slate-400 focus:ring-slate-400"
+                placeholder="Search tags"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <div>
+              <Link href="/listas/nueva">
+                <Button size="sm">Crear nueva</Button>
+              </Link>
+            </div>
           </div>
 
-          <div className="mt-6 flex flex-wrap gap-2">
+          <div className="my-6 flex flex-wrap gap-2">
             {genres?.slice(0, 12)?.map((genre) => (
               <Badge
                 key={genre.id}
@@ -78,76 +86,101 @@ export default function Listas() {
               </Badge>
             ))}
           </div>
+          <Tabs defaultValue="featured" className="space-y-6">
+            <TabsList className="bg-slate-100 text-slate-600">
+              <TabsTrigger value="featured">Featured Lists</TabsTrigger>
+              <TabsTrigger value="created">Lists I Created</TabsTrigger>
+              <TabsTrigger value="voted">Lists I have Voted On</TabsTrigger>
+              <TabsTrigger value="liked">Lists I have Liked</TabsTrigger>
+            </TabsList>
 
-          <nav className="mt-8 flex items-center gap-6">
-            <Link
-              href="#"
-              className="text-sm font-medium text-slate-600 hover:text-slate-800"
-            >
-              Create new list
-            </Link>
-            <Link
-              href="#"
-              className="text-sm font-medium text-slate-600 hover:text-slate-800"
-            >
-              Lists I&apos;ve created
-            </Link>
-            <Link
-              href="#"
-              className="text-sm font-medium text-slate-600 hover:text-slate-800"
-            >
-              Lists I&apos;ve voted on
-            </Link>
-          </nav>
+            <TabsContent value="featured">
+              <Card className="border-slate-200 bg-white">
+                <CardContent className="p-6 sm:p-8 lg:p-10">
+                  <div className="mb-6 flex items-center justify-between">
+                    <h2 className="text-2xl font-semibold text-slate-800">
+                      Featured lists
+                    </h2>
+                    <Button
+                      variant="ghost"
+                      className="text-sm text-slate-600 hover:text-slate-800"
+                    >
+                      View all
+                      <ChevronRight className="ml-1 h-4 w-4" />
+                    </Button>
+                  </div>
+                  <h3 className="mb-2 text-xl font-semibold text-slate-800">
+                    Best Cozy Mystery Series
+                  </h3>
+                  <p className="mb-6 text-sm text-slate-500">
+                    2,292 books · 2,662 voters
+                  </p>
 
-          <section className="mt-12">
-            <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-2xl font-semibold text-slate-800">
-                Featured lists
-              </h2>
-              <Button
-                variant="ghost"
-                className="text-sm text-slate-600 hover:text-slate-800"
-              >
-                View all
-                <ChevronRight className="ml-1 h-4 w-4" />
-              </Button>
-            </div>
-
-            <Card className="border-slate-200 bg-white">
-              <CardContent className="p-6 sm:p-8 lg:p-10">
-                <h3 className="mb-2 text-xl font-semibold text-slate-800">
-                  Best Cozy Mystery Series
-                </h3>
-                <p className="mb-6 text-sm text-slate-500">
-                  2,292 books · 2,662 voters
-                </p>
-
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-                  {featuredBooks.map((book) => (
-                    <div key={book.id} className="space-y-3">
-                      <div className="relative aspect-[2/3] overflow-hidden rounded-lg">
-                        <Image
-                          src={book.image}
-                          alt={book.title}
-                          fill
-                          className="object-cover"
-                        />
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+                    {featuredBooks.map((book) => (
+                      <div key={book.id} className="space-y-3">
+                        <div className="relative aspect-[2/3] overflow-hidden rounded-lg">
+                          <Image
+                            src={book.image}
+                            alt={book.title}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <div>
+                          <h4 className="font-medium leading-none text-slate-800">
+                            {book.title}
+                          </h4>
+                          <p className="mt-1 text-sm text-slate-500">
+                            {book.author}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h4 className="font-medium leading-none text-slate-800">
-                          {book.title}
-                        </h4>
-                        <p className="mt-1 text-sm text-slate-500">
-                          {book.author}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </section>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="created">
+              <Card>
+                <CardContent className="p-6">
+                  <h2 className="mb-4 text-2xl font-semibold text-slate-800">
+                    Lists I Created
+                  </h2>
+                  <p className="text-slate-600">
+                    This section would display the lists you have created.
+                  </p>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="voted">
+              <Card>
+                <CardContent className="p-6">
+                  <h2 className="mb-4 text-2xl font-semibold text-slate-800">
+                    Lists I have Voted On
+                  </h2>
+                  <p className="text-slate-600">
+                    This section would show the lists you have voted on.
+                  </p>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="liked">
+              <Card>
+                <CardContent className="p-6">
+                  <h2 className="mb-4 text-2xl font-semibold text-slate-800">
+                    Lists I have Liked
+                  </h2>
+                  <p className="text-slate-600">
+                    Here you would see the lists you have liked.
+                  </p>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </main>
       </div>
     </div>

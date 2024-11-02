@@ -41,7 +41,6 @@ export default function Home() {
   const { data: book } = useQuery<Book>({
     queryKey: ["books", id],
     enabled: typeof id === "string",
-    staleTime: 1000 * 60,
   });
 
   const queryClient = useQueryClient();
