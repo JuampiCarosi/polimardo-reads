@@ -182,6 +182,9 @@ export default function Listas() {
                 key={genre.id}
                 variant="secondary"
                 className="cursor-pointer bg-slate-200 text-slate-700 hover:bg-slate-300"
+                onClick={() =>
+                  void router.push(`/listas/busqueda?search=${genre.name}`)
+                }
               >
                 {genre.name}
               </Badge>
