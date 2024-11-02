@@ -520,13 +520,14 @@ export type Database = {
       }
       get_similar_lists: {
         Args: {
-          input_list_name: string
+          search_input: string
         }
         Returns: {
           id: string
           name: string
           description: string
           created_by: string
+          genres: string[]
         }[]
       }
       gtrgm_compress: {
