@@ -70,6 +70,8 @@ export default function Home() {
     }
 
     const data = (await response.json()) as BookRating;
+    if (data?.added_to_library) toast.success("Libro agregado a la biblioteca");
+
     toast.success(
       data
         ? `Valoración del libro actualizada a ${rating} estrellas`

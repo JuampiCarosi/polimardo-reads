@@ -13,7 +13,7 @@ import {
 import Image from "next/image";
 import { Pill } from "@/components/pill";
 import { statusColors, statusLabels } from "./[id]";
-import { GetServerSideProps } from "next";
+import { type GetServerSideProps } from "next";
 import { getServerAuthSession } from "@/server/auth";
 import { toast } from "sonner";
 import { type BookRating } from "../api/books/[id]/rating";
@@ -128,5 +128,5 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   }
   return {
     props: {},
-  }
+  };
 };

@@ -16,6 +16,7 @@ export type BookRating = {
   id: string;
   rating: number;
   user_id: string;
+  added_to_library: boolean;
 } | null;
 
 export default async function handler(
@@ -95,5 +96,51 @@ export default async function handler(
     return;
   }
 
-  res.status(200).json(data[0]! satisfies BookRating);
+  const { data: bookLibrary, error: bookError } = await supabase
+    .from("books_library")
+    .select("*")
+    .eq("id", queryResult.data.id)
+    .eq("user_id", session.user.id);
+
+  if (bookError) {
+    console.error(bookError);
+    res.status(500).json({
+      error:
+        bookError.message ?? "Unexpected error happend updating book status",
+    });
+    return;
+  }
+
+  if (bookLibrary.length === 0) {
+    const { data: updatedStatusData, error } = await supabase
+      .from("books_library")
+      .upsert(
+        {
+          user_id: session.user.id,
+          book_id: queryResult.data.id,
+          status: "read",
+        },
+        { onConflict: "user_id, book_id" },
+      )
+      .select("*");
+
+    if (error || !updatedStatusData) {
+      console.error(error);
+      res.status(500).json({
+        error:
+          error?.message ?? "Unexpected error happend updating book status",
+      });
+      return;
+    }
+
+    res.status(200).json({
+      ...data[0]!,
+      added_to_library: true,
+    } satisfies BookRating);
+    return;
+  }
+
+  res
+    .status(200)
+    .json({ ...data[0]!, added_to_library: false } satisfies BookRating);
 }
