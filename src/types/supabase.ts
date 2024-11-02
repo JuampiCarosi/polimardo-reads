@@ -372,21 +372,21 @@ export type Database = {
       lists: {
         Row: {
           created_at: string
-          createdBy: string
+          created_by: string
           description: string
           id: string
           name: string
         }
         Insert: {
           created_at?: string
-          createdBy: string
+          created_by: string
           description: string
           id?: string
           name: string
         }
         Update: {
           created_at?: string
-          createdBy?: string
+          created_by?: string
           description?: string
           id?: string
           name?: string
@@ -518,6 +518,18 @@ export type Database = {
           title: string
         }[]
       }
+      get_similar_lists: {
+        Args: {
+          search_input: string
+        }
+        Returns: {
+          id: string
+          name: string
+          description: string
+          created_by: string
+          genres: string[]
+        }[]
+      }
       gtrgm_compress: {
         Args: {
           "": unknown
@@ -547,6 +559,26 @@ export type Database = {
           "": unknown
         }
         Returns: unknown
+      }
+      search_books: {
+        Args: {
+          input_value: string
+          filter_type?: string
+        }
+        Returns: {
+          id: string
+          author: string
+          cover_img: string
+          description: string
+          edition: string
+          genres: string
+          isbn: string
+          language: string
+          publish_year: number
+          publisher: string
+          series: string
+          title: string
+        }[]
       }
       set_limit: {
         Args: {
