@@ -2,7 +2,6 @@ import { supabase } from "@/server/supabase";
 import { type NextApiHandler } from "next";
 import { type BookRaw } from "./[id]";
 
-import { type Book } from "./[id]";
 import { z } from "zod";
 
 const postSchema = z.object({

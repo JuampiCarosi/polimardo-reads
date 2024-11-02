@@ -26,12 +26,20 @@ import { type GetServerSideProps } from "next";
 import { getServerAuthSession } from "@/server/auth";
 import { type BookRaw } from "./api/books/[id]";
 import { LoadingSpinner } from "@/components/loading-spinner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 
 export default function Page() {
   const [search, setSearch] = useState("");
-
+  const [filter, setFilter] = useState("all");
   const { data, isLoading } = useQuery<BookRaw[]>({
-    queryKey: ["books", "search", `?book=${search}`],
+    queryKey: ["books", "search", `?q=${search}&filter=${filter}`],
   });
 
   return (
@@ -54,6 +62,20 @@ export default function Page() {
                 <LoadingSpinner />
               </div>
             )}
+            <div className="w-32">
+            <Select value={filter ?? undefined} onValueChange={setFilter}>
+              <SelectTrigger id="filter">
+                <SelectValue placeholder="Seleccionar filtro" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos</SelectItem>
+                <SelectItem value="title">Título</SelectItem>
+                <SelectItem value="genre">Género</SelectItem>
+                <SelectItem value="author">Autor</SelectItem>
+              </SelectContent>
+            </Select>
+            </div>
+           
           </div>
 
           <Table>
