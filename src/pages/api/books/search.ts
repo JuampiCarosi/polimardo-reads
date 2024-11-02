@@ -3,8 +3,10 @@ import { type NextApiHandler } from "next";
 import { z } from "zod";
 import { type BookRaw } from "./[id]";
 
+
 const search_schema = z.object({
-  book: z.string(),
+  q: z.string(),
+  filter: z.string(),
 });
 
 const handler: NextApiHandler = async (req, res) => {
@@ -13,8 +15,9 @@ const handler: NextApiHandler = async (req, res) => {
   if (req.method !== "GET")
     return res.status(405).json({ error: "Method not allowed" });
 
-  const { data, error } = await supabase.rpc("get_similar_books_v2", {
-    input_book_title: result.data.book,
+  const { data, error } = await supabase.rpc("search_books", {
+    input_value: result.data.q,
+    filter_type: result.data.filter,
   });
 
   if (error) {
