@@ -19,35 +19,9 @@ import Image from "next/image";
 import { Header } from "@/components/header";
 import { Badge } from "@/components/ui/badge";
 import { BookSelector } from "@/components/books-selector";
-import { type BookRaw } from "../api/books/[id]";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
-
-interface Comment {
-  id: number;
-  author: string;
-  avatar: string;
-  date: string;
-  content: string;
-}
-
-const comments: Comment[] = [
-  {
-    id: 1,
-    author: "Breanne",
-    avatar: "/placeholder.svg?height=40&width=40",
-    date: "Jul 21, 2011 04:52PM",
-    content: "Tiger saga all the way :)",
-  },
-  {
-    id: 2,
-    author: "Danna",
-    avatar: "/placeholder.svg?height=40&width=40",
-    date: "Jul 24, 2011 02:03AM",
-    content:
-      "A great, great list! discovered so many books here. Like Breanne, I can't wait to read the Tiger Saga. It seems like a decent take on...",
-  },
-];
+import { format } from "date-fns";
 
 export default function Component() {
   const [newComment, setNewComment] = React.useState("");
@@ -205,25 +179,30 @@ export default function Component() {
           <div className="mt-8">
             <h2 className="mb-4 text-2xl font-bold text-slate-900">Comments</h2>
             <div className="space-y-4">
-              {comments.map((comment) => (
+              {data?.comments.map((comment) => (
                 <div
                   key={comment.id}
                   className="rounded-lg bg-white p-4 shadow"
                 >
                   <div className="flex items-start space-x-4">
                     <Avatar>
-                      <AvatarImage src={comment.avatar} alt={comment.author} />
-                      <AvatarFallback>{comment.author[0]}</AvatarFallback>
+                      <AvatarImage
+                        src={comment.user_img}
+                        alt={comment.user_name}
+                      />
+                      <AvatarFallback>{comment.user_name}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <h3 className="text-sm font-medium text-slate-900">
-                          {comment.author}
+                          {comment.user_name}
                         </h3>
-                        <p className="text-xs text-slate-500">{comment.date}</p>
+                        <p className="text-xs text-slate-500">
+                          {format(comment.created_at, "dd-MM-yyyy")}
+                        </p>
                       </div>
                       <p className="mt-1 text-sm text-slate-700">
-                        {comment.content}
+                        {comment.comment}
                       </p>
                     </div>
                   </div>

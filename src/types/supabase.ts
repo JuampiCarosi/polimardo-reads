@@ -397,25 +397,33 @@ export type Database = {
         Row: {
           comment: string
           created_at: string
-          id: number
+          id: string
           list_id: string
           user_id: string
         }
         Insert: {
           comment: string
           created_at?: string
-          id?: number
+          id?: string
           list_id: string
           user_id: string
         }
         Update: {
           comment?: string
           created_at?: string
-          id?: number
+          id?: string
           list_id?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "lists_comments_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "lists"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       lists_tags: {
         Row: {
@@ -528,6 +536,20 @@ export type Database = {
           self_rating: number
           book_votes: number
           self_voted: number
+        }[]
+      }
+      get_list_comments: {
+        Args: {
+          input_list_id: string
+        }
+        Returns: {
+          id: string
+          created_at: string
+          user_id: string
+          list_id: string
+          comment: string
+          user_name: string
+          user_img: string
         }[]
       }
       get_list_info: {

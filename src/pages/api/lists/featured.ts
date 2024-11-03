@@ -38,7 +38,7 @@ const handler: NextApiHandler = async (req, res) => {
     res.status(200).json({
       ...list,
       books: books ?? [],
-    } satisfies ListDetailed);
+    } satisfies Omit<ListDetailed, "comments">);
     return;
   }
 

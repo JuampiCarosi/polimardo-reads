@@ -23,6 +23,15 @@ export type ListDetailed = {
     book_votes: number;
     self_voted: number;
   }>;
+  comments: Array<{
+    id: string;
+    created_at: string;
+    user_id: string;
+    list_id: string;
+    comment: string;
+    user_name: string;
+    user_img: string;
+  }>;
 };
 
 const handler: NextApiHandler = async (req, res) => {
@@ -51,9 +60,14 @@ const handler: NextApiHandler = async (req, res) => {
       input_user_id: session.user.id,
     });
 
-    const [listInfo, listBooks] = await Promise.all([
+    const commentsPromise = supabase.rpc("get_list_comments", {
+      input_list_id: listId,
+    });
+
+    const [listInfo, listBooks, comments] = await Promise.all([
       listInfoPromise,
       listBooksPromise,
+      commentsPromise,
     ]);
 
     const listInfoData = listInfo.data?.[0];
@@ -74,10 +88,17 @@ const handler: NextApiHandler = async (req, res) => {
       return;
     }
 
+    if (comments.error) {
+      console.log("COMMENTS", comments.error);
+      res.status(500).json({ error: comments.error.message });
+      return;
+    }
+
     const list: ListDetailed = {
       ...listInfoData,
       books: listBooks.data,
       genres: [...new Set(listInfoData.genres)],
+      comments: comments.data,
     };
 
     res.status(200).json(list);
