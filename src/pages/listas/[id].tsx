@@ -13,7 +13,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRouter } from "next/router";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { type ListDetailed } from "../api/lists/[id]";
 import Image from "next/image";
 import { Header } from "@/components/header";
@@ -33,10 +33,35 @@ export default function Component() {
     enabled: typeof id === "string",
   });
 
-  const handleCommentSubmit = (e: React.FormEvent) => {
+  const postCommentMutation = useMutation({
+    onSuccess: async () => {
+      await refetch();
+      setNewComment("");
+      toast.success("Comentario agregado");
+    },
+    onError: (error) => {
+      toast.error("Hubo un error al agregar el comentario");
+      console.error(error);
+    },
+    mutationFn: async () => {
+      if (!newComment || newComment.length < 1 || typeof id !== "string") {
+        return;
+      }
+      await fetch(`/api/lists/${id}/comment`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          comment: newComment,
+        }),
+      });
+    },
+  });
+
+  const handleCommentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Submitted comment:", newComment);
-    setNewComment("");
+    postCommentMutation.mutate();
   };
   const session = useSession();
 
@@ -216,7 +241,9 @@ export default function Component() {
                 onChange={(e) => setNewComment(e.target.value)}
                 className="mb-4 bg-white"
               />
-              <Button type="submit">Post Comment</Button>
+              <Button disabled={postCommentMutation.isLoading} type="submit">
+                Post Comment
+              </Button>
             </form>
           </div>
         </div>
