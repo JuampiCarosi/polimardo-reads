@@ -20,6 +20,9 @@ interface List {
   description: string;
   created_by: string;
   genres: string[];
+  books_count: number;
+  voters_count: number;
+  covers: string[];
 }
 
 const handler: NextApiHandler = async (req, res) => {
@@ -80,7 +83,9 @@ const handler: NextApiHandler = async (req, res) => {
       return res.status(400).json({ error: search.error });
     }
 
-    const { data, error } = await supabase.rpc("get_similar_lists", {search_input: search.data.search});
+    const { data, error } = await supabase.rpc("get_similar_lists", {
+      search_input: search.data.search,
+    });
     console.log(data);
 
     if (error) {
@@ -88,10 +93,16 @@ const handler: NextApiHandler = async (req, res) => {
       return res.status(500).json({ error: error.message });
     }
 
-    res.status(200).json(data satisfies List[]);
+    res.status(200).json(
+      data.map((d) => ({
+        ...d,
+        covers: [...new Set(d.covers)].slice(0, 5),
+        genres: [...new Set(d.genres)],
+      })) satisfies List[],
+    );
     return;
   }
-  
+
   res.status(405).json({ error: "Method not allowed" });
 };
 

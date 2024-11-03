@@ -393,6 +393,30 @@ export type Database = {
         }
         Relationships: []
       }
+      lists_comments: {
+        Row: {
+          comment: string
+          created_at: string
+          id: number
+          list_id: string
+          user_id: string
+        }
+        Insert: {
+          comment: string
+          created_at?: string
+          id?: number
+          list_id: string
+          user_id: string
+        }
+        Update: {
+          comment?: string
+          created_at?: string
+          id?: number
+          list_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       lists_tags: {
         Row: {
           created_at: string
@@ -488,6 +512,50 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_list_books: {
+        Args: {
+          input_list_id: string
+          input_user_id: string
+        }
+        Returns: {
+          id: string
+          title: string
+          series: string
+          author: string
+          description: string
+          cover_img: string
+          avg_rating: number
+          self_rating: number
+          book_votes: number
+          self_voted: number
+        }[]
+      }
+      get_list_info: {
+        Args: {
+          input_list_id: string
+        }
+        Returns: {
+          id: string
+          name: string
+          description: string
+          genres: string[]
+          books_count: number
+          users_count: number
+          votes_count: number
+        }[]
+      }
+      get_popular_list: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          name: string
+          description: string
+          genres: string[]
+          books_count: number
+          users_count: number
+          votes_count: number
+        }[]
+      }
       get_similar_books: {
         Args: {
           input_book_title: string
@@ -528,6 +596,9 @@ export type Database = {
           description: string
           created_by: string
           genres: string[]
+          covers: string[]
+          voters_count: number
+          books_count: number
         }[]
       }
       gtrgm_compress: {

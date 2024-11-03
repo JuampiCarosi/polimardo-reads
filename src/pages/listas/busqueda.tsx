@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import {
   Card,
@@ -10,16 +9,15 @@ import {
 import { Header } from "@/components/header";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
-import { List } from "../api/lists";
+import { type List } from "../api/lists";
+import Image from "next/image";
 
 export default function Busqueda() {
   const router = useRouter();
   const search = router.query?.search;
 
-  console.log(search);
-
   const { data } = useQuery<List[]>({
-    queryKey: [`lists?search=${search}`],
+    queryKey: [`lists?search=${search as string}`],
     enabled: typeof search === "string",
   });
 
@@ -33,27 +31,33 @@ export default function Busqueda() {
           </h1>
         </header>
 
+        {data?.length === 0 && (
+          <span className="flex justify-center text-sm font-semibold text-slate-500">
+            No se encontraron listas que coincidan con el criterio de busqueda
+          </span>
+        )}
         <div className="grid gap-6 md:grid-cols-2">
           {data?.map((list, index) => (
             <Card key={index} className="overflow-hidden">
               <CardHeader className="pb-4">
                 <CardTitle>
                   <Link
-                    href="#"
+                    href={`/listas/${list.id}`}
                     className="text-primary text-lg font-semibold hover:underline"
                   >
                     {list.name}
                   </Link>
                 </CardTitle>
-                <CardDescription>{list.description}</CardDescription>
-                <p className="text-muted-foreground text-sm">
-                  {/* {list.books.toLocaleString()} books —{" "}
-                  {list.voters.toLocaleString()} voters */}
-                </p>
+                <CardDescription className="flex flex-col">
+                  <span className="text-muted-foreground text-sm font-normal text-slate-500">
+                    {list.books_count} books — {list.voters_count} voters
+                  </span>
+                  <span>{list.description}</span>
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-5 gap-2">
-                  {/* {list.covers.map((cover, coverIndex) => (
+                  {list.covers.map((cover, coverIndex) => (
                     <Link
                       key={coverIndex}
                       href="#"
@@ -67,7 +71,7 @@ export default function Busqueda() {
                         sizes="(max-width: 768px) 20vw, 10vw"
                       />
                     </Link>
-                  ))} */}
+                  ))}
                 </div>
               </CardContent>
             </Card>

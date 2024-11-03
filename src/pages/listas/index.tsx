@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ChevronRight, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { useQuery } from "react-query";
@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/dialog";
 import { useRouter } from "next/router";
 import { Label } from "@/components/ui/label";
+import { type ListDetailed } from "../api/lists/[id]";
 
 export default function Listas() {
   const [open, setOpen] = useState(false);
@@ -36,32 +37,9 @@ export default function Listas() {
     queryKey: ["books", "mainGenres"],
   });
 
-  const featuredBooks = [
-    {
-      id: 1,
-      title: "Murder at the Vicarage",
-      author: "Agatha Christie",
-      image: "/placeholder.svg",
-    },
-    {
-      id: 2,
-      title: "Chocolate Chip Cookie Murder",
-      author: "Joanne Fluke",
-      image: "/placeholder.svg",
-    },
-    {
-      id: 3,
-      title: "The Mysterious Affair at Styles",
-      author: "Agatha Christie",
-      image: "/placeholder.svg",
-    },
-    {
-      id: 4,
-      title: "The Sweetness at the Bottom of the Pie",
-      author: "Alan Bradley",
-      image: "/placeholder.svg",
-    },
-  ];
+  const { data: featured } = useQuery<ListDetailed>({
+    queryKey: ["lists", "featured"],
+  });
 
   const handleSubmit = async () => {
     if (title.length === 0 || description.length === 0 || genres.length === 0) {
@@ -200,47 +178,46 @@ export default function Listas() {
 
             <TabsContent value="featured">
               <Card className="border-slate-200 bg-white">
-                <CardContent className="p-6 sm:p-8 lg:p-10">
-                  <div className="mb-6 flex items-center justify-between">
+                <CardContent className="sm:p-8 lg:p-10">
+                  <div className="mb-6 flex items-center justify-between px-6">
                     <h2 className="text-2xl font-semibold text-slate-800">
-                      Featured lists
+                      Listas populares
                     </h2>
-                    <Button
-                      variant="ghost"
-                      className="text-sm text-slate-600 hover:text-slate-800"
-                    >
-                      View all
-                      <ChevronRight className="ml-1 h-4 w-4" />
-                    </Button>
                   </div>
-                  <h3 className="mb-2 text-xl font-semibold text-slate-800">
-                    Best Cozy Mystery Series
-                  </h3>
-                  <p className="mb-6 text-sm text-slate-500">
-                    2,292 books · 2,662 voters
-                  </p>
+                  <div
+                    onClick={() => router.push(`/listas/${featured?.id}`)}
+                    className="cursor-pointer px-6 py-2 hover:bg-slate-100/90"
+                  >
+                    <h3 className="mb-2 text-xl font-semibold text-slate-800">
+                      {featured?.name}
+                    </h3>
+                    <p className="mb-6 text-sm text-slate-500">
+                      {featured?.books_count} libros · {featured?.users_count}{" "}
+                      votantes
+                    </p>
 
-                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-                    {featuredBooks.map((book) => (
-                      <div key={book.id} className="space-y-3">
-                        <div className="relative aspect-[2/3] overflow-hidden rounded-lg">
-                          <Image
-                            src={book.image}
-                            alt={book.title}
-                            fill
-                            className="object-cover"
-                          />
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+                      {featured?.books.map((book) => (
+                        <div key={book.id} className="space-y-3">
+                          <div className="relative aspect-[2/3] overflow-hidden rounded-lg">
+                            <Image
+                              src={book.cover_img}
+                              alt={book.title}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <div>
+                            <h4 className="font-medium leading-none text-slate-800">
+                              {book.title}
+                            </h4>
+                            <p className="mt-1 text-sm text-slate-500">
+                              {book.author}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <h4 className="font-medium leading-none text-slate-800">
-                            {book.title}
-                          </h4>
-                          <p className="mt-1 text-sm text-slate-500">
-                            {book.author}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
