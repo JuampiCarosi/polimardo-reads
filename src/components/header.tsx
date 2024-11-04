@@ -35,6 +35,9 @@ export function Header() {
           <Link className="hover:underline" href="/listas">
             Listas
           </Link>
+          <Link className="hover:underline" href="/amigos">
+            Amigos
+          </Link>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
