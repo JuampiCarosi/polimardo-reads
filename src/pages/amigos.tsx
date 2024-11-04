@@ -5,29 +5,28 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Header } from "@/components/header";
-
-interface Contact {
-  id: string;
-  name: string;
-  mutualFriends: number;
-  image: string;
-  status: "none" | "pending" | "friends";
-}
+import { useQuery } from "react-query";
+import { User } from "./api/users";
 
 export default function Component() {
-  const [contacts, setContacts] = useState<Contact[]>(initialContacts);
+  const users = useQuery<User[]>("users", async () => {
+    const response = await fetch("/api/users");
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+    return response.json();
+  });
+  console.log(users);
+
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredContacts = contacts.filter((contact) =>
-    contact.name.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  const filteredContacts =
+    users.data?.filter((user) =>
+      user.name?.toLowerCase().includes(searchQuery.toLowerCase()),
+    ) || [];
 
-  const handleAddFriend = (contactId: string) => {
-    setContacts((prevContacts) =>
-      prevContacts.map((contact) =>
-        contact.id === contactId ? { ...contact, status: "pending" } : contact,
-      ),
-    );
+  const handleAddFriend = (userId: string) => {
+    console.log(userId);
   };
 
   return (
@@ -49,38 +48,25 @@ export default function Component() {
               />
             </div>
             <div className="space-y-2">
-              {filteredContacts.map((contact) => (
+              {filteredContacts.map((user) => (
                 <div
-                  key={contact.id}
+                  key={user.id}
                   className="hover:bg-muted/50 flex items-center justify-between rounded-lg p-2"
                 >
                   <div className="flex items-center gap-3">
                     <Avatar>
-                      <AvatarImage src={contact.image} alt={contact.name} />
+                      <AvatarImage src={user.image ?? undefined} />
                       <AvatarFallback>
-                        {contact.name.slice(0, 2)}
+                        {(user.name ?? "NA").slice(0, 2)}
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <div className="font-medium">{contact.name}</div>
-                      <div className="text-muted-foreground text-sm">
-                        {contact.mutualFriends} mutual friend
-                        {contact.mutualFriends !== 1 ? "s" : ""}
-                      </div>
+                      <div className="font-medium">{user.name}</div>
                     </div>
                   </div>
-                  {contact.status === "none" ? (
-                    <Button
-                      size="sm"
-                      onClick={() => handleAddFriend(contact.id)}
-                    >
-                      Add
-                    </Button>
-                  ) : contact.status === "pending" ? (
-                    <Button size="sm" variant="secondary" disabled>
-                      Pending...
-                    </Button>
-                  ) : null}
+                  <Button size="sm" onClick={() => handleAddFriend(user.id)}>
+                    Add
+                  </Button>
                 </div>
               ))}
             </div>
