@@ -11,6 +11,19 @@ const userSchema = z.object({
   role: z.string(),
 });
 
+interface User {
+  birth_date: string | null
+  country: string | null
+  email: string | null
+  emailVerified: string | null
+  gender: string | null
+  id: string
+  image: string | null
+  name: string | null
+  onboarding_completed: boolean
+  role: string | null
+}
+
 const favoriteGenresSchema = z.array(
   z.object({ id: z.string(), name: z.string() }),
 );
@@ -63,7 +76,21 @@ const handler: NextApiHandler = async (req, res) => {
     return;
   }
 
+  if (req.method === "GET") {
+    const { data, error } = await authDB
+      .from("users")
+      .select("*");
+
+    if (error) {
+      throw Error(error.message);
+    }
+
+    res.status(200).json(data satisfies User[]);
+    return
+  }
+
   res.status(405).json({ error: "Method not allowed" });
 };
 
 export default handler;
+export type { User };
