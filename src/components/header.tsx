@@ -36,7 +36,7 @@ export function Header() {
             Listas
           </Link>
           <Link className="hover:underline" href="/amigos">
-            Amigos
+            Descubrir Amigos
           </Link>
         </div>
         <DropdownMenu>
@@ -61,6 +61,11 @@ export function Header() {
                 Publicar libro
               </DropdownMenuCheckboxItem>
             )}
+            <DropdownMenuCheckboxItem
+              onClick={() => router.push("/mis-amigos")}
+            >
+              Mis amigos
+            </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem onClick={() => signOut()}>
               Cerrar sesión
             </DropdownMenuCheckboxItem>

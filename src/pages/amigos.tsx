@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { useQuery } from "react-query";
 import { User } from "./api/users";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
-import { Friend } from "./api/friends";
+import { FriendRaw } from "./api/friends";
 
 export default function Component() {
   const session = useSession();
@@ -18,7 +18,7 @@ export default function Component() {
     queryKey: ["users"],
   });
 
-  const possible_friends = useQuery<Friend[]>({
+  const possible_friends = useQuery<FriendRaw[]>({
     queryKey: ["friends"],
   });
 
@@ -47,12 +47,12 @@ export default function Component() {
     possible_friends.refetch();
 
     if (!response.ok) {
-      toast.error("Error adding friend");
+      toast.error("Error mandando solicitud de amistad");
       console.error(await response.json());
       return;
     }
 
-    toast.success("Friend request sent");
+    toast.success("Solicitud de amistad enviada");
   };
 
   return (
