@@ -9,6 +9,7 @@ import { useQuery } from "react-query";
 import { User } from "./api/users";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
+import { Friend } from "./api/friends";
 
 export default function Component() {
   const session = useSession();
@@ -17,12 +18,22 @@ export default function Component() {
     queryKey: ["users"],
   });
 
+  const possible_friends = useQuery<Friend[]>({
+    queryKey: ["friends"],
+  });
+
   const [searchQuery, setSearchQuery] = useState("");
 
   const filtered_contacts =
     users.data?.filter((user) =>
       user.name?.toLowerCase().includes(searchQuery.toLowerCase()),
     ) || [];
+
+  const distinct_users = filtered_contacts.filter(
+    (user) =>
+      user.id !== session.data?.user.id &&
+      !possible_friends.data?.find((friend) => friend.friend_id === user.id),
+  );
 
   const handleAddFriend = async (id: string) => {
     const response = await fetch("/api/friends", {
@@ -33,15 +44,13 @@ export default function Component() {
       },
     });
 
-    users.refetch();
+    possible_friends.refetch();
 
     if (!response.ok) {
       toast.error("Error adding friend");
       console.error(await response.json());
       return;
     }
-
-    const data = await response.json();
 
     toast.success("Friend request sent");
   };
@@ -52,20 +61,20 @@ export default function Component() {
       <div className="position-relative mx-auto mt-14 items-center">
         <Card className="mx-auto max-w-2xl">
           <CardHeader>
-            <CardTitle>Contacts</CardTitle>
+            <CardTitle>Add Friends</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="relative">
               <Search className="text-muted-foreground absolute left-2 top-2.5 h-4 w-4" />
               <Input
-                placeholder="Search Contacts"
+                placeholder="Search new friends"
                 className="pl-8"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
             <div className="space-y-2">
-              {filtered_contacts.map((user) => (
+              {distinct_users.map((user) => (
                 <div
                   key={user.id}
                   className="hover:bg-muted/50 flex items-center justify-between rounded-lg p-2"
@@ -82,7 +91,7 @@ export default function Component() {
                     </div>
                   </div>
                   <Button size="sm" onClick={() => handleAddFriend(user.id)}>
-                    {users.friendship_status === "pending" ? "Pending" : "Add"}
+                    Add
                   </Button>
                 </div>
               ))}

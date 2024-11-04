@@ -358,16 +358,19 @@ export type Database = {
         Row: {
           created_at: string
           friend_id: string
+          is_added: boolean | null
           user_id: string
         }
         Insert: {
           created_at?: string
           friend_id: string
+          is_added?: boolean | null
           user_id: string
         }
         Update: {
           created_at?: string
           friend_id?: string
+          is_added?: boolean | null
           user_id?: string
         }
         Relationships: []

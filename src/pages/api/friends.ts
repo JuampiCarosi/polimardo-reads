@@ -7,6 +7,13 @@ const postSchema = z.object({
     friend_id: z.string(),
 });
 
+export type Friend = {
+    user_id: string;
+    friend_id: string;
+    is_added: boolean | null;
+    created_at: string;
+}
+
 const handler: NextApiHandler = async (req, res) => {
 
     if (req.method === "POST") {
@@ -26,6 +33,7 @@ const handler: NextApiHandler = async (req, res) => {
         const { error } = await supabase.from("friendships").insert({
             user_id: id,
             friend_id: friend_id,
+            is_added: false,
         });
 
         if (error) {
@@ -34,6 +42,21 @@ const handler: NextApiHandler = async (req, res) => {
         }
 
         res.status(200).json({ message: "Friend added" });
+        return;
+    }
+
+    if (req.method === "GET") {
+
+        const { data, error } = await supabase
+            .from("friendships")
+            .select("*")
+
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ error: error.message });
+        }
+
+        res.status(200).json(data satisfies Friend[]);
         return;
     }
 };
