@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -7,26 +7,43 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Header } from "@/components/header";
 import { useQuery } from "react-query";
 import { User } from "./api/users";
+import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 
 export default function Component() {
-  const users = useQuery<User[]>("users", async () => {
-    const response = await fetch("/api/users");
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    return response.json();
+  const session = useSession();
+
+  const users = useQuery<User[]>({
+    queryKey: ["users"],
   });
-  console.log(users);
 
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredContacts =
+  const filtered_contacts =
     users.data?.filter((user) =>
       user.name?.toLowerCase().includes(searchQuery.toLowerCase()),
     ) || [];
 
-  const handleAddFriend = (userId: string) => {
-    console.log(userId);
+  const handleAddFriend = async (id: string) => {
+    const response = await fetch("/api/friends", {
+      method: "POST",
+      body: JSON.stringify({ id: session.data?.user.id, friend_id: id }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    users.refetch();
+
+    if (!response.ok) {
+      toast.error("Error adding friend");
+      console.error(await response.json());
+      return;
+    }
+
+    const data = await response.json();
+
+    toast.success("Friend request sent");
   };
 
   return (
@@ -48,7 +65,7 @@ export default function Component() {
               />
             </div>
             <div className="space-y-2">
-              {filteredContacts.map((user) => (
+              {filtered_contacts.map((user) => (
                 <div
                   key={user.id}
                   className="hover:bg-muted/50 flex items-center justify-between rounded-lg p-2"
@@ -65,7 +82,7 @@ export default function Component() {
                     </div>
                   </div>
                   <Button size="sm" onClick={() => handleAddFriend(user.id)}>
-                    Add
+                    {users.friendship_status === "pending" ? "Pending" : "Add"}
                   </Button>
                 </div>
               ))}
