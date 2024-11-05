@@ -56,7 +56,23 @@ export default function Component() {
   };
 
   const handleDeleteFriend = async (id: string) => {
-    console.log(id);
+    const response = await fetch("/api/friends", {
+      method: "DELETE",
+      body: JSON.stringify({ id: id }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    possible_friends.refetch();
+
+    if (!response.ok) {
+      toast.error("Error eliminando amigo");
+      console.error(await response.json());
+      return;
+    }
+
+    toast.success("Amigo eliminado correctamente");
   };
 
   return (

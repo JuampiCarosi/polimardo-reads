@@ -14,6 +14,10 @@ const postSchema = z.object({
     friend_id: z.string(),
 });
 
+const deleteSchema = z.object({
+    id: z.string(),
+});
+
 export type FriendRaw = {
     id: string;
     user_id: string;
@@ -88,6 +92,30 @@ const handler: NextApiHandler = async (req, res) => {
         res.status(200).json({ message: "Friend updated" });
         return;
     }
+
+    if (req.method === "DELETE") {
+
+        console.log(req.body);
+
+        const result = deleteSchema.safeParse(req.body);
+
+        if (!result.success) {
+            console.log(result.error);
+            return res.status(400).json({ error: result.error });
+        }
+
+        const { error } = await supabase.from("friendships").delete().eq("id", result.data.id);
+
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ error: error.message });
+        }
+
+        res.status(200).json({ message: "Friend deleted" });
+        return;
+    }
+
+    res.status(405).json({ error: "Method not allowed" });
 };
 
 export default handler;
