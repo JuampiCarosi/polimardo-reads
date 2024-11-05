@@ -4,8 +4,6 @@ import { z } from "zod";
 
 const patchSchema = z.object({
     id: z.string(),
-    user_id: z.string(),
-    friend_id: z.string(),
     is_added: z.boolean(),
 });
 
@@ -18,7 +16,7 @@ const deleteSchema = z.object({
     id: z.string(),
 });
 
-export type FriendRaw = {
+export type FriendshipRaw = {
     id: string;
     user_id: string;
     friend_id: string;
@@ -65,7 +63,7 @@ const handler: NextApiHandler = async (req, res) => {
             return res.status(500).json({ error: error.message });
         }
 
-        res.status(200).json(data satisfies FriendRaw[]);
+        res.status(200).json(data satisfies FriendshipRaw[]);
         return;
     }
 
@@ -78,7 +76,7 @@ const handler: NextApiHandler = async (req, res) => {
             return res.status(400).json({ error: result.error });
         }
 
-        const {id, user_id, friend_id, is_added} = result.data;
+        const {id, is_added} = result.data;
 
         const { error } = await supabase.from("friendships").update({
             is_added: is_added,

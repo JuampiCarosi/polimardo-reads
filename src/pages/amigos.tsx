@@ -9,34 +9,37 @@ import { useQuery } from "react-query";
 import { User } from "./api/users";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
-import { FriendRaw } from "./api/friends";
+import { FriendshipRaw } from "./api/friendships";
 
 export default function Component() {
   const session = useSession();
 
-  const users = useQuery<User[]>({
+  const all_users = useQuery<User[]>({
     queryKey: ["users"],
   });
 
-  const possible_friends = useQuery<FriendRaw[]>({
-    queryKey: ["friends"],
+  const possible_friendships = useQuery<FriendshipRaw[]>({
+    queryKey: ["friendships"],
   });
 
   const [searchQuery, setSearchQuery] = useState("");
 
   const filtered_contacts =
-    users.data?.filter((user) =>
+    all_users.data?.filter((user) =>
       user.name?.toLowerCase().includes(searchQuery.toLowerCase()),
     ) || [];
 
   const distinct_users = filtered_contacts.filter(
     (user) =>
       user.id !== session.data?.user.id &&
-      !possible_friends.data?.find((friend) => friend.friend_id === user.id),
+      !possible_friendships.data?.find(
+        (friendship) =>
+          friendship.friend_id === user.id || friendship.user_id === user.id,
+      ),
   );
 
   const sendFriendRequest = async (id: string) => {
-    const response = await fetch("/api/friends", {
+    const response = await fetch("/api/friendships", {
       method: "POST",
       body: JSON.stringify({ user_id: session.data?.user.id, friend_id: id }),
       headers: {
@@ -44,7 +47,7 @@ export default function Component() {
       },
     });
 
-    possible_friends.refetch();
+    possible_friendships.refetch();
 
     if (!response.ok) {
       toast.error("Error mandando solicitud de amistad");

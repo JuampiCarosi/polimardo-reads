@@ -1,5 +1,5 @@
 import { getServerAuthSession } from "@/server/auth";
-import { supabase, authDB } from "@/server/supabase";
+import { supabase } from "@/server/supabase";
 import { type NextApiHandler } from "next";
 
 export type  Friendship = {
@@ -14,7 +14,6 @@ export type  Friendship = {
     user_image: string;
     is_added: boolean;
 }
-
 
 const handler: NextApiHandler = async (req, res) => {
 

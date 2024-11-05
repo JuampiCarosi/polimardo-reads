@@ -5,38 +5,40 @@ import { Header } from "@/components/header";
 import { useQuery } from "react-query";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
-import { Friendship } from "./api/mis-amigos";
+import { Friendship } from "./api/myFriends";
+
+function fetch_friendships_with_both_users_data() {
+  const possible_friendships = useQuery<Friendship[]>({
+    queryKey: ["myFriends"],
+  });
+  return possible_friendships;
+}
 
 export default function Component() {
   const session = useSession();
 
-  const possible_friends = useQuery<Friendship[]>({
-    queryKey: ["mis-amigos"],
-  });
-
   const user_id = session.data?.user.id;
+  const possible_friendships = fetch_friendships_with_both_users_data();
 
-  const friends = possible_friends.data?.filter(
+  const added_friends = possible_friendships.data?.filter(
     (friend) =>
       friend.is_added &&
       (friend.user_id === user_id || friend.friend_id === user_id),
   );
 
-  const pending_friends = possible_friends.data?.filter(
+  const pending_friends = possible_friendships.data?.filter(
     (friend) => friend.user_id === session.data?.user.id && !friend.is_added,
   );
 
-  const friend_requests = possible_friends.data?.filter(
+  const friend_requests = possible_friendships.data?.filter(
     (friend) => friend.friend_id === session.data?.user.id && !friend.is_added,
   );
 
   const handleAddFriend = async (id: string, friend_id: string) => {
-    const response = await fetch("/api/friends", {
+    const response = await fetch("/api/friendships", {
       method: "PATCH",
       body: JSON.stringify({
         id: id,
-        user_id: friend_id,
-        friend_id: user_id,
         is_added: true,
       }),
       headers: {
@@ -44,7 +46,7 @@ export default function Component() {
       },
     });
 
-    possible_friends.refetch();
+    possible_friendships.refetch();
 
     if (!response.ok) {
       toast.error("Ocurrio un error al agregar al amigo");
@@ -56,7 +58,7 @@ export default function Component() {
   };
 
   const handleDeleteFriend = async (id: string) => {
-    const response = await fetch("/api/friends", {
+    const response = await fetch("/api/friendships", {
       method: "DELETE",
       body: JSON.stringify({ id: id }),
       headers: {
@@ -64,7 +66,7 @@ export default function Component() {
       },
     });
 
-    possible_friends.refetch();
+    possible_friendships.refetch();
 
     if (!response.ok) {
       toast.error("Error eliminando amigo");
@@ -87,7 +89,7 @@ export default function Component() {
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold">Amigos</h2>
             </div>
-            {friends?.map((friend, index) => (
+            {added_friends?.map((friend, index) => (
               <div key={index} className="flex items-center space-x-4">
                 <Avatar>
                   <AvatarImage src={friend.friend_image} />
