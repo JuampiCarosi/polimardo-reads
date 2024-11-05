@@ -22,7 +22,7 @@ export function Header() {
         </Link>
       </div>
       <div className="flex items-center gap-10">
-        <div className="space-x-3 font-medium">
+        <div className="space-x-8 font-medium">
           <Link className="hover:underline" href="/">
             Home
           </Link>

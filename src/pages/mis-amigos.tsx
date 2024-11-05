@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import { Friendship } from "./api/myFriends";
 import Link from "next/link";
+import { Separator } from "@/components/ui/separator";
 
 function fetch_friendships_with_both_users_data() {
   const possible_friendships = useQuery<Friendship[]>({
@@ -47,7 +48,7 @@ export default function Component() {
       },
     });
 
-    possible_friendships.refetch();
+    void possible_friendships.refetch();
 
     if (!response.ok) {
       toast.error("Ocurrio un error al agregar al amigo");
@@ -67,7 +68,7 @@ export default function Component() {
       },
     });
 
-    possible_friendships.refetch();
+    void possible_friendships.refetch();
 
     if (!response.ok) {
       toast.error("Error eliminando amigo");
@@ -84,90 +85,111 @@ export default function Component() {
       <div className="position-relative mx-auto mt-14 items-center">
         <Card className="mx-auto max-w-2xl">
           <CardHeader>
-            <CardTitle className="text-2xl">Administra tus Amigos!</CardTitle>
+            <CardTitle className="text-3xl font-bold">
+              Administra tus Amigos!
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">Amigos</h2>
-            </div>
-            {added_friends?.length === 0 ? (
-              <div className="text-m">
-                No tienes amigos actualmente!{" "}
-                <Link className="hover:underline" href={"/amigos"}>
-                  {" "}
-                  Agrega nuevos amigos aqui{" "}
-                </Link>
+          <CardContent className="space-y-8">
+            <div>
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-bold">Amigos</h2>
               </div>
-            ) : (
-              added_friends?.map((friend, index) => (
-                <div key={index} className="flex items-center space-x-4">
-                  <Avatar>
-                    <AvatarImage src={friend.friend_image} />
-                  </Avatar>
-                  <span>
-                    {friend.user_id !== user_id
-                      ? friend.user_name
-                      : friend.friend_name}
-                  </span>
-                  <Button
-                    className="ml-4 flex-shrink-0"
-                    size="sm"
-                    onClick={() => handleDeleteFriend(friend.id)}
-                  >
-                    Eliminar Amigo
-                  </Button>
+              {added_friends?.length === 0 ? (
+                <div className="">
+                  No tienes amigos actualmente!{" "}
+                  <Link className="hover:underline" href={"/amigos"}>
+                    {" "}
+                    <span className="font-bold underline">
+                      Agrega nuevos amigos aqui{" "}
+                    </span>
+                  </Link>
                 </div>
-              ))
-            )}
-
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">Solicitudes de Amistad</h2>
+              ) : (
+                added_friends?.map((friend, index) => (
+                  <div key={index} className="flex items-center space-x-4">
+                    <Avatar>
+                      <AvatarImage src={friend.friend_image} />
+                    </Avatar>
+                    <span>
+                      {friend.user_id !== user_id
+                        ? friend.user_name
+                        : friend.friend_name}
+                    </span>
+                    <Button
+                      className="ml-4 flex-shrink-0"
+                      size="sm"
+                      onClick={() => handleDeleteFriend(friend.id)}
+                    >
+                      Eliminar Amigo
+                    </Button>
+                  </div>
+                ))
+              )}
+              <Separator className="mt-4"></Separator>
             </div>
-            {friend_requests?.length === 0 ? (
-              <div className="text-m">
-                No tienes solicitudes de amistad pendientes
+            <div>
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-bold">Solicitudes de Amistad</h2>
               </div>
-            ) : (
-              friend_requests?.map((friendship, index) => (
-                <div key={index} className="flex items-center space-x-4">
-                  <Avatar>
-                    <AvatarImage src={friendship.user_image} />
-                  </Avatar>
-                  <span>{friendship.user_name}</span>
-                  <Button
-                    size="sm"
-                    onClick={() =>
-                      handleAddFriend(friendship.id, friendship.friend_id)
-                    }
-                  >
-                    Aceptar
-                  </Button>
+              {friend_requests?.length === 0 ? (
+                <div className="text-m">
+                  No tienes solicitudes de amistad pendientes
                 </div>
-              ))
-            )}
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold">Solicitudes Pendientes</h2>
+              ) : (
+                friend_requests?.map((friendship, index) => (
+                  <div key={index} className="flex items-center space-x-4">
+                    <Avatar>
+                      <AvatarImage src={friendship.user_image} />
+                    </Avatar>
+                    <span>{friendship.user_name}</span>
+                    <Button
+                      size="sm"
+                      onClick={() =>
+                        handleAddFriend(friendship.id, friendship.friend_id)
+                      }
+                    >
+                      Aceptar
+                    </Button>
+                  </div>
+                ))
+              )}
+              <Separator className="mt-4"></Separator>
             </div>
-            {pending_friends?.length === 0 ? (
-              <div className="text-m">
-                No tienes solicitudes de amistad pendientes
+            <div>
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-bold">Solicitudes Pendientes</h2>
               </div>
-            ) : (
-              pending_friends?.map((friend, index) => (
-                <div key={index} className="flex items-center space-x-4">
-                  <Avatar>
-                    <AvatarImage src={friend.friend_image} />
-                  </Avatar>
-                  <span>{friend.friend_name}</span>
-                  <Button
-                    size="sm"
-                    onClick={() => handleDeleteFriend(friend.id)}
-                  >
-                    Cancelar Solicitud
-                  </Button>
+              {pending_friends?.length === 0 ? (
+                <div className="text-m">
+                  No tienes solicitudes de amistad pendientes
                 </div>
-              ))
-            )}
+              ) : (
+                pending_friends?.map((friend, index) => (
+                  <>
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-4"
+                    >
+                      <div className="flex items-center gap-4">
+                        <Avatar>
+                          <AvatarImage src={friend.friend_image} />
+                        </Avatar>
+                        <span>{friend.friend_name}</span>
+                      </div>
+                      <Button
+                        size="sm"
+                        onClick={() => handleDeleteFriend(friend.id)}
+                      >
+                        Cancelar Solicitud
+                      </Button>
+                    </div>
+                    {index != pending_friends.length - 1 ? (
+                      <Separator></Separator>
+                    ) : null}
+                  </>
+                ))
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>
