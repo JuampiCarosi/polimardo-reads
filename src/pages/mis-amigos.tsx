@@ -1,24 +1,26 @@
-import { useState, useRef } from "react";
-import { Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Header } from "@/components/header";
 import { useQuery } from "react-query";
-import { User } from "./api/users";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
-import { Friend } from "./api/mis-amigos";
+import { Friendship } from "./api/mis-amigos";
 
 export default function Component() {
   const session = useSession();
 
-  const possible_friends = useQuery<Friend[]>({
+  const possible_friends = useQuery<Friendship[]>({
     queryKey: ["mis-amigos"],
   });
 
-  const friends = possible_friends.data?.filter((friend) => friend.is_added);
+  const user_id = session.data?.user.id;
+
+  const friends = possible_friends.data?.filter(
+    (friend) =>
+      friend.is_added &&
+      (friend.user_id === user_id || friend.friend_id === user_id),
+  );
 
   const pending_friends = possible_friends.data?.filter(
     (friend) => friend.user_id === session.data?.user.id && !friend.is_added,
@@ -28,12 +30,13 @@ export default function Component() {
     (friend) => friend.friend_id === session.data?.user.id && !friend.is_added,
   );
 
-  const handleAddFriend = async (id: string) => {
+  const handleAddFriend = async (id: string, friend_id: string) => {
     const response = await fetch("/api/friends", {
-      method: "POST",
+      method: "PATCH",
       body: JSON.stringify({
-        id: session.data?.user.id,
-        friend_id: id,
+        id: id,
+        user_id: friend_id,
+        friend_id: user_id,
         is_added: true,
       }),
       headers: {
@@ -70,15 +73,18 @@ export default function Component() {
             </div>
             {friends?.map((friend, index) => (
               <div key={index} className="flex items-center space-x-4">
-                {" "}
                 <Avatar>
                   <AvatarImage src={friend.friend_image} />
                 </Avatar>
-                <span>{friend.friend_name}</span>
+                <span>
+                  {friend.user_id !== user_id
+                    ? friend.user_name
+                    : friend.friend_name}
+                </span>
                 <Button
                   className="ml-4 flex-shrink-0"
                   size="sm"
-                  onClick={() => handleDeleteFriend(friend.friend_id)}
+                  onClick={() => handleDeleteFriend(friend.id)}
                 >
                   Eliminar Amigo
                 </Button>
@@ -88,15 +94,17 @@ export default function Component() {
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold">Solicitudes de Amistad</h2>
             </div>
-            {friend_requests?.map((friend, index) => (
+            {friend_requests?.map((friendship, index) => (
               <div key={index} className="flex items-center space-x-4">
                 <Avatar>
-                  <AvatarImage src={friend.user_image} />
+                  <AvatarImage src={friendship.user_image} />
                 </Avatar>
-                <span>{friend.user_name}</span>
+                <span>{friendship.user_name}</span>
                 <Button
                   size="sm"
-                  onClick={() => handleAddFriend(friend.user_id)}
+                  onClick={() =>
+                    handleAddFriend(friendship.id, friendship.friend_id)
+                  }
                 >
                   Aceptar
                 </Button>

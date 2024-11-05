@@ -2,13 +2,20 @@ import { supabase, authDB } from "@/server/supabase";
 import { type NextApiHandler } from "next";
 import { z } from "zod";
 
-const postSchema = z.object({
+const patchSchema = z.object({
     id: z.string(),
+    user_id: z.string(),
     friend_id: z.string(),
     is_added: z.boolean(),
 });
 
+const postSchema = z.object({
+    user_id: z.string(),
+    friend_id: z.string(),
+});
+
 export type FriendRaw = {
+    id: string;
     user_id: string;
     friend_id: string;
     is_added: boolean | null;
@@ -26,12 +33,12 @@ const handler: NextApiHandler = async (req, res) => {
             return res.status(400).json({ error: result.error });
         }
 
-        const { id, friend_id, is_added} = result.data;
+        const {user_id, friend_id} = result.data;
 
         const { error } = await supabase.from("friendships").insert({
-            user_id: id,
+            user_id: user_id,
             friend_id: friend_id,
-            is_added: is_added,
+            is_added: false,
         });
 
         if (error) {
@@ -55,6 +62,30 @@ const handler: NextApiHandler = async (req, res) => {
         }
 
         res.status(200).json(data satisfies FriendRaw[]);
+        return;
+    }
+
+    if (req.method === "PATCH") {
+                
+        const result = patchSchema.safeParse(req.body);
+
+        if (!result.success) {
+            console.log(result.error);
+            return res.status(400).json({ error: result.error });
+        }
+
+        const {id, user_id, friend_id, is_added} = result.data;
+
+        const { error } = await supabase.from("friendships").update({
+            is_added: is_added,
+        }).eq("id", id);
+
+        if (error) {
+            console.log(error);
+            return res.status(500).json({ error: error.message });
+        }
+
+        res.status(200).json({ message: "Friend updated" });
         return;
     }
 };

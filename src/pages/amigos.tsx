@@ -35,10 +35,10 @@ export default function Component() {
       !possible_friends.data?.find((friend) => friend.friend_id === user.id),
   );
 
-  const handleAddFriend = async (id: string) => {
+  const sendFriendRequest = async (id: string) => {
     const response = await fetch("/api/friends", {
       method: "POST",
-      body: JSON.stringify({ id: session.data?.user.id, friend_id: id }),
+      body: JSON.stringify({ user_id: session.data?.user.id, friend_id: id }),
       headers: {
         "Content-Type": "application/json",
       },
@@ -90,7 +90,7 @@ export default function Component() {
                       <div className="font-medium">{user.name}</div>
                     </div>
                   </div>
-                  <Button size="sm" onClick={() => handleAddFriend(user.id)}>
+                  <Button size="sm" onClick={() => sendFriendRequest(user.id)}>
                     Add
                   </Button>
                 </div>

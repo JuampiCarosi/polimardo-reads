@@ -2,7 +2,8 @@ import { getServerAuthSession } from "@/server/auth";
 import { supabase, authDB } from "@/server/supabase";
 import { type NextApiHandler } from "next";
 
-export type  Friend = {
+export type  Friendship = {
+    id: string;
     friend_id: string;
     friend_name: string;
     friend_email: string;
@@ -34,7 +35,7 @@ const handler: NextApiHandler = async (req, res) => {
             return res.status(500).json({ error: error.message });
         }
 
-        res.status(200).json(data satisfies Friend[]);
+        res.status(200).json(data satisfies Friendship[]);
         return;
     }
 };
