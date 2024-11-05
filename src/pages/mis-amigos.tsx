@@ -159,6 +159,12 @@ export default function Component() {
                     <AvatarImage src={friend.friend_image} />
                   </Avatar>
                   <span>{friend.friend_name}</span>
+                  <Button
+                    size="sm"
+                    onClick={() => handleDeleteFriend(friend.id)}
+                  >
+                    Cancelar Solicitud
+                  </Button>
                 </div>
               ))
             )}
