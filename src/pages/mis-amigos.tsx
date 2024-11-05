@@ -6,6 +6,7 @@ import { useQuery } from "react-query";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import { Friendship } from "./api/myFriends";
+import Link from "next/link";
 
 function fetch_friendships_with_both_users_data() {
   const possible_friendships = useQuery<Friendship[]>({
@@ -89,56 +90,78 @@ export default function Component() {
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold">Amigos</h2>
             </div>
-            {added_friends?.map((friend, index) => (
-              <div key={index} className="flex items-center space-x-4">
-                <Avatar>
-                  <AvatarImage src={friend.friend_image} />
-                </Avatar>
-                <span>
-                  {friend.user_id !== user_id
-                    ? friend.user_name
-                    : friend.friend_name}
-                </span>
-                <Button
-                  className="ml-4 flex-shrink-0"
-                  size="sm"
-                  onClick={() => handleDeleteFriend(friend.id)}
-                >
-                  Eliminar Amigo
-                </Button>
+            {added_friends?.length === 0 ? (
+              <div className="text-m">
+                No tienes amigos actualmente!{" "}
+                <Link className="hover:underline" href={"/amigos"}>
+                  {" "}
+                  Agrega nuevos amigos aqui{" "}
+                </Link>
               </div>
-            ))}
+            ) : (
+              added_friends?.map((friend, index) => (
+                <div key={index} className="flex items-center space-x-4">
+                  <Avatar>
+                    <AvatarImage src={friend.friend_image} />
+                  </Avatar>
+                  <span>
+                    {friend.user_id !== user_id
+                      ? friend.user_name
+                      : friend.friend_name}
+                  </span>
+                  <Button
+                    className="ml-4 flex-shrink-0"
+                    size="sm"
+                    onClick={() => handleDeleteFriend(friend.id)}
+                  >
+                    Eliminar Amigo
+                  </Button>
+                </div>
+              ))
+            )}
 
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold">Solicitudes de Amistad</h2>
             </div>
-            {friend_requests?.map((friendship, index) => (
-              <div key={index} className="flex items-center space-x-4">
-                <Avatar>
-                  <AvatarImage src={friendship.user_image} />
-                </Avatar>
-                <span>{friendship.user_name}</span>
-                <Button
-                  size="sm"
-                  onClick={() =>
-                    handleAddFriend(friendship.id, friendship.friend_id)
-                  }
-                >
-                  Aceptar
-                </Button>
+            {friend_requests?.length === 0 ? (
+              <div className="text-m">
+                No tienes solicitudes de amistad pendientes
               </div>
-            ))}
+            ) : (
+              friend_requests?.map((friendship, index) => (
+                <div key={index} className="flex items-center space-x-4">
+                  <Avatar>
+                    <AvatarImage src={friendship.user_image} />
+                  </Avatar>
+                  <span>{friendship.user_name}</span>
+                  <Button
+                    size="sm"
+                    onClick={() =>
+                      handleAddFriend(friendship.id, friendship.friend_id)
+                    }
+                  >
+                    Aceptar
+                  </Button>
+                </div>
+              ))
+            )}
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold">Solicitudes Pendientes</h2>
             </div>
-            {pending_friends?.map((friend, index) => (
-              <div key={index} className="flex items-center space-x-4">
-                <Avatar>
-                  <AvatarImage src={friend.friend_image} />
-                </Avatar>
-                <span>{friend.friend_name}</span>
+            {pending_friends?.length === 0 ? (
+              <div className="text-m">
+                No tienes solicitudes de amistad pendientes
               </div>
-            ))}
+            ) : (
+              pending_friends?.map((friend, index) => (
+                <div key={index} className="flex items-center space-x-4">
+                  <Avatar>
+                    <AvatarImage src={friend.friend_image} />
+                  </Avatar>
+                  <span>{friend.friend_name}</span>
+                </div>
+              ))
+            )}
           </CardContent>
         </Card>
       </div>
