@@ -22,6 +22,7 @@ import {
 import { useRouter } from "next/router";
 import { Label } from "@/components/ui/label";
 import { type ListDetailed } from "../api/lists/[id]";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function Listas() {
   const [open, setOpen] = useState(false);
@@ -134,18 +135,26 @@ export default function Listas() {
                     >
                       Descripción
                     </Label>
-                    <Input
+                    <Textarea
                       className="w-full"
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                     />
                   </div>
-                  <GenresSelector
-                    className="w-full"
-                    genres={genres}
-                    setGenres={setGenres}
-                    valuesClassName="max-w-[400px]"
-                  />
+                  <div>
+                    <Label
+                      className="text-sm font-semibold text-slate-800"
+                      htmlFor="genres"
+                    >
+                      Tags
+                    </Label>
+                    <GenresSelector
+                      className="w-full"
+                      genres={genres}
+                      setGenres={setGenres}
+                      valuesClassName="max-w-[400px]"
+                    />
+                  </div>
                   <Button onClick={async () => await handleSubmit()}>
                     Crear Lista
                   </Button>
