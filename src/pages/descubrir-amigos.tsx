@@ -82,14 +82,13 @@ export default function Component() {
             <div className="space-y-2">
               {distinctUsers?.map((user, index) => (
                 <div key={user.id}>
-                  <div className="hover:bg-muted/50 flex items-center justify-between rounded-lg p-2">
+                  <div
+                    onClick={() => router.push(`/perfil/${user.id}`)}
+                    className="flex cursor-pointer items-center justify-between rounded-lg p-2 hover:bg-slate-50"
+                  >
                     <div className="flex items-center gap-3">
                       <Avatar>
-                        <AvatarImage
-                          src={user.image ?? undefined}
-                          onClick={() => router.push(`/perfil/${user.id}`)}
-                          className="cursor-pointer"
-                        />
+                        <AvatarImage src={user.image ?? undefined} />
                         <AvatarFallback>
                           {(user.name ?? "NA").slice(0, 2)}
                         </AvatarFallback>

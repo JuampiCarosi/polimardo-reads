@@ -9,27 +9,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Calendar,
-  Flag,
-  Mail,
-  MapPin,
-  UserCircle,
-  User as UserComponent,
-} from "lucide-react";
+import { Cake, Flag, Mail, MapPin, User as UserComponent } from "lucide-react";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { type Genres } from "../api/user-preferred-genres";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { type Friendship } from "../api/myFriends";
+import { toast } from "sonner";
+import { useSession } from "next-auth/react";
+
+function firstLetterToUpperCase(str: string | undefined | null) {
+  if (!str) return str;
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
 
 export default function Page() {
   const router = useRouter();
   const { id } = router.query;
-
-  const {
-    data: user,
-    isLoading,
-    error,
-  } = useQuery<User>({
+  const { data: user } = useQuery<User>({
     queryKey: ["users", `?id=${id as string}`],
     enabled: typeof id === "string",
   });
@@ -43,87 +41,194 @@ export default function Page() {
     enabled: typeof id === "string",
   });
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error || !user) return <div>Error loading user data.</div>;
-
   return (
     <div className="min-h-screen bg-slate-100">
       <Header />
       <div className="position-relative mx-auto mt-14 items-center">
-        <Card className="mx-auto max-w-2xl pb-10 pl-10 pr-10 pt-10">
-          <CardHeader>
-            <div className="flex items-center space-x-4">
-              <Avatar className="h-20 w-20">
-                <AvatarImage
-                  src={user?.image ?? undefined}
-                  alt={user?.name ?? ""}
-                />
-                <AvatarFallback>
-                  <UserComponent className="h-10 w-10" />
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <CardTitle className="text-2xl">{user?.name}</CardTitle>
-                <CardDescription>{user?.role}</CardDescription>
+        {user && (
+          <Card className="mx-auto max-w-2xl p-10">
+            <CardHeader>
+              <div className="flex justify-between">
+                <div className="flex items-center space-x-4">
+                  <Avatar className="h-20 w-20">
+                    <AvatarImage
+                      src={user.image ?? undefined}
+                      alt={user.name ?? ""}
+                    />
+                    <AvatarFallback>
+                      <UserComponent className="h-10 w-10" />
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <CardTitle className="text-2xl">{user.name}</CardTitle>
+                    <CardDescription>{user.role}</CardDescription>
+                  </div>
+                </div>
+                <FriendButton />
               </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <Mail className="text-muted-foreground h-5 w-5" />
-                <span>{user?.email ?? "No email provided"}</span>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <Mail className="text-muted-foreground h-5 w-5" />
+                    <span>{user.email}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Cake className="text-muted-foreground h-5 w-5" />
+                    <span>{user.birth_date}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <MapPin className="text-muted-foreground h-5 w-5" />
+                    <span>{user.country}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Flag className="text-muted-foreground h-5 w-5" />
+                    <span>{firstLetterToUpperCase(user.gender)}</span>
+                  </div>
+                </div>
+
+                <Separator className="mt-8"></Separator>
               </div>
-              <div className="flex items-center space-x-2">
-                <Calendar className="text-muted-foreground h-5 w-5" />
-                <span>{user?.birth_date ?? "No birth date provided"}</span>
+              <div className="space-y-2 pt-2">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-bold">Géneros favoritos</h2>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span>
+                    {isLoadingGenres ? (
+                      "Loading..."
+                    ) : errorGenres ? (
+                      "Error loading genres"
+                    ) : (
+                      <div className="flex flex-wrap gap-2">
+                        {genres?.map((genre) => (
+                          <Badge
+                            key={genre.id}
+                            variant="secondary"
+                            className="bg-slate-200 text-slate-700 hover:bg-slate-200"
+                          >
+                            {genre.name}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                  </span>
+                </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <MapPin className="text-muted-foreground h-5 w-5" />
-                <span>{user?.country ?? "No country provided"}</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Flag className="text-muted-foreground h-5 w-5" />
-                <span>{user?.gender ?? "No gender provided"}</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <UserCircle className="text-muted-foreground h-5 w-5" />
-                <span>
-                  {user?.onboarding_completed
-                    ? "Onboarding completed"
-                    : "Onboarding not completed"}
-                </span>
-              </div>
-              <Separator className="mt-8"></Separator>
-            </div>
-            <div>
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold">Géneros favoritos</h2>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span>
-                  {isLoadingGenres ? (
-                    "Loading..."
-                  ) : errorGenres ? (
-                    "Error loading genres"
-                  ) : (
-                    <div className="flex flex-wrap gap-2">
-                      {genres?.map((genre) => (
-                        <div
-                          key={genre.id}
-                          className="rounded-full bg-gray-200 px-4 py-2"
-                        >
-                          {genre.name}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
+  );
+}
+
+function FriendButton() {
+  const session = useSession();
+  const router = useRouter();
+  const { id } = router.query;
+
+  const { data: friends, refetch: refetchFriends } = useQuery<Friendship[]>({
+    queryKey: ["myFriends"],
+  });
+
+  const friendship = friends
+    ? friends.find((friend) => friend.friend_id === id || friend.user_id === id)
+    : null;
+
+  if (!session.data?.user.id || friendship === null || typeof id !== "string")
+    return null;
+
+  const addFriend = async () => {
+    const response = await fetch("/api/friendships", {
+      method: "POST",
+      body: JSON.stringify({ user_id: session.data?.user.id, friend_id: id }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      toast.error("Error mandando solicitud de amistad");
+      console.error(await response.json());
+      return;
+    }
+
+    toast.success("Solicitud de amistad enviada");
+    void refetchFriends();
+  };
+
+  const acceptRequest = async () => {
+    const response = await fetch("/api/friendships", {
+      method: "PATCH",
+      body: JSON.stringify({
+        id: friendship?.id,
+        is_added: true,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    void refetchFriends();
+
+    if (!response.ok) {
+      toast.error("Ocurrio un error al agregar al amigo");
+      console.error(await response.json());
+      return;
+    }
+
+    toast.success("Amigo agregado correctamente");
+  };
+
+  const deleteFriend = async () => {
+    const response = await fetch("/api/friendships", {
+      method: "DELETE",
+      body: JSON.stringify({ id: friendship?.id }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    void refetchFriends();
+
+    if (!response.ok) {
+      toast.error("Error eliminando amigo");
+      console.error(await response.json());
+      return;
+    }
+
+    toast.success("Amigo eliminado correctamente");
+  };
+
+  if (!friendship) {
+    return (
+      <Button onClick={addFriend} size="xs">
+        + agregar amigo
+      </Button>
+    );
+  }
+
+  if (friendship.is_added) {
+    return (
+      <Button variant="outline" onClick={deleteFriend} size="xs">
+        eliminar amigo
+      </Button>
+    );
+  }
+
+  if (friendship.friend_id === id) {
+    return (
+      <Button disabled variant="outline" onClick={deleteFriend} size="xs">
+        solicitud enviada
+      </Button>
+    );
+  }
+
+  return (
+    <Button onClick={acceptRequest} size="xs">
+      aceptar solicitud
+    </Button>
   );
 }
