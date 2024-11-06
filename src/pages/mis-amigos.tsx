@@ -108,16 +108,20 @@ export default function Component() {
                 </div>
               ) : (
                 added_friends?.map((friend, index) => (
-                  <div key={index} className="flex items-center space-x-4">
+                  <div key={index} className="flex items-center space-x-4 mb-4">
                     <Avatar>
                       <AvatarImage
-                        src={friend.friend_image}
+                        src={
+                          friend.user_id !== user_id
+                            ? friend.user_image
+                            : friend.friend_image
+                        }
                         onClick={() =>
                           router.push(
                             `/perfil/${
                               friend.user_id !== user_id
-                                ? friend.user_name
-                                : friend.friend_name
+                                ? friend.user_id
+                                : friend.friend_id
                             }`,
                           )
                         }
@@ -125,9 +129,22 @@ export default function Component() {
                       />
                     </Avatar>
                     <span>
-                      {friend.user_id !== user_id
-                        ? friend.user_name
-                        : friend.friend_name}
+                        <span
+                        onClick={() =>
+                          router.push(
+                          `/perfil/${
+                            friend.user_id !== user_id
+                            ? friend.user_id
+                            : friend.friend_id
+                          }`,
+                          )
+                        }
+                        className="cursor-pointer"
+                        >
+                        {friend.user_id !== user_id
+                          ? friend.user_name
+                          : friend.friend_name}
+                        </span>
                     </span>
                     <Button
                       className="ml-4 flex-shrink-0"
@@ -151,17 +168,40 @@ export default function Component() {
                 </div>
               ) : (
                 friend_requests?.map((friendship, index) => (
-                  <div key={index} className="flex items-center space-x-4">
+                  <div key={index} className="flex items-center space-x-4 mb-4">
                     <Avatar>
                       <AvatarImage
                         src={friendship.user_image}
                         onClick={() =>
-                          router.push(`/perfil/${friendship.user_id}`)
+                          router.push(
+                            `/perfil/${
+                              friendship.user_id !== user_id
+                              ? friendship.user_id
+                              : friendship.friend_id
+                            }`,
+                            )
                         }
                         className="cursor-pointer"
                       />
                     </Avatar>
-                    <span>{friendship.user_name}</span>
+                    <span>
+                        <span
+                        onClick={() =>
+                          router.push(
+                          `/perfil/${
+                            friendship.user_id !== user_id
+                            ? friendship.user_id
+                            : friendship.friend_id
+                          }`,
+                          )
+                        }
+                        className="cursor-pointer"
+                        >
+                        {friendship.user_id !== user_id
+                          ? friendship.user_name
+                          : friendship.friend_name}
+                        </span>
+                    </span>
                     <Button
                       size="sm"
                       onClick={() =>
@@ -190,17 +230,40 @@ export default function Component() {
                       key={index}
                       className="flex items-center justify-between p-4"
                     >
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-4 mb-4">
                         <Avatar>
                           <AvatarImage
                             src={friend.friend_image}
                             onClick={() =>
-                              router.push(`/perfil/${friend.friend_id}`)
+                              router.push(
+                                `/perfil/${
+                                  friend.user_id !== user_id
+                                  ? friend.user_id
+                                  : friend.friend_id
+                                }`,
+                                )
                             }
                             className="cursor-pointer"
                           />
                         </Avatar>
-                        <span>{friend.friend_name}</span>
+                        <span>
+                        <span
+                        onClick={() =>
+                          router.push(
+                          `/perfil/${
+                            friend.user_id !== user_id
+                            ? friend.user_id
+                            : friend.friend_id
+                          }`,
+                          )
+                        }
+                        className="cursor-pointer"
+                        >
+                        {friend.user_id !== user_id
+                          ? friend.user_name
+                          : friend.friend_name}
+                        </span>
+                    </span>
                       </div>
                       <Button
                         size="sm"
