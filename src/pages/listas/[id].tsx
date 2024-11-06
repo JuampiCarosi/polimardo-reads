@@ -215,7 +215,9 @@ export default function Component() {
                         src={comment.user_img}
                         alt={comment.user_name}
                       />
-                      <AvatarFallback>{comment.user_name}</AvatarFallback>
+                      <AvatarFallback className="border border-slate-400">
+                        {comment.user_name.slice(0, 1)}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">

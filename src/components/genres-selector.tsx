@@ -30,6 +30,7 @@ export function GenresSelector({
       options={genresOptions}
       valuesClassName={valuesClassName}
       className={className}
+      placeholder="Seleccione al menos un género"
     />
   );
 }
