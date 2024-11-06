@@ -121,6 +121,7 @@ export default function Component() {
                             }`,
                           )
                         }
+                        className="cursor-pointer"
                       />
                     </Avatar>
                     <span>
@@ -157,6 +158,7 @@ export default function Component() {
                         onClick={() =>
                           router.push(`/perfil/${friendship.user_id}`)
                         }
+                        className="cursor-pointer"
                       />
                     </Avatar>
                     <span>{friendship.user_name}</span>
@@ -195,6 +197,7 @@ export default function Component() {
                             onClick={() =>
                               router.push(`/perfil/${friend.friend_id}`)
                             }
+                            className="cursor-pointer"
                           />
                         </Avatar>
                         <span>{friend.friend_name}</span>

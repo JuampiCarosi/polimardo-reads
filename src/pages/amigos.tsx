@@ -91,6 +91,7 @@ export default function Component() {
                         <AvatarImage
                           src={user.image ?? undefined}
                           onClick={() => router.push(`/perfil/${user.id}`)}
+                          className="cursor-pointer"
                         />
                         <AvatarFallback>
                           {(user.name ?? "NA").slice(0, 2)}
