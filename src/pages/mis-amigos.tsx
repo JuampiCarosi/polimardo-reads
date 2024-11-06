@@ -107,8 +107,17 @@ export default function Component() {
 
               {addedFriends?.map((friend) => (
                 <div
-                  className="flex items-center justify-between"
+                  className="flex cursor-pointer items-center justify-between py-2 hover:bg-slate-50"
                   key={friend.id}
+                  onClick={() =>
+                    router.push(
+                      `/perfil/${
+                        friend.user_id !== userId
+                          ? friend.user_id
+                          : friend.friend_id
+                      }`,
+                    )
+                  }
                 >
                   <div className="flex items-center space-x-4">
                     <Avatar>
@@ -118,35 +127,13 @@ export default function Component() {
                             ? friend.user_image
                             : friend.friend_image
                         }
-                        onClick={() =>
-                          router.push(
-                            `/perfil/${
-                              friend.user_id !== userId
-                                ? friend.user_id
-                                : friend.friend_id
-                            }`,
-                          )
-                        }
                         className="cursor-pointer"
                       />
                     </Avatar>
                     <span>
-                      <span
-                        onClick={() =>
-                          router.push(
-                            `/perfil/${
-                              friend.user_id !== userId
-                                ? friend.user_id
-                                : friend.friend_id
-                            }`,
-                          )
-                        }
-                        className="cursor-pointer"
-                      >
-                        {friend.user_id !== userId
-                          ? friend.user_name
-                          : friend.friend_name}
-                      </span>
+                      {friend.user_id !== userId
+                        ? friend.user_name
+                        : friend.friend_name}
                     </span>
                   </div>
                   <Button
@@ -158,7 +145,7 @@ export default function Component() {
                   </Button>
                 </div>
               ))}
-              <Separator className="mt-4" />
+              <Separator />
             </div>
             <div>
               <div className="flex items-center justify-between">
@@ -174,37 +161,23 @@ export default function Component() {
 
               {friendRequests?.map((friendship) => (
                 <div
+                  className="flex cursor-pointer items-center justify-between py-2 hover:bg-slate-50"
                   key={friendship.id}
-                  className="flex items-center justify-between"
+                  onClick={() =>
+                    router.push(
+                      `/perfil/${
+                        friendship.user_id !== userId
+                          ? friendship.user_id
+                          : friendship.friend_id
+                      }`,
+                    )
+                  }
                 >
                   <div className="flex items-center gap-4">
                     <Avatar>
-                      <AvatarImage
-                        src={friendship.user_image}
-                        onClick={() =>
-                          router.push(
-                            `/perfil/${
-                              friendship.user_id !== userId
-                                ? friendship.user_id
-                                : friendship.friend_id
-                            }`,
-                          )
-                        }
-                        className="cursor-pointer"
-                      />
+                      <AvatarImage src={friendship.user_image} />
                     </Avatar>
-                    <span
-                      onClick={() =>
-                        router.push(
-                          `/perfil/${
-                            friendship.user_id !== userId
-                              ? friendship.user_id
-                              : friendship.friend_id
-                          }`,
-                        )
-                      }
-                      className="cursor-pointer"
-                    >
+                    <span>
                       {friendship.user_id !== userId
                         ? friendship.user_name
                         : friendship.friend_name}
@@ -241,9 +214,22 @@ export default function Component() {
                 </div>
               )}
 
-              {pendingFriends?.map((friend, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div className="mb-4 flex items-center gap-4">
+              {pendingFriends?.map((friend) => (
+                <div
+                  className="flex cursor-pointer items-center justify-between py-2 hover:bg-slate-50"
+                  key={friend.id}
+                  onClick={() =>
+                    router.push(
+                      `/perfil/${
+                        friend.user_id !== userId
+                          ? friend.user_id
+                          : friend.friend_id
+                      }`,
+                    )
+                  }
+                >
+                  {" "}
+                  <div className="flex items-center gap-4">
                     <Avatar>
                       <AvatarImage
                         src={friend.friend_image}

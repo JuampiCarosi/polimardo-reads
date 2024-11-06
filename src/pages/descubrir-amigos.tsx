@@ -99,7 +99,10 @@ export default function Component() {
                     </div>
                     <Button
                       size="sm"
-                      onClick={() => sendFriendRequest(user.id)}
+                      onClick={(e) => {
+                        void sendFriendRequest(user.id);
+                        e.stopPropagation();
+                      }}
                     >
                       Add
                     </Button>

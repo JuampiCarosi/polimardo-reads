@@ -25,6 +25,7 @@ const config = {
       "images.amazon.com",
       "i.gr-assets.com",
       "encrypted-tbn3.gstatic.com",
+      "m.media-amazon.com",
     ],
   },
 };

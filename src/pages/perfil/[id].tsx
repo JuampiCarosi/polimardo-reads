@@ -137,7 +137,12 @@ function FriendButton() {
     ? friends.find((friend) => friend.friend_id === id || friend.user_id === id)
     : null;
 
-  if (!session.data?.user.id || friendship === null || typeof id !== "string")
+  if (
+    !session.data?.user.id ||
+    friendship === null ||
+    typeof id !== "string" ||
+    session.data?.user.id === id
+  )
     return null;
 
   const addFriend = async () => {
