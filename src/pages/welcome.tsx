@@ -17,6 +17,7 @@ import axios from "axios";
 import { type Genres } from "./api/books/genres";
 import { useRouter } from "next/router";
 
+
 const maxSteps = 2;
 const country_list = [
   "Afganistán",
@@ -354,7 +355,12 @@ export default function Page() {
             )}
             onClick={() => setRole("reader")}
           >
+          <div className="text-3xl p-6">
             Lector
+          </div>
+          <div className={cn("text-gray-700", role === "reader" && "text-white")}>
+            Quiero leer, conocer y compartir opiniones sobre libros, interactuar con otros usuarios y recibir recomendaciones.
+          </div>
           </div>
           <div
             className={cn(
@@ -363,7 +369,12 @@ export default function Page() {
             )}
             onClick={() => setRole("author")}
           >
+            <div className="text-3xl p-6">
             Autor
+            </div>
+            <div className={cn("text-gray-700", role === "author" && "text-white")}>
+            Quiero publicar mis libros, interactuar con mis lectores y recibir feedback. Además, quiero aprovechar todos los beneficios de un lector. 
+            </div>
           </div>
         </div>
       </div>
