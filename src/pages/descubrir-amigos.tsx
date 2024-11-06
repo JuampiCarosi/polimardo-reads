@@ -6,10 +6,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Header } from "@/components/header";
 import { useQuery } from "react-query";
-import { User } from "./api/users";
+import { type User } from "./api/users";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
-import { FriendshipRaw } from "./api/friendships";
+import { type FriendshipRaw } from "./api/friendships";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/router";
 
@@ -17,29 +17,30 @@ export default function Component() {
   const session = useSession();
   const router = useRouter();
 
-  const all_users = useQuery<User[]>({
+  const allUsers = useQuery<User[]>({
     queryKey: ["users"],
   });
 
-  const possible_friendships = useQuery<FriendshipRaw[]>({
-    queryKey: ["friendships"],
+  const possibleFriendships = useQuery<FriendshipRaw[]>({
+    queryKey: ["myFriends"],
   });
 
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filtered_contacts =
-    all_users.data?.filter((user) =>
-      user.name?.toLowerCase().includes(searchQuery.toLowerCase()),
-    ) || [];
+  const filteredContacts = allUsers.data?.filter((user) =>
+    user.name?.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
 
-  const distinct_users = filtered_contacts.filter(
-    (user) =>
-      user.id !== session.data?.user.id &&
-      !possible_friendships.data?.find(
+  const distinctUsers = filteredContacts?.filter((user) => {
+    if (!session.data?.user.id || !possibleFriendships.data) return false;
+    return (
+      user.id !== session.data.user.id &&
+      !possibleFriendships.data.find(
         (friendship) =>
           friendship.friend_id === user.id || friendship.user_id === user.id,
-      ),
-  );
+      )
+    );
+  });
 
   const sendFriendRequest = async (id: string) => {
     const response = await fetch("/api/friendships", {
@@ -50,8 +51,6 @@ export default function Component() {
       },
     });
 
-    possible_friendships.refetch();
-
     if (!response.ok) {
       toast.error("Error mandando solicitud de amistad");
       console.error(await response.json());
@@ -59,6 +58,7 @@ export default function Component() {
     }
 
     toast.success("Solicitud de amistad enviada");
+    void possibleFriendships.refetch();
   };
 
   return (
@@ -80,12 +80,9 @@ export default function Component() {
               />
             </div>
             <div className="space-y-2">
-              {distinct_users.map((user, index) => (
-                <>
-                  <div
-                    key={user.id}
-                    className="hover:bg-muted/50 flex items-center justify-between rounded-lg p-2"
-                  >
+              {distinctUsers?.map((user, index) => (
+                <div key={user.id}>
+                  <div className="hover:bg-muted/50 flex items-center justify-between rounded-lg p-2">
                     <div className="flex items-center gap-3">
                       <Avatar>
                         <AvatarImage
@@ -108,10 +105,10 @@ export default function Component() {
                       Add
                     </Button>
                   </div>
-                  {index != distinct_users.length - 1 ? (
+                  {index != distinctUsers?.length - 1 ? (
                     <Separator></Separator>
                   ) : null}
-                </>
+                </div>
               ))}
             </div>
           </CardContent>

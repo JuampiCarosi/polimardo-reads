@@ -1,8 +1,7 @@
 import { Header } from "@/components/header";
-import { User } from "../api/users";
+import { type User } from "../api/users";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -15,13 +14,12 @@ import {
   Flag,
   Mail,
   MapPin,
-  Music,
   UserCircle,
   User as UserComponent,
 } from "lucide-react";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
-import { Genres } from "../api/user-preferred-genres";
+import { type Genres } from "../api/user-preferred-genres";
 
 export default function Page() {
   const router = useRouter();
@@ -32,15 +30,8 @@ export default function Page() {
     isLoading,
     error,
   } = useQuery<User>({
-    queryKey: ["users", id],
-    queryFn: async () => {
-      const response = await fetch(`/api/users?id=${id as string}`);
-      //   console.log("🚀 ~ queryFn: ~ response:", response);
-      if (!response.ok) throw new Error("User not found");
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return response.json();
-    },
-    enabled: !!id, // only run query if id is defined
+    queryKey: ["users", `?id=${id as string}`],
+    enabled: typeof id === "string",
   });
 
   const {
@@ -48,15 +39,8 @@ export default function Page() {
     isLoading: isLoadingGenres,
     error: errorGenres,
   } = useQuery<Genres[]>({
-    queryKey: ["user-preferred-genres", id],
-    queryFn: async () => {
-      const response = await fetch(`/api/user-preferred-genres?id=${id as string}`);
-      //   console.log("🚀 ~ queryFn: ~ response:", response);
-      if (!response.ok) throw new Error("User not found");
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return response.json();
-    },
-    enabled: !!id, // only run query if id is defined
+    queryKey: ["user-preferred-genres", `?id=${id as string}`],
+    enabled: typeof id === "string",
   });
 
   if (isLoading) return <div>Loading...</div>;
@@ -71,16 +55,16 @@ export default function Page() {
             <div className="flex items-center space-x-4">
               <Avatar className="h-20 w-20">
                 <AvatarImage
-                  src={user.image ?? undefined}
-                  alt={user.name ?? ""}
+                  src={user?.image ?? undefined}
+                  alt={user?.name ?? ""}
                 />
                 <AvatarFallback>
                   <UserComponent className="h-10 w-10" />
                 </AvatarFallback>
               </Avatar>
               <div>
-                <CardTitle className="text-2xl">{user.name}</CardTitle>
-                <CardDescription>{user.role}</CardDescription>
+                <CardTitle className="text-2xl">{user?.name}</CardTitle>
+                <CardDescription>{user?.role}</CardDescription>
               </div>
             </div>
           </CardHeader>
@@ -88,29 +72,29 @@ export default function Page() {
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
                 <Mail className="text-muted-foreground h-5 w-5" />
-                <span>{user.email || "No email provided"}</span>
+                <span>{user?.email ?? "No email provided"}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Calendar className="text-muted-foreground h-5 w-5" />
-                <span>{user.birth_date || "No birth date provided"}</span>
+                <span>{user?.birth_date ?? "No birth date provided"}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <MapPin className="text-muted-foreground h-5 w-5" />
-                <span>{user.country || "No country provided"}</span>
+                <span>{user?.country ?? "No country provided"}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Flag className="text-muted-foreground h-5 w-5" />
-                <span>{user.gender || "No gender provided"}</span>
+                <span>{user?.gender ?? "No gender provided"}</span>
               </div>
               <div className="flex items-center space-x-2">
                 <UserCircle className="text-muted-foreground h-5 w-5" />
                 <span>
-                  {user.onboarding_completed
+                  {user?.onboarding_completed
                     ? "Onboarding completed"
                     : "Onboarding not completed"}
                 </span>
               </div>
-                <Separator className="mt-8"></Separator>
+              <Separator className="mt-8"></Separator>
             </div>
             <div>
               <div className="flex items-center justify-between">
@@ -118,21 +102,22 @@ export default function Page() {
               </div>
               <div className="flex items-center space-x-2">
                 <span>
-                  {
-                    isLoadingGenres
-                      ? "Loading..."
-                      : errorGenres
-                      ? "Error loading genres"
-                      : (
-                        <div className="flex flex-wrap gap-2">
-                          {genres?.map((genre) => (
-                            <div key={genre.id} className="bg-gray-200 rounded-full px-4 py-2">
-                              {genre.name}
-                            </div>
-                          ))}
+                  {isLoadingGenres ? (
+                    "Loading..."
+                  ) : errorGenres ? (
+                    "Error loading genres"
+                  ) : (
+                    <div className="flex flex-wrap gap-2">
+                      {genres?.map((genre) => (
+                        <div
+                          key={genre.id}
+                          className="rounded-full bg-gray-200 px-4 py-2"
+                        >
+                          {genre.name}
                         </div>
-                      )
-                  }
+                      ))}
+                    </div>
+                  )}
                 </span>
               </div>
             </div>

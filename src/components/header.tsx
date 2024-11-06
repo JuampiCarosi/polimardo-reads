@@ -35,7 +35,7 @@ export function Header() {
           <Link className="hover:underline" href="/listas">
             Listas
           </Link>
-          <Link className="hover:underline" href="/amigos">
+          <Link className="hover:underline" href="/descubrir-amigos">
             Descubrir Amigos
           </Link>
         </div>
