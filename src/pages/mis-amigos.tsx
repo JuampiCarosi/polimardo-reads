@@ -139,7 +139,10 @@ export default function Component() {
                   <Button
                     size="sm"
                     variant="destructive"
-                    onClick={() => handleDeleteFriend(friend.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      void handleDeleteFriend(friend.id);
+                    }}
                   >
                     Eliminar Amigo
                   </Button>
@@ -187,13 +190,19 @@ export default function Component() {
                     <Button
                       size="sm"
                       variant="destructive"
-                      onClick={() => handleDeleteFriend(friendship.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        void handleDeleteFriend(friendship.id);
+                      }}
                     >
                       Rechazar
                     </Button>
                     <Button
                       size="sm"
-                      onClick={() => handleAddFriend(friendship.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        void handleAddFriend(friendship.id);
+                      }}
                     >
                       Aceptar
                     </Button>
@@ -228,46 +237,23 @@ export default function Component() {
                     )
                   }
                 >
-                  {" "}
                   <div className="flex items-center gap-4">
                     <Avatar>
-                      <AvatarImage
-                        src={friend.friend_image}
-                        onClick={() =>
-                          router.push(
-                            `/perfil/${
-                              friend.user_id !== userId
-                                ? friend.user_id
-                                : friend.friend_id
-                            }`,
-                          )
-                        }
-                        className="cursor-pointer"
-                      />
+                      <AvatarImage src={friend.friend_image} />
                     </Avatar>
                     <span>
-                      <span
-                        onClick={() =>
-                          router.push(
-                            `/perfil/${
-                              friend.user_id !== userId
-                                ? friend.user_id
-                                : friend.friend_id
-                            }`,
-                          )
-                        }
-                        className="cursor-pointer"
-                      >
-                        {friend.user_id !== userId
-                          ? friend.user_name
-                          : friend.friend_name}
-                      </span>
+                      {friend.user_id !== userId
+                        ? friend.user_name
+                        : friend.friend_name}
                     </span>
                   </div>
                   <Button
                     size="sm"
                     variant="destructive"
-                    onClick={() => handleDeleteFriend(friend.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      void handleDeleteFriend(friend.id);
+                    }}
                   >
                     Cancelar Solicitud
                   </Button>
