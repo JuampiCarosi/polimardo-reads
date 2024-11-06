@@ -1,3 +1,4 @@
+import { Header } from "@/components/header";
 import { User } from "../api/users";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -44,48 +45,54 @@ export default function Page() {
   if (error || !user) return <div>Error loading user data.</div>;
 
   return (
-    <Card className="mx-auto max-w-2xl pb-10 pl-10 pr-10 pt-10">
-      <CardHeader>
-        <div className="flex items-center space-x-4">
-          <Avatar className="h-20 w-20">
-            <AvatarImage src={user.image ?? undefined} alt={user.name ?? ""} />
-            <AvatarFallback>
-              <UserComponent className="h-10 w-10" />
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <CardTitle className="text-2xl">{user.name}</CardTitle>
-            <CardDescription>{user.role}</CardDescription>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div className="flex items-center space-x-2">
-            <Mail className="text-muted-foreground h-5 w-5" />
-            <span>{user.email || "No email provided"}</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Calendar className="text-muted-foreground h-5 w-5" />
-            <span>{user.birth_date || "No birth date provided"}</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <MapPin className="text-muted-foreground h-5 w-5" />
-            <span>{user.country || "No country provided"}</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Flag className="text-muted-foreground h-5 w-5" />
-            <span>{user.gender || "No gender provided"}</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <UserCircle className="text-muted-foreground h-5 w-5" />
-            <span>
-              {user.onboarding_completed
-                ? "Onboarding completed"
-                : "Onboarding not completed"}
-            </span>
-          </div>
-          {/* <div className="flex items-start space-x-2">
+    <div className="min-h-screen bg-slate-100">
+      <Header />
+      <div className="position-relative mx-auto mt-14 items-center">
+        <Card className="mx-auto max-w-2xl pb-10 pl-10 pr-10 pt-10">
+          <CardHeader>
+            <div className="flex items-center space-x-4">
+              <Avatar className="h-20 w-20">
+                <AvatarImage
+                  src={user.image ?? undefined}
+                  alt={user.name ?? ""}
+                />
+                <AvatarFallback>
+                  <UserComponent className="h-10 w-10" />
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <CardTitle className="text-2xl">{user.name}</CardTitle>
+                <CardDescription>{user.role}</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center space-x-2">
+                <Mail className="text-muted-foreground h-5 w-5" />
+                <span>{user.email || "No email provided"}</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Calendar className="text-muted-foreground h-5 w-5" />
+                <span>{user.birth_date || "No birth date provided"}</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <MapPin className="text-muted-foreground h-5 w-5" />
+                <span>{user.country || "No country provided"}</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Flag className="text-muted-foreground h-5 w-5" />
+                <span>{user.gender || "No gender provided"}</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <UserCircle className="text-muted-foreground h-5 w-5" />
+                <span>
+                  {user.onboarding_completed
+                    ? "Onboarding completed"
+                    : "Onboarding not completed"}
+                </span>
+              </div>
+              {/* <div className="flex items-start space-x-2">
             <Music className="text-muted-foreground mt-1 h-5 w-5" />
             <div>
               <span className="font-semibold">Genres:</span>
@@ -100,8 +107,10 @@ export default function Page() {
               )}
             </div>
           </div> */}
-        </div>
-      </CardContent>
-    </Card>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }

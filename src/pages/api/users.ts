@@ -78,7 +78,6 @@ const handler: NextApiHandler = async (req, res) => {
 
   if (req.method === "GET") {
     const userId = req.query.id as string | undefined;
-    console.log("🚀 ~ consthandler:NextApiHandler= ~ userId:", userId);
 
     if (userId) {
       const { data, error } = await authDB
