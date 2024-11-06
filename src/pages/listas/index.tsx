@@ -177,62 +177,62 @@ export default function Listas() {
               </Badge>
             ))}
           </div>
-          <Tabs defaultValue="featured" className="space-y-6">
+          {/* <Tabs defaultValue="featured" className="space-y-6">
             <TabsList className="bg-slate-100 text-slate-600">
               <TabsTrigger value="featured">Featured Lists</TabsTrigger>
               <TabsTrigger value="created">Lists I Created</TabsTrigger>
               <TabsTrigger value="voted">Lists I have Voted On</TabsTrigger>
               <TabsTrigger value="liked">Lists I have Liked</TabsTrigger>
-            </TabsList>
+            </TabsList> */}
 
-            <TabsContent value="featured">
-              <Card className="border-slate-200 bg-white">
-                <CardContent className="sm:p-8 lg:p-10">
-                  <div className="mb-6 flex items-center justify-between px-6">
-                    <h2 className="text-2xl font-semibold text-slate-800">
-                      Listas populares
-                    </h2>
-                  </div>
-                  <div
-                    onClick={() => router.push(`/listas/${featured?.id}`)}
-                    className="cursor-pointer px-6 py-2 hover:bg-slate-100/90"
-                  >
-                    <h3 className="mb-2 text-xl font-semibold text-slate-800">
-                      {featured?.name}
-                    </h3>
-                    <p className="mb-6 text-sm text-slate-500">
-                      {featured?.books_count} libros · {featured?.users_count}{" "}
-                      votantes
-                    </p>
+          {/* <TabsContent value="featured"> */}
+          <Card className="border-slate-200 bg-white">
+            <CardContent className="sm:p-8 lg:p-10">
+              <div className="mb-6 flex items-center justify-between px-6">
+                <h2 className="text-2xl font-semibold text-slate-800">
+                  Listas populares
+                </h2>
+              </div>
+              <div
+                onClick={() => router.push(`/listas/${featured?.id}`)}
+                className="cursor-pointer px-6 py-2 hover:bg-slate-100/90"
+              >
+                <h3 className="mb-2 text-xl font-semibold text-slate-800">
+                  {featured?.name}
+                </h3>
+                <p className="mb-6 text-sm text-slate-500">
+                  {featured?.books_count} libros · {featured?.users_count}{" "}
+                  votantes
+                </p>
 
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-                      {featured?.books.map((book) => (
-                        <div key={book.id} className="space-y-3">
-                          <div className="relative aspect-[2/3] overflow-hidden rounded-lg">
-                            <Image
-                              src={book.cover_img}
-                              alt={book.title}
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                          <div>
-                            <h4 className="font-medium leading-none text-slate-800">
-                              {book.title}
-                            </h4>
-                            <p className="mt-1 text-sm text-slate-500">
-                              {book.author}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+                  {featured?.books.map((book) => (
+                    <div key={book.id} className="space-y-3">
+                      <div className="relative aspect-[2/3] overflow-hidden rounded-lg">
+                        <Image
+                          src={book.cover_img}
+                          alt={book.title}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div>
+                        <h4 className="font-medium leading-none text-slate-800">
+                          {book.title}
+                        </h4>
+                        <p className="mt-1 text-sm text-slate-500">
+                          {book.author}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          {/* </TabsContent> */}
 
-            <TabsContent value="created">
+          {/* <TabsContent value="created">
               <Card>
                 <CardContent className="p-6">
                   <h2 className="mb-4 text-2xl font-semibold text-slate-800">
@@ -270,7 +270,7 @@ export default function Listas() {
                 </CardContent>
               </Card>
             </TabsContent>
-          </Tabs>
+          </Tabs> */}
         </main>
       </div>
     </div>
