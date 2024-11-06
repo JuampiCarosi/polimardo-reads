@@ -354,6 +354,30 @@ export type Database = {
           },
         ]
       }
+      friendships: {
+        Row: {
+          created_at: string
+          friend_id: string
+          id: string
+          is_added: boolean | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          friend_id: string
+          id?: string
+          is_added?: boolean | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          friend_id?: string
+          id?: string
+          is_added?: boolean | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       genres: {
         Row: {
           id: string
@@ -520,6 +544,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_friends_data: {
+        Args: {
+          input_user_id: string
+        }
+        Returns: {
+          id: string
+          user_id: string
+          friend_id: string
+          user_name: string
+          user_email: string
+          user_image: string
+          friend_name: string
+          friend_email: string
+          friend_image: string
+          is_added: boolean
+        }[]
+      }
       get_list_books: {
         Args: {
           input_list_id: string

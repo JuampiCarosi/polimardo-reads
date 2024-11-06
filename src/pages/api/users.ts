@@ -11,6 +11,19 @@ const userSchema = z.object({
   role: z.string(),
 });
 
+interface User {
+  birth_date: string | null;
+  country: string | null;
+  email: string | null;
+  emailVerified: string | null;
+  gender: string | null;
+  id: string;
+  image: string | null;
+  name: string | null;
+  onboarding_completed: boolean;
+  role: string | null;
+}
+
 const favoriteGenresSchema = z.array(
   z.object({ id: z.string(), name: z.string() }),
 );
@@ -63,7 +76,38 @@ const handler: NextApiHandler = async (req, res) => {
     return;
   }
 
+  if (req.method === "GET") {
+    const userId = req.query.id as string | undefined;
+
+    if (userId) {
+      const { data, error } = await authDB
+        .from("users")
+        .select("*")
+        .eq("id", userId)
+        .single();
+
+      if (error) {
+        res.status(404).json({ error: "User not found" });
+        return;
+      }
+
+      res.status(200).json(data);
+      return;
+    }
+
+    const { data, error } = await authDB.from("users").select("*");
+
+    if (error) {
+      res.status(500).json({ error: error.message });
+      return;
+    }
+
+    res.status(200).json(data);
+    return;
+  }
+
   res.status(405).json({ error: "Method not allowed" });
 };
 
 export default handler;
+export type { User };

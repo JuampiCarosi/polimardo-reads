@@ -11,7 +11,7 @@ const handler: NextApiHandler = async (req, res) => {
     return res.status(405).json({ error: "Method not allowed" });
 
   const { data, error } = await supabase.from("genres").select("*");
-
+  
   if (error) {
     console.error(error);
     return res.status(500).json({ error: error.message });

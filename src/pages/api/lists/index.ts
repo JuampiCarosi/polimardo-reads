@@ -58,7 +58,7 @@ const handler: NextApiHandler = async (req, res) => {
       return res.status(500).json({ error: "No id returned" });
     }
 
-    const promies = result.data.genres.map(async (genre) => {
+    const promise = result.data.genres.map(async (genre) => {
       const { error } = await supabase.from("lists_tags").insert({
         list_id: id,
         genre_id: genre,
@@ -70,7 +70,7 @@ const handler: NextApiHandler = async (req, res) => {
       }
     });
 
-    await Promise.all(promies);
+    await Promise.all(promise);
 
     res.status(201).json(data);
     return;

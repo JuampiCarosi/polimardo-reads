@@ -22,7 +22,7 @@ export function Header() {
         </Link>
       </div>
       <div className="flex items-center gap-10">
-        <div className="space-x-3 font-medium">
+        <div className="space-x-8 font-medium">
           <Link className="hover:underline" href="/">
             Home
           </Link>
@@ -34,6 +34,9 @@ export function Header() {
           </Link>
           <Link className="hover:underline" href="/listas">
             Listas
+          </Link>
+          <Link className="hover:underline" href="/descubrir-amigos">
+            Descubrir Amigos
           </Link>
         </div>
         <DropdownMenu>
@@ -50,6 +53,11 @@ export function Header() {
             <DropdownMenuCheckboxItem onClick={() => router.push("/perfil")}>
               Editar perfil
             </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem
+              onClick={() => router.push(`/perfil/${user?.id}`)}
+            >
+              Ver perfil
+            </DropdownMenuCheckboxItem>
 
             {user?.role === "author" && (
               <DropdownMenuCheckboxItem
@@ -58,6 +66,11 @@ export function Header() {
                 Publicar libro
               </DropdownMenuCheckboxItem>
             )}
+            <DropdownMenuCheckboxItem
+              onClick={() => router.push("/mis-amigos")}
+            >
+              Mis amigos
+            </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem onClick={() => signOut()}>
               Cerrar sesión
             </DropdownMenuCheckboxItem>
