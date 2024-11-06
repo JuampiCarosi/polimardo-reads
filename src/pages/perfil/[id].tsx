@@ -1,6 +1,7 @@
 import { Header } from "@/components/header";
 import { User } from "../api/users";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,6 +21,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
+import { Genres } from "../api/user-preferred-genres";
 
 export default function Page() {
   const router = useRouter();
@@ -33,6 +35,22 @@ export default function Page() {
     queryKey: ["users", id],
     queryFn: async () => {
       const response = await fetch(`/api/users?id=${id as string}`);
+      //   console.log("🚀 ~ queryFn: ~ response:", response);
+      if (!response.ok) throw new Error("User not found");
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return response.json();
+    },
+    enabled: !!id, // only run query if id is defined
+  });
+
+  const {
+    data: genres,
+    isLoading: isLoadingGenres,
+    error: errorGenres,
+  } = useQuery<Genres[]>({
+    queryKey: ["user-preferred-genres", id],
+    queryFn: async () => {
+      const response = await fetch(`/api/user-preferred-genres?id=${id as string}`);
       //   console.log("🚀 ~ queryFn: ~ response:", response);
       if (!response.ok) throw new Error("User not found");
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
@@ -92,21 +110,31 @@ export default function Page() {
                     : "Onboarding not completed"}
                 </span>
               </div>
-              {/* <div className="flex items-start space-x-2">
-            <Music className="text-muted-foreground mt-1 h-5 w-5" />
-            <div>
-              <span className="font-semibold">Genres:</span>
-              {user.genres && user.genres.length > 0 ? (
-                <ul className="list-inside list-disc">
-                  {user.genres.map((genre, index) => (
-                    <li key={index}>{genre}</li>
-                  ))}
-                </ul>
-              ) : (
-                <span> No genres provided</span>
-              )}
+                <Separator className="mt-8"></Separator>
             </div>
-          </div> */}
+            <div>
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-bold">Géneros favoritos</h2>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span>
+                  {
+                    isLoadingGenres
+                      ? "Loading..."
+                      : errorGenres
+                      ? "Error loading genres"
+                      : (
+                        <div className="flex flex-wrap gap-2">
+                          {genres?.map((genre) => (
+                            <div key={genre.id} className="bg-gray-200 rounded-full px-4 py-2">
+                              {genre.name}
+                            </div>
+                          ))}
+                        </div>
+                      )
+                  }
+                </span>
+              </div>
             </div>
           </CardContent>
         </Card>
