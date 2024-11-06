@@ -78,7 +78,7 @@ function Form({ user }: { user: Session["user"] }) {
   };
 
   return (
-    <Card className="mx-auto max-w-2xl pb-10 pl-10 pr-10 pt-10">
+    <Card className="mx-auto max-w-2xl pb-10 pl-10 pr-10 pt-10 ">
       <CardHeader>
         <div className="flex items-center space-x-4">
           <div>
@@ -192,10 +192,11 @@ export default function PostNewBook() {
 
   return (
     <div>
-      <div className="min-h-screen bg-slate-100">
-        <Header />
+      <div className="min-h-screen  bg-slate-100">
+      <Header />
+        <div className="position-relative mx-auto mt-14 items-center">
         {session && <Form user={session.user} />}
-        <div className="position-relative mx-auto mt-14 items-center"></div>
+        </div>
       </div>
     </div>
   );
