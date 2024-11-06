@@ -53,6 +53,11 @@ export function Header() {
             <DropdownMenuCheckboxItem onClick={() => router.push("/perfil")}>
               Editar perfil
             </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem
+              onClick={() => router.push(`/perfil/${user?.id}`)}
+            >
+              Ver perfil
+            </DropdownMenuCheckboxItem>
 
             {user?.role === "author" && (
               <DropdownMenuCheckboxItem

@@ -12,16 +12,16 @@ const userSchema = z.object({
 });
 
 interface User {
-  birth_date: string | null
-  country: string | null
-  email: string | null
-  emailVerified: string | null
-  gender: string | null
-  id: string
-  image: string | null
-  name: string | null
-  onboarding_completed: boolean
-  role: string | null
+  birth_date: string | null;
+  country: string | null;
+  email: string | null;
+  emailVerified: string | null;
+  gender: string | null;
+  id: string;
+  image: string | null;
+  name: string | null;
+  onboarding_completed: boolean;
+  role: string | null;
 }
 
 const favoriteGenresSchema = z.array(
@@ -77,16 +77,57 @@ const handler: NextApiHandler = async (req, res) => {
   }
 
   if (req.method === "GET") {
-    const { data, error } = await authDB
-      .from("users")
-      .select("*");
+    const userId = req.query.id as string | undefined;
+    console.log("🚀 ~ consthandler:NextApiHandler= ~ userId:", userId);
 
-    if (error) {
-      throw Error(error.message);
+    if (userId) {
+      const { data, error } = await authDB
+        .from("users")
+        .select("*")
+        .eq("id", userId)
+        .single();
+
+      if (error) {
+        res.status(404).json({ error: "User not found" });
+        return;
+      }
+
+      // const { data: genresIds, error: genresIdsError } = await supabase
+      //   .from("user_favorite_genres")
+      //   .select("*, genres:genre_id (name)")
+      //   .eq("user_id", userId);
+      // console.log("🚀 ~ consthandler:NextApiHandler= ~ genres:", genresIds);
+
+      // if (genresIdsError) {
+      //   res.status(404).json({ error: "Error fetching genres" });
+      //   return;
+      // }
+
+      // const genresIdsArr = genresIds.map((genreData) => genreData.genre_id)
+
+      res.status(200).json(data);
+      return;
     }
 
-    res.status(200).json(data satisfies User[]);
-    return
+    const { data, error } = await authDB.from("users").select("*");
+
+    if (error) {
+      res.status(500).json({ error: error.message });
+      return;
+    }
+
+    res.status(200).json(data);
+    return;
+    // const { data, error } = await authDB
+    //   .from("users")
+    //   .select("*");
+
+    // if (error) {
+    //   throw Error(error.message);
+    // }
+
+    // res.status(200).json(data satisfies User[]);
+    // return
   }
 
   res.status(405).json({ error: "Method not allowed" });
