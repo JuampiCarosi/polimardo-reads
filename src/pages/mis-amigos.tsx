@@ -8,6 +8,7 @@ import { useSession } from "next-auth/react";
 import { Friendship } from "./api/myFriends";
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
+import { useRouter } from "next/router";
 
 function fetch_friendships_with_both_users_data() {
   const possible_friendships = useQuery<Friendship[]>({
@@ -18,6 +19,7 @@ function fetch_friendships_with_both_users_data() {
 
 export default function Component() {
   const session = useSession();
+  const router = useRouter();
 
   const user_id = session.data?.user.id;
   const possible_friendships = fetch_friendships_with_both_users_data();
@@ -108,7 +110,18 @@ export default function Component() {
                 added_friends?.map((friend, index) => (
                   <div key={index} className="flex items-center space-x-4">
                     <Avatar>
-                      <AvatarImage src={friend.friend_image} />
+                      <AvatarImage
+                        src={friend.friend_image}
+                        onClick={() =>
+                          router.push(
+                            `/perfil/${
+                              friend.user_id !== user_id
+                                ? friend.user_name
+                                : friend.friend_name
+                            }`,
+                          )
+                        }
+                      />
                     </Avatar>
                     <span>
                       {friend.user_id !== user_id
@@ -139,7 +152,12 @@ export default function Component() {
                 friend_requests?.map((friendship, index) => (
                   <div key={index} className="flex items-center space-x-4">
                     <Avatar>
-                      <AvatarImage src={friendship.user_image} />
+                      <AvatarImage
+                        src={friendship.user_image}
+                        onClick={() =>
+                          router.push(`/perfil/${friendship.user_id}`)
+                        }
+                      />
                     </Avatar>
                     <span>{friendship.user_name}</span>
                     <Button
@@ -161,7 +179,7 @@ export default function Component() {
               </div>
               {pending_friends?.length === 0 ? (
                 <div className="text-m">
-                  No tienes solicitudes de amistad pendientes
+                  No tienes solicitudes de amistad enviadas pendientes
                 </div>
               ) : (
                 pending_friends?.map((friend, index) => (
@@ -172,7 +190,12 @@ export default function Component() {
                     >
                       <div className="flex items-center gap-4">
                         <Avatar>
-                          <AvatarImage src={friend.friend_image} />
+                          <AvatarImage
+                            src={friend.friend_image}
+                            onClick={() =>
+                              router.push(`/perfil/${friend.friend_id}`)
+                            }
+                          />
                         </Avatar>
                         <span>{friend.friend_name}</span>
                       </div>

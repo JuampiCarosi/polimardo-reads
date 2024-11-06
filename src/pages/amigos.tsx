@@ -11,9 +11,11 @@ import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import { FriendshipRaw } from "./api/friendships";
 import { Separator } from "@/components/ui/separator";
+import { useRouter } from "next/router";
 
 export default function Component() {
   const session = useSession();
+  const router = useRouter();
 
   const all_users = useQuery<User[]>({
     queryKey: ["users"],
@@ -86,7 +88,10 @@ export default function Component() {
                   >
                     <div className="flex items-center gap-3">
                       <Avatar>
-                        <AvatarImage src={user.image ?? undefined} />
+                        <AvatarImage
+                          src={user.image ?? undefined}
+                          onClick={() => router.push(`/perfil/${user.id}`)}
+                        />
                         <AvatarFallback>
                           {(user.name ?? "NA").slice(0, 2)}
                         </AvatarFallback>
