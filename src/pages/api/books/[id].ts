@@ -8,7 +8,7 @@ export type BookRaw = {
   cover_img: string | null;
   description: string;
   edition: string | null;
-  genres: string;
+  genres: string[];
   id: string;
   isbn: string;
   language: string;
@@ -64,6 +64,7 @@ const handler: NextApiHandler = async (req, res) => {
     ...data[0]!,
     status: data[0]?.books_library[0]?.status ?? null,
     selfRating: data[0]?.books_ratings[0]?.rating ?? null,
+    genres: data[0]?.genres.replace(/[\[\]']/g, "").split(",") ?? [],
     cover_blob: await getCoverBlob(data[0]),
   };
 
@@ -73,7 +74,7 @@ const handler: NextApiHandler = async (req, res) => {
 export default handler;
 
 export async function getCoverBlob(
-  book?: BookRaw,
+  book?: BookRaw | (Omit<BookRaw, "genres"> & { genres: string }),
 ): Promise<string | undefined> {
   if (!book) return;
   if (!book.cover_img) return;

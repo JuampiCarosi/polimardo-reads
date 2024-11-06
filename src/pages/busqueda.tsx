@@ -33,7 +33,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
+import { Badge } from "@/components/ui/badge";
 
 export default function Page() {
   const [search, setSearch] = useState("");
@@ -50,32 +50,33 @@ export default function Page() {
           <CardTitle>Buscar Libros</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="mb-6 flex">
-            <Input
-              placeholder="Search items..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="mr-2"
-            />
-            {isLoading && (
-              <div role="status" className="my-auto -ml-10">
-                <LoadingSpinner />
-              </div>
-            )}
-            <div className="w-32">
-            <Select value={filter ?? undefined} onValueChange={setFilter}>
-              <SelectTrigger id="filter">
-                <SelectValue placeholder="Seleccionar filtro" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="title">Título</SelectItem>
-                <SelectItem value="genre">Género</SelectItem>
-                <SelectItem value="author">Autor</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="mb-6 flex gap-2">
+            <div className="flex w-full">
+              <Input
+                placeholder="Search items..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="mr-2"
+              />
+              {isLoading && (
+                <div role="status" className="my-auto -ml-10 w-[40.5px]">
+                  <LoadingSpinner />
+                </div>
+              )}
             </div>
-           
+            <div className="w-32">
+              <Select value={filter ?? undefined} onValueChange={setFilter}>
+                <SelectTrigger id="filter">
+                  <SelectValue placeholder="Seleccionar filtro" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos</SelectItem>
+                  <SelectItem value="title">Título</SelectItem>
+                  <SelectItem value="genre">Género</SelectItem>
+                  <SelectItem value="author">Autor</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <Table>
@@ -126,6 +127,17 @@ function BookDialog({ item }: { item: BookRaw }) {
             {item.title} <span className="text-slate-600">#{item.isbn}</span>
           </DialogTitle>
           <DialogDescription>by {item.author}</DialogDescription>
+          <div className="flex flex-wrap items-center gap-1">
+            {item.genres.map((genre) => (
+              <Badge
+                key={genre}
+                variant="secondary"
+                className="text-nowrap bg-slate-300 text-slate-700 hover:bg-slate-300"
+              >
+                {genre}
+              </Badge>
+            ))}
+          </div>
         </DialogHeader>
         <div className="flex items-start gap-6 pt-2">
           {item.cover_img && (

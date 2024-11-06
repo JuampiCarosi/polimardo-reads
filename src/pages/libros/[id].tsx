@@ -22,6 +22,7 @@ import { Stars } from "@/components/stars-rating";
 import { type BookRating } from "../api/books/[id]/rating";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 export const statusLabels = {
   reading: "leyendo",
@@ -92,8 +93,19 @@ export default function Home() {
                 <span className="text-slate-600">#{book?.isbn}</span>
               </CardTitle>
               <CardDescription>by {book?.author}</CardDescription>
+              <div className="flex flex-wrap items-center gap-1 pt-2">
+                {book?.genres.map((genre) => (
+                  <Badge
+                    key={genre}
+                    variant="secondary"
+                    className="text-nowrap bg-slate-300 text-slate-700 hover:bg-slate-300"
+                  >
+                    {genre}
+                  </Badge>
+                ))}
+              </div>
             </div>
-            {book && <BookStatusPill book={book} />}
+            <div className="pt-4">{book && <BookStatusPill book={book} />}</div>
           </div>
         </CardHeader>
         <CardContent>
@@ -192,12 +204,12 @@ function BookStatusPill({ book }: { book: Book }) {
 
   const pill = {
     read: (
-      <div className="cursor-pointer rounded-full border border-green-400 bg-green-100 px-2.5 py-0.5 text-xs text-green-700 hover:bg-green-200">
+      <div className="cursor-pointer text-nowrap rounded-full border border-green-400 bg-green-100 px-2.5 py-0.5 text-xs text-green-700 hover:bg-green-200">
         {statusLabels.read}
       </div>
     ),
     null: (
-      <div className="cursor-pointer rounded-full border border-slate-400 bg-slate-100 px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-200">
+      <div className="cursor-pointer text-nowrap rounded-full border border-slate-400 bg-slate-100 px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-200">
         Agregar a biblioteca +
       </div>
     ),

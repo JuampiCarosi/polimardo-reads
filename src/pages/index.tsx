@@ -27,6 +27,7 @@ import { Button } from "@/components/ui/button";
 import router from "next/router";
 import { type BookWithBlob } from "./api/books/recommended";
 import { LoadingSpinner } from "@/components/loading-spinner";
+import { Badge } from "@/components/ui/badge";
 
 export default function Home() {
   const { data, isLoading, refetch, isFetching } = useQuery<BookWithBlob[]>({
@@ -114,7 +115,7 @@ function BookDialog({ item }: { item: BookWithBlob }) {
           </TableCell>
           <TableCell>{item.title}</TableCell>
           <TableCell>{item.author}</TableCell>
-          <TableCell>{item.genres.replace(/[\[\]']/g, "")}</TableCell>
+          <TableCell>{item.genres.join(", ")}</TableCell>
         </TableRow>
       </DialogTrigger>
       <DialogContent className="max-w-2xl">
@@ -123,6 +124,17 @@ function BookDialog({ item }: { item: BookWithBlob }) {
             {item.title} <span className="text-slate-600">#{item.isbn}</span>
           </DialogTitle>
           <DialogDescription>by {item.author}</DialogDescription>
+          <div className="flex flex-wrap items-center gap-1">
+            {item.genres.map((genre) => (
+              <Badge
+                key={genre}
+                variant="secondary"
+                className="text-nowrap bg-slate-300 text-slate-700 hover:bg-slate-300"
+              >
+                {genre}
+              </Badge>
+            ))}
+          </div>
         </DialogHeader>
         <div className="flex items-start gap-6 pt-2">
           {item.cover_img && (
@@ -130,7 +142,7 @@ function BookDialog({ item }: { item: BookWithBlob }) {
               alt={item.title}
               src={item.cover_blob ?? item.cover_img}
               className="my-auto rounded-lg border"
-              width={120}
+              width={180}
               height={180}
             />
           )}

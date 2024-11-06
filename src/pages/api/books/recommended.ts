@@ -78,6 +78,7 @@ export default async function handler(
       return {
         ...book,
         cover_blob: await getCoverBlob(book),
+        genres: book.genres.replace(/[\[\]']/g, "").split(","),
       };
     });
   const books = await Promise.all(promises);

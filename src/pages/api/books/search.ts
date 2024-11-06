@@ -3,7 +3,6 @@ import { type NextApiHandler } from "next";
 import { z } from "zod";
 import { type BookRaw } from "./[id]";
 
-
 const search_schema = z.object({
   q: z.string(),
   filter: z.string(),
@@ -25,7 +24,12 @@ const handler: NextApiHandler = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 
-  res.status(200).json(data satisfies BookRaw[]);
+  const books = data.map((v) => ({
+    ...v,
+    genres: v.genres.replace(/[\[\]']/g, "").split(",") ?? [],
+  }));
+
+  res.status(200).json(books satisfies BookRaw[]);
 };
 
 export default handler;
