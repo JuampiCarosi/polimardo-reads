@@ -23,10 +23,17 @@ import { Label } from "@/components/ui/label";
 import { type ListDetailed } from "../api/lists/[id]";
 import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { MyChallenges } from "../api/challenges/[id]";
 
 
 
 export default function Desafios() {
+  const { data: session } = useSession();
+  const userId = session?.user.id;
+  const {data: myChallenges} = useQuery<MyChallenges[]>({
+    queryKey: ["challenges", userId],
+  })
 
 
   return (
@@ -43,6 +50,35 @@ export default function Desafios() {
                     <Link href="/desafios/crear">Crear nuevo desafío</Link>
                 </Button>
             </div>
+          <Card className="border-slate-200 bg-white">
+            <CardContent className="sm:p-8 lg:p-10">
+              <div className="mb-6 flex items-center justify-between px-6">
+                <h2 className="text-2xl font-semibold text-slate-800">
+                  Mis Desafíos
+                </h2>
+              </div>
+              <div className="grid grid-cols-2 lg:gap-8">
+                {myChallenges?.map((challenge) => (
+                  <Card key={challenge.id} className="border-slate-200 bg-white">
+                    <CardContent className="sm:p-8 lg:p-10">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-xl font-semibold text-slate-800">
+                          {challenge.name}
+                        </h3>
+                        <Badge>{challenge.book_count} libros</Badge>
+                      </div>
+                      <div className="mt-4">
+                        <p className="text-slate-600">{challenge.description}</p>
+                      </div>
+                      <div className="mt-6">
+                    
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              </CardContent>
+          </Card>
         </main>
       </div>
     </div>

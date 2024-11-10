@@ -354,6 +354,95 @@ export type Database = {
           },
         ]
       }
+      challenges: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string | null
+          end_date: string
+          id: string
+          name: string
+          start_date: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          description?: string | null
+          end_date: string
+          id?: string
+          name: string
+          start_date: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          end_date?: string
+          id?: string
+          name?: string
+          start_date?: string
+        }
+        Relationships: []
+      }
+      challenges_books: {
+        Row: {
+          book_id: string
+          book_number: number
+          challenge_id: string
+        }
+        Insert: {
+          book_id: string
+          book_number?: number
+          challenge_id: string
+        }
+        Update: {
+          book_id?: string
+          book_number?: number
+          challenge_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenges_books_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books_detailed"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "challenges_books_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      challenges_participants: {
+        Row: {
+          challenge_id: string
+          joined_at: string | null
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          joined_at?: string | null
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          joined_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenges_participants_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       friendships: {
         Row: {
           created_at: string
@@ -662,6 +751,21 @@ export type Database = {
           covers: string[]
           voters_count: number
           books_count: number
+        }[]
+      }
+      get_user_challenges: {
+        Args: {
+          user_challenge_id: string
+        }
+        Returns: {
+          id: string
+          name: string
+          description: string
+          created_by: string
+          start_date: string
+          end_date: string
+          participants: number
+          book_count: number
         }[]
       }
       gtrgm_compress: {

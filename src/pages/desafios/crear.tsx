@@ -1,19 +1,24 @@
 import { Header } from "@/components/header";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { Search } from "lucide-react";
-import { Session } from "next-auth";
+import { type Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { useQuery } from "react-query";
-import { BookRaw } from "../api/books/[id]";
+import { type BookRaw } from "../api/books/[id]";
 import search from "../api/books/search";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 import { Separator } from "@radix-ui/react-dropdown-menu";
+import { CommandItem } from "@/components/ui/command";
+import { LoadingSpinner } from "@/components/loading-spinner";
+import axios from "axios";
+import { toast } from "sonner";
+import router from "next/router";
 
 export default function PostNewChallenge() {
     const { data: session } = useSession();
@@ -36,11 +41,32 @@ function ChallengeCreationForm({user}: {user: Session["user"]}) {
     const [startDate, setStartDate] = useState<string>();
     const [endDate, setEndDate] = useState<string>();
     const [search, setSearch] = useState<string>("");
-    const { data, isLoading } = useQuery<BookRaw[]>({
+    const {data} = useQuery<BookRaw[]>({
         queryKey: ["books", "search", `?q=${search}&filter=all`],
       });
     const [challengeBooks, setChallengeBooks] = useState<Array<BookRaw>>([])
 
+    const handleSubmit = async () => {
+        const books = challengeBooks.map((book) => book.id)
+        const challengeData = {
+            title,
+            description,
+            startDate,
+            endDate,
+            createdBy: user.id,
+            books
+        }
+        try {
+            await axios.post("/api/challenges", challengeData);
+            toast.success("Libro publicado correctamente");
+            await router.push("/desafios");
+          } catch (err) {
+            console.error(err);
+            toast.error(
+              "Error al crear el desafío. Asegurate de llenar todos los campos correctamente.",
+            );
+          }
+    }
 
     return (
         <Card className="mx-auto max-w-2xl pb-10 pl-10 pr-10 pt-10 ">
@@ -141,8 +167,7 @@ function ChallengeCreationForm({user}: {user: Session["user"]}) {
                     {data?.map((book) => (
                         <div key={book.id}>
                             <div
-                                className="flex cursor-pointer items-center justify-between rounded-lg p-2 hover:bg-slate-50"
-                            >
+                                className="flex cursor-pointer items-center justify-between rounded-lg p-2 hover:bg-slate-50">
                                 <div className="flex items-center gap-3">
                                     <Avatar>
                                         <AvatarImage src={book.cover_img ?? undefined}
@@ -153,7 +178,8 @@ function ChallengeCreationForm({user}: {user: Session["user"]}) {
                                         </AvatarFallback>
                                     </Avatar>
                                     <div>
-                                        <div className="font-sm">{book.title}</div>
+                                        <div className="font-semibold">{book.title}</div>
+                                        <div className="text-slate-700 text-xs">{book.author.slice(0, 60)}</div>
                                     </div>
                                 </div>
                                 <Button
@@ -164,15 +190,23 @@ function ChallengeCreationForm({user}: {user: Session["user"]}) {
                                         } else {
                                             setChallengeBooks([...challengeBooks, book]);
                                         }
+                                        setSearch("");
 
                                     }}
+                                    variant={challengeBooks.includes(book) ? "destructive" : "default"}
                                 >
-                                    Agregar
+                                    {challengeBooks.includes(book) ? "Quitar" : "Agregar"}
                                 </Button>
                             </div>
                         </div>
                     ))}
                 </div>
+                <CardFooter>
+                    <Button className="w-full"
+                    onClick={handleSubmit}>
+                        Guardar Cambios
+                    </Button>
+                </CardFooter>
             </CardContent>
         </Card>
     );
