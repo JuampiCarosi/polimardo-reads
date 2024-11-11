@@ -18,6 +18,14 @@ import {
 import { Label } from "@/components/ui/label";
 import { FriendsSelector } from "@/components/friends-selector";
 import { toast } from "sonner";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
+} from "@/components/ui/breadcrumb";
 
 export default function Grupos() {
   const [search, setSearch] = useState("");
@@ -33,28 +41,30 @@ export default function Grupos() {
   return (
     <div className="min-h-screen bg-slate-100">
       <Header />
-
-      <Card className="mx-auto mt-6 max-w-6xl">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0">
-          <div className="space-y-1">
-            <CardTitle className="text-lg font-bold">Mis grupos</CardTitle>
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="max-w-md"
-              placeholder="Buscar grupos"
-            />
-          </div>
-          <CreateGroupDialog />
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredGroups?.map((group) => (
-              <GroupCard key={group.id} group={group} />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <div className="mx-auto mt-3 max-w-6xl space-y-4">
+        <BreadCrumbs />
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <div className="space-y-1">
+              <CardTitle className="text-lg font-bold">Mis grupos</CardTitle>
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="max-w-md"
+                placeholder="Buscar grupos"
+              />
+            </div>
+            <CreateGroupDialog />
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {filteredGroups?.map((group) => (
+                <GroupCard key={group.id} group={group} />
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
@@ -147,5 +157,21 @@ function CreateGroupDialog() {
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function BreadCrumbs() {
+  return (
+    <Breadcrumb className="pl-2">
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <BreadcrumbLink href="/">Home</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
+        <BreadcrumbItem>
+          <BreadcrumbPage>Mis Grupos</BreadcrumbPage>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    </Breadcrumb>
   );
 }
