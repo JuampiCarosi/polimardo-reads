@@ -19,8 +19,6 @@ export default function Component() {
     queryKey: ["myFriends"],
   });
 
-  console.log(possibleFriendships.data);
-
   const addedFriends = possibleFriendships.data?.filter(
     (friend) =>
       friend.is_added &&

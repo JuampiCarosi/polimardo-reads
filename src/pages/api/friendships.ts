@@ -50,18 +50,6 @@ const handler: NextApiHandler = async (req, res) => {
     return;
   }
 
-  if (req.method === "GET") {
-    const { data, error } = await supabase.from("friendships").select("*");
-
-    if (error) {
-      console.log(error);
-      return res.status(500).json({ error: error.message });
-    }
-
-    res.status(200).json(data satisfies FriendshipRaw[]);
-    return;
-  }
-
   if (req.method === "PATCH") {
     const result = patchSchema.safeParse(req.body);
 
@@ -89,8 +77,6 @@ const handler: NextApiHandler = async (req, res) => {
   }
 
   if (req.method === "DELETE") {
-    console.log(req.body);
-
     const result = deleteSchema.safeParse(req.body);
 
     if (!result.success) {

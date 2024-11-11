@@ -46,8 +46,6 @@ const handler: NextApiHandler = async (req, res) => {
     console.error(error);
     return res.status(500).json({ error: error.message });
   }
-  console.log("COUNT", count);
-  console.log("STATUS", status);
 
   res.status(200).json(data satisfies BookRaw[]);
 };

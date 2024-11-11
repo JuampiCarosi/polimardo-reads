@@ -71,6 +71,9 @@ export function Header() {
             >
               Mis amigos
             </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem onClick={() => router.push("/grupos")}>
+              Grupos
+            </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem onClick={() => signOut()}>
               Cerrar sesión
             </DropdownMenuCheckboxItem>

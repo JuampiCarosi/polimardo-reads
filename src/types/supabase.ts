@@ -354,6 +354,127 @@ export type Database = {
           },
         ]
       }
+      challenges: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string | null
+          end_date: string
+          id: string
+          name: string
+          start_date: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          description?: string | null
+          end_date: string
+          id?: string
+          name: string
+          start_date: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          end_date?: string
+          id?: string
+          name?: string
+          start_date?: string
+        }
+        Relationships: []
+      }
+      challenges_books: {
+        Row: {
+          book_id: string
+          book_number: number
+          challenge_id: string
+        }
+        Insert: {
+          book_id: string
+          book_number?: number
+          challenge_id: string
+        }
+        Update: {
+          book_id?: string
+          book_number?: number
+          challenge_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenges_books_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books_detailed"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "challenges_books_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      challenges_participants: {
+        Row: {
+          challenge_id: string
+          joined_at: string | null
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          joined_at?: string | null
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          joined_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenges_participants_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      discussion_comments: {
+        Row: {
+          comment: string
+          created_at: string
+          created_by: string
+          discussion_id: string
+          id: number
+        }
+        Insert: {
+          comment: string
+          created_at?: string
+          created_by: string
+          discussion_id?: string
+          id?: number
+        }
+        Update: {
+          comment?: string
+          created_at?: string
+          created_by?: string
+          discussion_id?: string
+          id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discussion_comments_discussion_id_fkey"
+            columns: ["discussion_id"]
+            isOneToOne: false
+            referencedRelation: "group_discussions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       friendships: {
         Row: {
           created_at: string
@@ -390,6 +511,94 @@ export type Database = {
         Update: {
           id?: string
           name?: string
+        }
+        Relationships: []
+      }
+      group_discussions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          group_id: string
+          id: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          group_id: string
+          id?: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          group_id?: string
+          id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_discussions_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      group_members: {
+        Row: {
+          created_at: string
+          group_id: string
+          has_accepted: boolean | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          group_id?: string
+          has_accepted?: boolean | null
+          id?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          group_id?: string
+          has_accepted?: boolean | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      groups: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          title: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          title?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          title?: string | null
         }
         Relationships: []
       }
@@ -544,6 +753,33 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_discussion_comments: {
+        Args: {
+          input_discussion_id: string
+        }
+        Returns: {
+          id: string
+          created_at: string
+          user_id: string
+          discussion_id: string
+          comment: string
+          user_name: string
+          user_img: string
+        }[]
+      }
+      get_discussion_info: {
+        Args: {
+          input_discussion_id: string
+        }
+        Returns: {
+          id: string
+          created_at: string
+          user_name: string
+          title: string
+          description: string
+          comments_count: number
+        }[]
+      }
       get_friends_data: {
         Args: {
           input_user_id: string
@@ -559,6 +795,28 @@ export type Database = {
           friend_email: string
           friend_image: string
           is_added: boolean
+        }[]
+      }
+      get_group_info: {
+        Args: {
+          input_group_id: string
+        }
+        Returns: {
+          id: string
+          title: string
+          members: Json
+          discussions: Json
+        }[]
+      }
+      get_groups: {
+        Args: {
+          input_user_id: string
+        }
+        Returns: {
+          id: string
+          title: string
+          member_count: number
+          discussions_count: number
         }[]
       }
       get_list_books: {
@@ -662,6 +920,21 @@ export type Database = {
           covers: string[]
           voters_count: number
           books_count: number
+        }[]
+      }
+      get_user_challenges: {
+        Args: {
+          user_challenge_id: string
+        }
+        Returns: {
+          id: string
+          name: string
+          description: string
+          created_by: string
+          start_date: string
+          end_date: string
+          participants: number
+          book_count: number
         }[]
       }
       gtrgm_compress: {
