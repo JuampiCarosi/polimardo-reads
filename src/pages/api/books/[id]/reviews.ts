@@ -42,8 +42,6 @@ const handler: NextApiHandler = async (req, res) => {
     created_at: review.created_at,
   }));
 
-  console.log(reviews);
-
   res.status(200).json(reviews);
 };
 

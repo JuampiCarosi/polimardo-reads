@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useQuery, useQueryClient } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { Header } from "@/components/header";
 import { type Book } from "../api/books/[id]";
 import {
@@ -28,6 +28,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { BookReview } from "../api/books/[id]/reviews";
 import { format } from "date-fns";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import React from "react";
+import { useSession } from "next-auth/react";
 
 export const statusLabels = {
   reading: "leyendo",
@@ -42,15 +44,51 @@ export const statusColors = {
 } as const;
 
 export default function Home() {
+  const [newReview, setNewReview] = React.useState("");
   const router = useRouter();
   const id = router.query.id;
-  const { data: book } = useQuery<Book>({
-    queryKey: ["books", id],
+  
+  const { data: reviews, refetch } = useQuery<BookReview[]>({
+    queryKey: ["books", id, "reviews"],
     enabled: typeof id === "string",
   });
 
-  const { data: reviews } = useQuery<BookReview[]>({
-    queryKey: ["books", id, "reviews"],
+  const postReviewMutation = useMutation({
+    onSuccess: async () => {
+      await refetch();
+      setNewReview("");
+    },
+    onError: (error: any) => {
+      toast.error("Hubo un error al agregar la review");
+      console.error(error);
+    },
+    mutationFn: async () => {
+      if (!newReview || newReview.length < 1 || typeof id !== "string") {
+        toast.error("La review no puede estar vacia");
+        return;
+      }
+      const res = await fetch(`/api/books/${id}/post_review`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          review: newReview,
+        }),
+      });
+      if (res.ok) {
+        toast.success("Review agregada correctamente");
+      }
+    },
+  });
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    postReviewMutation.mutate();
+  };
+  const session = useSession();
+
+  const { data: book } = useQuery<Book>({
+    queryKey: ["books", id],
     enabled: typeof id === "string",
   });
 
@@ -215,15 +253,17 @@ export default function Home() {
                 </div>
               ))}
             </div>
-          {/* <form onSubmit={} className="mt-4"> */}
+          <form onSubmit={handleReviewSubmit} className="mt-4">
             <Textarea
               placeholder="Dejá tu opinión..."
+              value={newReview}
+              onChange={(e) => setNewReview(e.target.value)}
               className="mb-4 mt-4 bg-white"
             />
-            <Button>
+            <Button disabled={postReviewMutation.isLoading} type="submit">
               Post Review
             </Button>
-          {/* </form> */}
+          </form>
         </div>
       </div>
     </div>

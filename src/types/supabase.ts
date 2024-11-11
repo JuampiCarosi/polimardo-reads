@@ -253,8 +253,8 @@ export type Database = {
         Insert: {
           author: string
           book_id: string
-          created_at: string
-          id: string
+          created_at?: string
+          id?: string
           review_text: string | null
         }
         Update: {
