@@ -38,16 +38,19 @@ const handler: NextApiHandler = async (req, res) => {
   if (req.method !== "GET")
     return res.status(405).json({ error: "Method not allowed" });
 
-  const { data, error, count, status } = await supabase
-    .from("books_detailed")
-    .select("*");
+  const { data, error } = await supabase.from("books_detailed").select("*");
 
   if (error) {
     console.error(error);
     return res.status(500).json({ error: error.message });
   }
 
-  res.status(200).json(data satisfies BookRaw[]);
+  const books = data.map((v) => ({
+    ...v,
+    genres: v.genres.replace(/[\[\]']/g, "").split(",") ?? [],
+  }));
+
+  res.status(200).json(books satisfies BookRaw[]);
 };
 
 export default handler;

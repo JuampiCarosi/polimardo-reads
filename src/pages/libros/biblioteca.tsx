@@ -18,6 +18,7 @@ import { getServerAuthSession } from "@/server/auth";
 import { toast } from "sonner";
 import { type BookRating } from "../api/books/[id]/rating";
 import { Stars } from "@/components/stars-rating";
+import { useRouter } from "next/router";
 
 export default function Page() {
   const { data } = useQuery<Book[]>({
@@ -59,6 +60,8 @@ export default function Page() {
     await queryClient.invalidateQueries(["books", "library"]);
   }
 
+  const router = useRouter();
+
   return (
     <div className="min-h-screen bg-slate-100">
       <Header />
@@ -79,7 +82,11 @@ export default function Page() {
             </TableHeader>
             <TableBody>
               {data?.map((item) => (
-                <TableRow key={item.isbn}>
+                <TableRow
+                  onClick={() => router.push(`/libros/${item.id}`)}
+                  key={item.isbn}
+                  className="cursor-pointer"
+                >
                   <TableCell>
                     {item.cover_img && (
                       <Image

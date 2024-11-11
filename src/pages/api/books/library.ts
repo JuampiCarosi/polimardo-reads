@@ -35,5 +35,5 @@ export default async function handler(
       ...books_detailed!,
     }));
 
-  res.status(200).json(books satisfies Book[]);
+  res.status(200).json(books satisfies Omit<Book, "genres">[]);
 }
