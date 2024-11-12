@@ -91,6 +91,59 @@ const handler: NextApiHandler = async (req, res) => {
     res.status(201).json({ id });
     return;
   }
+
+  if (req.method === "PATCH") {
+    const result = z
+    .object({ id: z.string() })
+    .safeParse(req.body);
+
+    if (!result.success) {
+      console.log(result.error);
+      return res.status(400).json({ error: result.error });
+    }
+
+    const { id } = result.data;
+    console.log(id);
+
+    const { error } = await supabase
+      .from("group_members")
+      .update({ has_accepted: true })
+      .eq("id", id);
+    
+    if (error) {
+      console.log(error);
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.status(200).json({ message: "Group successfully added" });
+    return;
+  }
+
+  if (req.method === "DELETE") {
+    const result = z
+      .object({ id: z.string() })
+      .safeParse(req.body);
+
+    if (!result.success) {
+      console.log(result.error);
+      return res.status(400).json({ error: result.error });
+    }
+
+    const { id } = result.data;
+
+    const { error } = await supabase
+      .from("group_members")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      console.log(error);
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.status(200).json({ message: "Group rejected" });
+    return;
+  }
 };
 
 export default handler;
