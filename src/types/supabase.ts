@@ -203,6 +203,38 @@ export type Database = {
           },
         ]
       }
+      book_reviews: {
+        Row: {
+          author: string
+          book_id: string
+          created_at: string
+          id: string
+          review_text: string | null
+        }
+        Insert: {
+          author: string
+          book_id: string
+          created_at?: string
+          id?: string
+          review_text?: string | null
+        }
+        Update: {
+          author?: string
+          book_id?: string
+          created_at?: string
+          id?: string
+          review_text?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "book_reviews_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "books_detailed"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       books: {
         Row: {
           book_author: string
@@ -443,6 +475,38 @@ export type Database = {
           },
         ]
       }
+      discussion_comments: {
+        Row: {
+          comment: string
+          created_at: string
+          created_by: string
+          discussion_id: string
+          id: string
+        }
+        Insert: {
+          comment: string
+          created_at?: string
+          created_by: string
+          discussion_id?: string
+          id?: string
+        }
+        Update: {
+          comment?: string
+          created_at?: string
+          created_by?: string
+          discussion_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discussion_comments_discussion_id_fkey"
+            columns: ["discussion_id"]
+            isOneToOne: false
+            referencedRelation: "group_discussions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       friendships: {
         Row: {
           created_at: string
@@ -479,6 +543,94 @@ export type Database = {
         Update: {
           id?: string
           name?: string
+        }
+        Relationships: []
+      }
+      group_discussions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          group_id: string
+          id: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          group_id: string
+          id?: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          group_id?: string
+          id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_discussions_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      group_members: {
+        Row: {
+          created_at: string
+          group_id: string
+          has_accepted: boolean | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          group_id?: string
+          has_accepted?: boolean | null
+          id?: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          group_id?: string
+          has_accepted?: boolean | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      groups: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          title: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          title?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          title?: string | null
         }
         Relationships: []
       }
@@ -633,6 +785,32 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_discussion_comments: {
+        Args: {
+          input_discussion_id: string
+        }
+        Returns: {
+          id: string
+          created_at: string
+          user_id: string
+          discussion_id: string
+          comment: string
+          user_name: string
+          user_img: string
+        }[]
+      }
+      get_discussion_info: {
+        Args: {
+          input_discussion_id: string
+        }
+        Returns: {
+          id: string
+          created_at: string
+          user_name: string
+          title: string
+          description: string
+        }[]
+      }
       get_friends_data: {
         Args: {
           input_user_id: string
@@ -648,6 +826,28 @@ export type Database = {
           friend_email: string
           friend_image: string
           is_added: boolean
+        }[]
+      }
+      get_group_info: {
+        Args: {
+          input_group_id: string
+        }
+        Returns: {
+          id: string
+          title: string
+          members: Json
+          discussions: Json
+        }[]
+      }
+      get_groups: {
+        Args: {
+          input_user_id: string
+        }
+        Returns: {
+          id: string
+          title: string
+          member_count: number
+          discussions_count: number
         }[]
       }
       get_list_books: {
@@ -708,6 +908,20 @@ export type Database = {
           votes_count: number
         }[]
       }
+      get_reviews: {
+        Args: {
+          input_book_id: string
+        }
+        Returns: {
+          user_id: string
+          user_img: string
+          user_name: string
+          book_id: string
+          review: string
+          rating: number
+          created_at: string
+        }[]
+      }
       get_similar_books: {
         Args: {
           input_book_title: string
@@ -765,7 +979,8 @@ export type Database = {
           start_date: string
           end_date: string
           participants: number
-          book_count: number
+          book_ids: string[]
+          books_read: string[]
         }[]
       }
       gtrgm_compress: {

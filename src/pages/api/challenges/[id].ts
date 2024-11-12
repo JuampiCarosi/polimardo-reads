@@ -9,7 +9,8 @@ export type MyChallenges = {
     end_date: string;
     created_by: string;
     participants: number;
-    book_count: number;
+    book_ids: string[];
+    books_read: string[];
 }
 
 
@@ -24,11 +25,16 @@ const handler: NextApiHandler = async (req, res) => {
             user_challenge_id: id
         })
 
+
+
         if (result.error) {
             console.error(result.error);
             return res.status(500).json({ error: result.error.message });
         }
 
+        console.log(result.data);
+
+        
         res.status(200).json(result.data satisfies MyChallenges[]);
     }
 }
