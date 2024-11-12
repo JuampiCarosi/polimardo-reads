@@ -223,23 +223,28 @@ export default function Home() {
             <div className="space-y-4">
               {reviews?.map((review) => (
                 <div
-                  key={review.author_id}
+                  key={review.user_id}
                   className="rounded-lg bg-white p-4 shadow"
                 >
                   <div className="flex items-start space-x-4">
-                    {/* <Avatar>
-                      <AvatarImage
-                        src={review.user_img}
-                        alt={review.user_name}
-                      />
-                      <AvatarFallback className="border border-slate-400">
-                        {review.user_name.slice(0, 1)}
-                      </AvatarFallback>
-                    </Avatar> */}
+                    <div className="flex flex-col items-center">
+                      <Avatar>
+                        <AvatarImage
+                          src={review.user_img || ""}
+                          alt={review.user_name || ""}
+                        />
+                        <AvatarFallback className="border border-slate-400">
+                          {review.user_name?.slice(0, 1)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="text-xs text-slate-500 mb-2 mt-2">
+                        {review.rating}⭐
+                      </div>
+                    </div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
                         <h3 className="text-sm font-medium text-slate-900">
-                          {review.author_id}
+                          {review.user_name || "Anónimo"}
                         </h3>
                         <p className="text-xs text-slate-500">
                           {format(review.created_at, "dd-MM-yyyy")}

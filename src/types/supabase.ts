@@ -909,6 +909,20 @@ export type Database = {
           votes_count: number
         }[]
       }
+      get_reviews: {
+        Args: {
+          input_book_id: string
+        }
+        Returns: {
+          user_id: string
+          user_img: string
+          user_name: string
+          book_id: string
+          review: string
+          rating: number
+          created_at: string
+        }[]
+      }
       get_similar_books: {
         Args: {
           input_book_title: string
