@@ -238,7 +238,7 @@ export default function Home() {
                         </AvatarFallback>
                       </Avatar>
                       <div className="text-xs text-slate-500 mb-2 mt-2">
-                        {review.rating}⭐
+                        {review.rating || "-"}⭐
                       </div>
                     </div>
                     <div className="flex-1">
