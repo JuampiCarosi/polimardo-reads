@@ -274,38 +274,6 @@ export type Database = {
         }
         Relationships: []
       }
-      book_reviews: {
-        Row: {
-          author: string
-          book_id: string
-          created_at: string
-          id: string
-          review_text: string | null
-        }
-        Insert: {
-          author: string
-          book_id: string
-          created_at?: string
-          id?: string
-          review_text: string | null
-        }
-        Update: {
-          author?: string
-          book_id?: string
-          created_at?: string
-          id?: string
-          review_text?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "book_reviews_book_id_fkey"
-            columns: ["book_id"]
-            isOneToOne: false
-            referencedRelation: "books_detailed"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       books_detailed: {
         Row: {
           author: string
@@ -856,7 +824,6 @@ export type Database = {
           user_name: string
           title: string
           description: string
-          comments_count: number
         }[]
       }
       get_friends_data: {

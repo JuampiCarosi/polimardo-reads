@@ -77,6 +77,11 @@ export function Header() {
             <DropdownMenuCheckboxItem onClick={() => router.push("/grupos")}>
               Grupos
             </DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem
+              onClick={() => router.push("/grupos/invitaciones")}
+            >
+              Invitaciones Grupos
+            </DropdownMenuCheckboxItem>
             <DropdownMenuCheckboxItem onClick={() => signOut()}>
               Cerrar sesión
             </DropdownMenuCheckboxItem>
