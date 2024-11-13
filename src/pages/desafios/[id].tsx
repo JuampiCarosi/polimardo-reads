@@ -159,7 +159,8 @@ export default function Challenge() {
             </div>
             {typeof id === "string" && myChallengesIds?.includes(id) && (
               <div className="text-slate-600">
-                Progreso del desafío: {formatNumber(getPartialProgress())}%
+                Progreso del desafío:{" "}
+                {formatNumber(getPartialProgress(), { emptyValues: "0" })}%
               </div>
             )}
             <div className="mb-2 flex w-full justify-center">

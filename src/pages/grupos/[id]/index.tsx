@@ -31,6 +31,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { cn } from "@/lib/utils";
 
 export default function Group() {
   const [activeTab, setActiveTab] = useState("discussions");
@@ -123,7 +124,10 @@ export default function Group() {
                     <Link
                       href={`/perfil/${member.id}`}
                       key={member.id}
-                      className="flex items-center space-x-2 rounded-md px-4 py-2 hover:bg-slate-100"
+                      className={cn(
+                        "flex items-center space-x-2 rounded-md px-4 py-2 hover:bg-slate-100",
+                        !member.has_accepted && "opacity-60",
+                      )}
                     >
                       <Avatar>
                         <AvatarImage
@@ -134,7 +138,19 @@ export default function Group() {
                           {member?.name?.charAt(0)}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="text-sm font-medium">{member.name}</span>
+                      <div className="flex flex-col items-start gap-1">
+                        <div className={cn("text-sm font-medium")}>
+                          {member.name}
+                        </div>
+                        {!member.has_accepted && (
+                          <Badge
+                            variant="secondary"
+                            className="px-1 py-0 text-[0.7rem]"
+                          >
+                            Pendiente
+                          </Badge>
+                        )}
+                      </div>
                     </Link>
                   ))}
                 </div>

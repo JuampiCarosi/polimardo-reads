@@ -7,7 +7,7 @@ import { type User } from "../../users";
 export type GroupInfo = {
   id: string;
   title: string | null;
-  members: Array<User> | null;
+  members: Array<User & { has_accepted: boolean }> | null;
   discussions: Array<{
     created_at: string;
     created_by: string | null;
