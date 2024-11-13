@@ -66,7 +66,7 @@ export default function Challenge() {
       (book) => challenge?.book_ids.includes(book.id) && book.status === "read",
     ).length;
     if (readBooks !== undefined && totalBooks !== undefined && totalBooks > 0) {
-      return formatNumber((readBooks / totalBooks) * 100);
+      return (readBooks / totalBooks) * 100;
     }
     return 0;
   };
@@ -159,7 +159,7 @@ export default function Challenge() {
             </div>
             {typeof id === "string" && myChallengesIds?.includes(id) && (
               <div className="text-slate-600">
-                Progreso del desafío: {getPartialProgress()}%
+                Progreso del desafío: {formatNumber(getPartialProgress())}%
               </div>
             )}
             <div className="mb-2 flex w-full justify-center">
