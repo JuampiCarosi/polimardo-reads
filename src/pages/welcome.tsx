@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import axios from "axios";
 import { type Genres } from "./api/books/genres";
 import { useRouter } from "next/router";
+import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 
 const maxSteps = 2;
 const country_list = [
@@ -478,5 +479,7 @@ export default function Page() {
     </div>
   );
 }
+
+export const getServerSideProps = getServerSidePropsWithAuth();
 
 export { country_list };

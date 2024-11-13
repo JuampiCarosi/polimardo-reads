@@ -11,6 +11,7 @@ import { useRouter } from "next/router";
 import { useQuery } from "react-query";
 import { type List } from "../api/lists";
 import Image from "next/image";
+import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 
 export default function Busqueda() {
   const router = useRouter();
@@ -81,3 +82,5 @@ export default function Busqueda() {
     </div>
   );
 }
+
+export const getServerSideProps = getServerSidePropsWithAuth();

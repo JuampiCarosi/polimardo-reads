@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
+import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 import { type GroupInfo } from "@/pages/api/groups/[id]";
 import { type Discussion } from "@/pages/api/groups/discussions/[id]";
 import { group } from "console";
@@ -196,3 +197,4 @@ function BreadCrumbs({ discussion }: { discussion: Discussion | undefined }) {
     </Breadcrumb>
   );
 }
+export const getServerSideProps = getServerSidePropsWithAuth();

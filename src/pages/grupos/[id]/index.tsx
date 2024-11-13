@@ -32,6 +32,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { cn } from "@/lib/utils";
+import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 
 export default function Group() {
   const [activeTab, setActiveTab] = useState("discussions");
@@ -317,3 +318,5 @@ function BreadCrumbs({ group }: { group: GroupInfo | undefined }) {
     </Breadcrumb>
   );
 }
+
+export const getServerSideProps = getServerSidePropsWithAuth();

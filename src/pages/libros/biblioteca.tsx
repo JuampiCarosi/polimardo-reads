@@ -13,12 +13,12 @@ import {
 import Image from "next/image";
 import { Pill } from "@/components/pill";
 import { statusColors, statusLabels } from "./[id]";
-import { type GetServerSideProps } from "next";
-import { getServerAuthSession } from "@/server/auth";
+
 import { toast } from "sonner";
 import { type BookRating } from "../api/books/[id]/rating";
 import { Stars } from "@/components/stars-rating";
 import { useRouter } from "next/router";
+import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 
 export default function Page() {
   const { data } = useQuery<Book[]>({
@@ -123,17 +123,4 @@ export default function Page() {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const session = await getServerAuthSession(ctx);
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/auth/signin",
-        permanent: false,
-      },
-    };
-  }
-  return {
-    props: {},
-  };
-};
+export const getServerSideProps = getServerSidePropsWithAuth();

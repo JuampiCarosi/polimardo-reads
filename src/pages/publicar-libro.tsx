@@ -29,6 +29,7 @@ import { getServerAuthSession } from "@/server/auth";
 import { type Session } from "next-auth";
 import { useRouter } from "next/router";
 import { GenresSelector } from "@/components/genres-selector";
+import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 
 function Form({ user }: { user: Session["user"] }) {
   const { data: all_genres } = useQuery<Genres[]>({
@@ -78,7 +79,7 @@ function Form({ user }: { user: Session["user"] }) {
   };
 
   return (
-    <Card className="mx-auto max-w-2xl pb-10 pl-10 pr-10 pt-10 ">
+    <Card className="mx-auto max-w-2xl pb-10 pl-10 pr-10 pt-10">
       <CardHeader>
         <div className="flex items-center space-x-4">
           <div>
@@ -192,28 +193,20 @@ export default function PostNewBook() {
 
   return (
     <div>
-      <div className="min-h-screen  bg-slate-100">
-      <Header />
+      <div className="min-h-screen bg-slate-100">
+        <Header />
         <div className="position-relative mx-auto mt-14 items-center">
-        {session && <Form user={session.user} />}
+          {session && <Form user={session.user} />}
         </div>
       </div>
     </div>
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
+export const getServerSideProps = getServerSidePropsWithAuth(async (ctx) => {
   const session = await getServerAuthSession(ctx);
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/auth/signin",
-        permanent: false,
-      },
-    };
-  }
 
-  if (session.user.role !== "author") {
+  if (session?.user.role !== "author") {
     return {
       redirect: {
         destination: "/",
@@ -224,4 +217,4 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   return {
     props: {},
   };
-};
+});

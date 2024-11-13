@@ -23,6 +23,7 @@ import { useRouter } from "next/router";
 import { Label } from "@/components/ui/label";
 import { type ListDetailed } from "../api/lists/[id]";
 import { Textarea } from "@/components/ui/textarea";
+import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 
 export default function Listas() {
   const [open, setOpen] = useState(false);
@@ -100,7 +101,7 @@ export default function Listas() {
                 <div
                   className={
                     open
-                      ? "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0"
+                      ? "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80"
                       : "hidden"
                   }
                 />
@@ -276,3 +277,5 @@ export default function Listas() {
     </div>
   );
 }
+
+export const getServerSideProps = getServerSidePropsWithAuth();

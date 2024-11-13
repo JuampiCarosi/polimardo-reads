@@ -21,6 +21,7 @@ import { Progress } from "@/components/ui/progress";
 import { type MyChallenges } from "../api/challenges";
 import { toast } from "sonner";
 import { formatNumber } from "@/lib/numbers";
+import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 
 export default function Challenge() {
   const queryClient = useQueryClient();
@@ -236,3 +237,5 @@ export default function Challenge() {
     </div>
   );
 }
+
+export const getServerSideProps = getServerSidePropsWithAuth();

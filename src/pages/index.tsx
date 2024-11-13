@@ -28,6 +28,7 @@ import router from "next/router";
 import { type BookWithBlob } from "./api/books/recommended";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { Badge } from "@/components/ui/badge";
+import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 
 export default function Home() {
   const { data, isLoading, refetch, isFetching } = useQuery<BookWithBlob[]>({
@@ -184,18 +185,10 @@ function BookDialog({ item }: { item: BookWithBlob }) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
+export const getServerSideProps = getServerSidePropsWithAuth(async (ctx) => {
   const session = await getServerAuthSession(ctx);
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/auth/signin",
-        permanent: false,
-      },
-    };
-  }
 
-  if (!session.user.onboarding_completed) {
+  if (!session?.user.onboarding_completed) {
     return {
       redirect: {
         destination: "/welcome",
@@ -207,4 +200,4 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   return {
     props: {},
   };
-};
+});

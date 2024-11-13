@@ -12,6 +12,7 @@ import { useSession } from "next-auth/react";
 import { type FriendshipRaw } from "./api/friendships";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/router";
+import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 
 export default function Component() {
   const session = useSession();
@@ -119,3 +120,5 @@ export default function Component() {
     </div>
   );
 }
+
+export const getServerSideProps = getServerSidePropsWithAuth();

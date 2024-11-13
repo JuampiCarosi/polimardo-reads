@@ -26,6 +26,7 @@ import {
   BreadcrumbSeparator,
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
+import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 
 export default function Grupos() {
   const [search, setSearch] = useState("");
@@ -175,3 +176,5 @@ function BreadCrumbs() {
     </Breadcrumb>
   );
 }
+
+export const getServerSideProps = getServerSidePropsWithAuth();

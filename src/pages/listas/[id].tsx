@@ -22,6 +22,7 @@ import { BookSelector } from "@/components/books-selector";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import { format } from "date-fns";
+import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 
 export default function Component() {
   const [newComment, setNewComment] = React.useState("");
@@ -256,3 +257,5 @@ export default function Component() {
     </div>
   );
 }
+
+export const getServerSideProps = getServerSidePropsWithAuth();

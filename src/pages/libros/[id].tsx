@@ -29,6 +29,7 @@ import { format } from "date-fns";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import React from "react";
 import { useSession } from "next-auth/react";
+import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 
 export const statusLabels = {
   reading: "leyendo",
@@ -346,3 +347,5 @@ function BookStatusPill({ book }: { book: Book }) {
     </DropdownMenu>
   );
 }
+
+export const getServerSideProps = getServerSidePropsWithAuth();

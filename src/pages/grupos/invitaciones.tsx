@@ -9,6 +9,7 @@ import { useQuery } from "react-query";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import type { Invitation } from "../api/groups/invitations";
+import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 
 export default function Component() {
   const [search, setSearch] = useState("");
@@ -131,3 +132,5 @@ export default function Component() {
     </div>
   );
 }
+
+export const getServerSideProps = getServerSidePropsWithAuth();

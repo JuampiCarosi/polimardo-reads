@@ -9,6 +9,7 @@ import { type Friendship } from "./api/myFriends";
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/router";
+import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 
 export default function Component() {
   const session = useSession();
@@ -264,3 +265,5 @@ export default function Component() {
     </div>
   );
 }
+
+export const getServerSideProps = getServerSidePropsWithAuth();

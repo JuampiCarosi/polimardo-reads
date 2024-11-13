@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { type Friendship } from "../api/myFriends";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
+import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 
 function firstLetterToUpperCase(str: string | undefined | null) {
   if (!str) return str;
@@ -237,3 +238,5 @@ function FriendButton() {
     </Button>
   );
 }
+
+export const getServerSideProps = getServerSidePropsWithAuth();

@@ -33,7 +33,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
+import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 
 export default function Page() {
   const [search, setSearch] = useState("");
@@ -63,19 +63,18 @@ export default function Page() {
               </div>
             )}
             <div className="w-32">
-            <Select value={filter ?? undefined} onValueChange={setFilter}>
-              <SelectTrigger id="filter">
-                <SelectValue placeholder="Seleccionar filtro" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="title">Título</SelectItem>
-                <SelectItem value="genre">Género</SelectItem>
-                <SelectItem value="author">Autor</SelectItem>
-              </SelectContent>
-            </Select>
+              <Select value={filter ?? undefined} onValueChange={setFilter}>
+                <SelectTrigger id="filter">
+                  <SelectValue placeholder="Seleccionar filtro" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos</SelectItem>
+                  <SelectItem value="title">Título</SelectItem>
+                  <SelectItem value="genre">Género</SelectItem>
+                  <SelectItem value="author">Autor</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-           
           </div>
 
           <Table>
@@ -174,17 +173,4 @@ function BookDialog({ item }: { item: BookRaw }) {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const session = await getServerAuthSession(ctx);
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/auth/signin",
-        permanent: false,
-      },
-    };
-  }
-  return {
-    props: {},
-  };
-};
+export const getServerSideProps = getServerSidePropsWithAuth();

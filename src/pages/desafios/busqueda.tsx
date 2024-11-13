@@ -17,6 +17,7 @@ import { LoadingSpinner } from "@/components/loading-spinner";
 import { type GeneralChallengeData } from "../api/challenges/search";
 import { Button } from "@/components/ui/button";
 import router from "next/router";
+import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 
 export default function Page() {
   const queryClient = useQueryClient();
@@ -96,17 +97,4 @@ export default function Page() {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const session = await getServerAuthSession(ctx);
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/auth/signin",
-        permanent: false,
-      },
-    };
-  }
-  return {
-    props: {},
-  };
-};
+export const getServerSideProps = getServerSidePropsWithAuth();

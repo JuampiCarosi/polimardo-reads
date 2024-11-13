@@ -28,6 +28,7 @@ import { toast } from "sonner";
 import { Header } from "@/components/header";
 import { type GetServerSideProps } from "next";
 import { getServerAuthSession } from "@/server/auth";
+import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 
 function Form({ user }: { user: Session["user"] }) {
   const [name, setName] = useState(user.name!);
@@ -156,17 +157,4 @@ export default function UserProfileEdit() {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const session = await getServerAuthSession(ctx);
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/auth/signin",
-        permanent: false,
-      },
-    };
-  }
-  return {
-    props: {},
-  };
-};
+export const getServerSideProps = getServerSidePropsWithAuth();

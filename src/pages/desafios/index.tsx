@@ -28,6 +28,7 @@ import { type MyChallenges } from "../api/challenges/index";
 import { Progress } from "@/components/ui/progress";
 import { getServerAuthSession } from "@/server/auth";
 import { type GetServerSideProps } from "next";
+import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 
 export default function Desafios() {
   const { data: session } = useSession();
@@ -118,17 +119,4 @@ export default function Desafios() {
   );
 }
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const session = await getServerAuthSession(ctx);
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/auth/signin",
-        permanent: false,
-      },
-    };
-  }
-  return {
-    props: {},
-  };
-};
+export const getServerSideProps = getServerSidePropsWithAuth();

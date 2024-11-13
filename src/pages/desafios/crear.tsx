@@ -27,6 +27,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import router from "next/router";
 import { MultipleBookSelector } from "@/components/books-selector";
+import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 
 export default function PostNewChallenge() {
   const { data: session } = useSession();
@@ -149,3 +150,5 @@ function ChallengeCreationForm({ user }: { user: Session["user"] }) {
     </Card>
   );
 }
+
+export const getServerSideProps = getServerSidePropsWithAuth();
