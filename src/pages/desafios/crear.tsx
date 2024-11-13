@@ -26,6 +26,7 @@ import { LoadingSpinner } from "@/components/loading-spinner";
 import axios from "axios";
 import { toast } from "sonner";
 import router from "next/router";
+import { MultipleBookSelector } from "@/components/books-selector";
 
 export default function PostNewChallenge() {
   const { data: session } = useSession();
@@ -51,17 +52,16 @@ function ChallengeCreationForm({ user }: { user: Session["user"] }) {
   const { data } = useQuery<BookRaw[]>({
     queryKey: ["books", "search", `?q=${search}&filter=all`],
   });
-  const [challengeBooks, setChallengeBooks] = useState<Array<BookRaw>>([]);
+  const [challengeBooks, setChallengeBooks] = useState<Array<string>>([]);
 
   const handleSubmit = async () => {
-    const books = challengeBooks.map((book) => book.id);
     const challengeData = {
       title,
       description,
       startDate,
       endDate,
       createdBy: user.id,
-      books,
+      books: challengeBooks,
     };
     try {
       const res = await axios.post("/api/challenges", challengeData);
@@ -132,92 +132,14 @@ function ChallengeCreationForm({ user }: { user: Session["user"] }) {
             />
           </div>
         </div>
-        <div className="space-y-2">
+        <div className="flex flex-col space-y-2">
           <Label>Libros del Desafío</Label>
-          {challengeBooks.map((book) => (
-            <div key={book.id}>
-              <div className="flex cursor-pointer items-center justify-between rounded-lg p-2 hover:bg-slate-50">
-                <div className="flex items-center gap-3">
-                  <Avatar>
-                    <AvatarImage
-                      src={book.cover_img ?? undefined}
-                      width={56}
-                      height={56}
-                    />
-                    <AvatarFallback>{book.title}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <div className="font-sm">{book.title}</div>
-                  </div>
-                </div>
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    if (challengeBooks.includes(book)) {
-                      setChallengeBooks(
-                        challengeBooks.filter((g) => g !== book),
-                      );
-                    }
-                  }}
-                  variant="destructive"
-                >
-                  Quitar
-                </Button>
-              </div>
-            </div>
-          ))}
+          <MultipleBookSelector
+            value={challengeBooks}
+            setValue={setChallengeBooks}
+          />
         </div>
-        <div className="space-y-2">
-          <div className="relative">
-            <Search className="text-muted-foreground absolute left-2 top-2.5 h-4 w-4" />
-            <Input
-              placeholder="Buscá libros por título, género o autor"
-              className="pl-8"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-          {data?.map((book) => (
-            <div key={book.id}>
-              <div className="flex cursor-pointer items-center justify-between rounded-lg p-2 hover:bg-slate-50">
-                <div className="flex items-center gap-3">
-                  <Avatar>
-                    <AvatarImage
-                      src={book.cover_img ?? undefined}
-                      width={56}
-                      height={56}
-                    />
-                    <AvatarFallback>{book.title}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <div className="font-semibold">{book.title}</div>
-                    <div className="text-xs text-slate-700">
-                      {book.author.slice(0, 60)}
-                    </div>
-                  </div>
-                </div>
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    if (challengeBooks.includes(book)) {
-                      setChallengeBooks(
-                        challengeBooks.filter((g) => g !== book),
-                      );
-                    } else {
-                      setChallengeBooks([...challengeBooks, book]);
-                    }
-                    setSearch("");
-                  }}
-                  variant={
-                    challengeBooks.includes(book) ? "destructive" : "default"
-                  }
-                >
-                  {challengeBooks.includes(book) ? "Quitar" : "Agregar"}
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
+
         <CardFooter>
           <Button className="w-full" onClick={handleSubmit}>
             Guardar Cambios

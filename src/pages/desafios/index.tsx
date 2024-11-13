@@ -27,7 +27,7 @@ import { useSession } from "next-auth/react";
 import { type MyChallenges } from "../api/challenges/index";
 import { Progress } from "@/components/ui/progress";
 import { getServerAuthSession } from "@/server/auth";
-import { GetServerSideProps } from "next";
+import { type GetServerSideProps } from "next";
 
 export default function Desafios() {
   const { data: session } = useSession();
@@ -58,6 +58,11 @@ export default function Desafios() {
                 </h2>
               </div>
               <div className="grid grid-cols-2 lg:gap-8">
+                {myChallenges?.length === 0 && (
+                  <div className="col-span-2 w-full pt-2 text-center text-sm font-medium text-slate-500">
+                    No estas participando de ningun desafío
+                  </div>
+                )}
                 {myChallenges?.map((challenge) => (
                   <Card
                     key={challenge.id}

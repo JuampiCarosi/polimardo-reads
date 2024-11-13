@@ -20,6 +20,7 @@ import { Pill } from "@/components/pill";
 import { Progress } from "@/components/ui/progress";
 import { type MyChallenges } from "../api/challenges";
 import { toast } from "sonner";
+import { formatNumber } from "@/lib/numbers";
 
 export default function Challenge() {
   const queryClient = useQueryClient();
@@ -65,7 +66,7 @@ export default function Challenge() {
       (book) => challenge?.book_ids.includes(book.id) && book.status === "read",
     ).length;
     if (readBooks !== undefined && totalBooks !== undefined && totalBooks > 0) {
-      return (readBooks / totalBooks) * 100;
+      return formatNumber((readBooks / totalBooks) * 100);
     }
     return 0;
   };
