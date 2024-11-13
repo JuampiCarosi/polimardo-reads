@@ -11,12 +11,26 @@ const postSchema = z.object({
     books: z.array(z.string()).min(1),
 })
 
+const UserIdSchema = z.object({
+    user: z.string()
+})
+
+export type MyChallenges = {
+    id: string;
+    name: string;
+    description: string;
+    start_date: string;
+    end_date: string;
+    created_by: string;
+    participants: number;
+    book_ids: string[];
+    books_read: string[];
+}
+
 const handler: NextApiHandler = async (req, res) => {
     if (req.method === "POST") {
-        console.log(req.body);
         const result = postSchema.safeParse(req.body);
         if (!result.success) {
-            console.log(result.error.message);
             return res.status(400).json({ error: result.error });
         }
         
@@ -60,6 +74,32 @@ const handler: NextApiHandler = async (req, res) => {
         await Promise.all(promise)
 
         res.status(201).json(data);
+    }
+
+    if( req.method === "GET") {
+        const schema = UserIdSchema.safeParse(req.query);
+
+        if (!schema.success) {
+            return res.status(400).json({ error: "No id provided" })
+        }
+
+        const id = schema.data.user;
+
+
+        const result = await supabase.rpc("get_user_challenges", {
+            user_challenge_id: id
+        })
+
+
+
+        if (result.error) {
+            console.error(result.error);
+            return res.status(500).json({ error: result.error.message });
+        }
+
+
+        
+        res.status(200).json(result.data satisfies MyChallenges[]);
     }
 };
 

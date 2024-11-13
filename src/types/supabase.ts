@@ -785,6 +785,21 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_challenge: {
+        Args: {
+          challenge_id: string
+        }
+        Returns: {
+          id: string
+          name: string
+          description: string
+          created_by: string
+          start_date: string
+          end_date: string
+          participants: number
+          book_ids: string[]
+        }[]
+      }
       get_discussion_comments: {
         Args: {
           input_discussion_id: string
@@ -981,6 +996,18 @@ export type Database = {
           participants: number
           book_ids: string[]
           books_read: string[]
+        }[]
+      }
+      get_user_group_invites: {
+        Args: {
+          input_user_id: string
+        }
+        Returns: {
+          id: string
+          group_id: string
+          title: string
+          member_count: number
+          discussions_count: number
         }[]
       }
       gtrgm_compress: {

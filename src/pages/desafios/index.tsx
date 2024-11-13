@@ -18,13 +18,13 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { useRouter } from "next/router";
+import router, { useRouter } from "next/router";
 import { Label } from "@/components/ui/label";
 import { type ListDetailed } from "../api/lists/[id]";
 import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { MyChallenges } from "../api/challenges/[id]";
+import { type MyChallenges } from "../api/challenges/index";
 import { Progress } from "@/components/ui/progress"
 
 
@@ -33,7 +33,7 @@ export default function Desafios() {
   const { data: session } = useSession();
   const userId = session?.user.id;
   const {data: myChallenges} = useQuery<MyChallenges[]>({
-    queryKey: ["challenges", userId],
+    queryKey: ["challenges?user=" + userId],
   })
 
 
@@ -46,7 +46,7 @@ export default function Desafios() {
           <div className="flex items-center justify-between">
 
             </div>
-            <div>
+            <div className="flex justify-end py-4">
                 <Button size= "sm" asChild>
                     <Link href="/desafios/crear">Crear nuevo desafío</Link>
                 </Button>
@@ -60,7 +60,12 @@ export default function Desafios() {
               </div>
               <div className="grid grid-cols-2 lg:gap-8">
                 {myChallenges?.map((challenge) => (
-                  <Card key={challenge.id} className="border-slate-200 bg-white cursor-pointer hover:shadow-lg ">
+                  <Card key={challenge.id} className="border-slate-200 bg-white cursor-pointer hover:shadow-lg "
+                  onClick={
+                    async () => {
+                      await router.push(`/desafios/${challenge.id}`)
+                    }
+                  }>
                     <CardContent className="sm:p-8 lg:p-10">
                       <div className="flex items-center justify-between r">
                         <h3 className="text-xl font-semibold text-slate-800">

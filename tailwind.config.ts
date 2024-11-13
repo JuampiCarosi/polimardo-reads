@@ -3,7 +3,9 @@ import { fontFamily } from "tailwindcss/defaultTheme";
 
 export default {
   darkMode: ["class"],
-  content: ["./src/**/*.tsx"],
+  content: [
+    "./src/**/*.tsx",
+  ],
   theme: {
     extend: {
       fontFamily: { sans: ["var(--font-sans)"], brand: ["var(--brand-sans)"] },
@@ -15,5 +17,4 @@ export default {
       colors: {},
     },
   },
-  plugins: [require("tailwindcss-animate")],
 } satisfies Config;

@@ -58,7 +58,7 @@ function ChallengeCreationForm({user}: {user: Session["user"]}) {
         }
         try {
             await axios.post("/api/challenges", challengeData);
-            toast.success("Libro publicado correctamente");
+            toast.success("Desafío creado correctamente");
             await router.push("/desafios");
           } catch (err) {
             console.error(err);
