@@ -40,7 +40,50 @@ const handler: NextApiHandler = async (req, res) => {
     return res.status(500).json({ error: "Error adding review" });
   }
 
-  return res.status(200).json({ message: "Review added" });
+  const { data: bookLibrary, error: bookError } = await supabase
+    .from("books_library")
+    .select("*")
+    .eq("book_id", parseResult.data.id)
+    .eq("user_id", session.user.id);
+
+  if (bookError) {
+    console.error(bookError);
+    res.status(500).json({
+      error:
+        bookError.message ?? "Unexpected error happend updating book status",
+    });
+    return;
+  }
+
+  if (bookLibrary.length === 0) {
+    const { data: updatedStatusData, error } = await supabase
+      .from("books_library")
+      .upsert(
+        {
+          user_id: session.user.id,
+          book_id: parseResult.data.id,
+          status: "read",
+        },
+        { onConflict: "user_id, book_id" },
+      )
+      .select("*");
+
+    if (error || !updatedStatusData) {
+      console.error(error);
+      res.status(500).json({
+        error:
+          error?.message ?? "Unexpected error happend updating book status",
+      });
+      return;
+    }
+    return res
+      .status(200)
+      .json({ message: "Review added", added_to_library: true });
+  }
+
+  return res
+    .status(200)
+    .json({ message: "Review added", added_to_library: false });
 };
 
 export default handler;

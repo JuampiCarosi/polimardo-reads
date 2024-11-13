@@ -30,6 +30,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import React from "react";
 import { useSession } from "next-auth/react";
 import { getServerSidePropsWithAuth } from "@/lib/with-auth";
+import { z } from "zod";
 
 export const statusLabels = {
   reading: "leyendo",
@@ -48,24 +49,29 @@ export default function Home() {
   const router = useRouter();
   const id = router.query.id;
 
-  const { data: reviews, refetch } = useQuery<BookReview[]>({
+  const { data: reviews, refetch: refetchReviews } = useQuery<BookReview[]>({
     queryKey: ["books", id, "reviews"],
+    enabled: typeof id === "string",
+  });
+  const { data: book, refetch: refetchBooks } = useQuery<Book>({
+    queryKey: ["books", id],
     enabled: typeof id === "string",
   });
 
   const postReviewMutation = useMutation({
-    onSuccess: async () => {
-      await refetch();
+    onSuccess: async ({ added_to_library }) => {
+      await Promise.allSettled([refetchBooks(), refetchReviews()]);
       setNewReview("");
+      if (added_to_library) toast.success("Libro agregado a la biblioteca");
+      toast.success("Review agregada correctamente");
     },
-    onError: (error) => {
+    onError: (error: never) => {
       toast.error("Hubo un error al agregar la review");
       console.error(error);
     },
     mutationFn: async () => {
-      if (!newReview || newReview.length < 1 || typeof id !== "string") {
-        toast.error("La review no puede estar vacia");
-        return;
+      if (typeof id !== "string") {
+        throw new Error("Error posting review");
       }
       const res = await fetch(`/api/books/${id}/post_review`, {
         method: "POST",
@@ -76,21 +82,24 @@ export default function Home() {
           review: newReview,
         }),
       });
-      if (res.ok) {
-        toast.success("Review agregada correctamente");
+
+      if (!res.ok) {
+        throw new Error("Error posting review");
       }
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const json = await res.json();
+      const parsed = z.object({ added_to_library: z.boolean() }).parse(json);
+      return parsed;
     },
   });
   const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!newReview || newReview.length < 1) {
+      toast.error("La review no puede estar vacia");
+      return;
+    }
     postReviewMutation.mutate();
   };
-  const session = useSession();
-
-  const { data: book } = useQuery<Book>({
-    queryKey: ["books", id],
-    enabled: typeof id === "string",
-  });
 
   const queryClient = useQueryClient();
 
@@ -220,7 +229,7 @@ export default function Home() {
       <div className="mx-auto mt-6 max-w-3xl">
         <div className="mt-8">
           <h2 className="mb-4 text-2xl font-bold text-slate-900">
-            Reseñas de otros lectores
+            Reseñas de lectores
           </h2>
           <div className="space-y-4">
             {reviews?.map((review) => (

@@ -58,6 +58,11 @@ export default function Grupos() {
             <CreateGroupDialog />
           </CardHeader>
           <CardContent>
+            {groups?.length === 0 && (
+              <div className="text-center text-sm font-medium text-slate-500">
+                No tienes grupos aún
+              </div>
+            )}
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {filteredGroups?.map((group) => (
                 <GroupCard key={group.id} group={group} />
