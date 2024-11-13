@@ -1,11 +1,6 @@
-"use client";
-
-import * as React from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { useVirtualizer } from "@tanstack/react-virtual";
-
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { useQuery } from "react-query";
+import { type Friendship } from "@/pages/api/myFriends";
+import { useSession } from "next-auth/react";
 import {
   Command,
   CommandEmpty,
@@ -13,12 +8,56 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+} from "./ui/command";
+import { cn } from "@/lib/utils";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { ChevronsUpDown, Check } from "lucide-react";
+import React from "react";
+import { Button } from "./ui/button";
+import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover";
+
+export function FriendsSelector({
+  friends,
+  setFriends,
+  className,
+  exclude,
+}: {
+  friends: Array<string>;
+  setFriends: React.Dispatch<React.SetStateAction<string[]>>;
+  className?: string;
+  exclude?: string[];
+}) {
+  const { data } = useQuery<Friendship[]>({
+    queryKey: ["myFriends"],
+  });
+  const session = useSession();
+
+  const friendsOptions =
+    data
+      ?.map((friend) => {
+        if (friend.user_id === session.data?.user.id) {
+          return {
+            label: friend.friend_name,
+            value: friend.friend_id,
+          };
+        }
+        return {
+          label: friend.user_name,
+          value: friend.user_id,
+        };
+      })
+      ?.filter((f) => !exclude?.includes(f.value)) ?? [];
+
+  return (
+    <MultipleSelect
+      values={friends}
+      setValues={setFriends}
+      options={friendsOptions}
+      className={className}
+      placeholder="Seleccione amigos"
+    />
+  );
+}
 
 type Options = {
   label: string;
@@ -31,16 +70,12 @@ export function MultipleSelect({
   className,
   values,
   setValues,
-  valuesClassName,
-  popoverClassName,
 }: {
   options: Options[];
   placeholder?: string;
   className?: string;
   values?: string[];
   setValues?: React.Dispatch<React.SetStateAction<string[]>>;
-  valuesClassName?: string;
-  popoverClassName?: string;
 }) {
   const [open, setOpen] = React.useState(false);
   const [_values, _setValues] = React.useState<string[]>([]);
@@ -69,12 +104,7 @@ export function MultipleSelect({
           aria-expanded={open}
           className={cn("w-[200px] justify-between text-slate-700", className)}
         >
-          <span
-            className={cn(
-              "max-w-[150px] overflow-hidden text-ellipsis",
-              valuesClassName,
-            )}
-          >
+          <span className={cn("max-w-[370px] overflow-hidden text-ellipsis")}>
             {valuesToUse.length > 0
               ? selectedOptions.join(", ")
               : (placeholder ?? "Seleccione una")}
@@ -82,7 +112,7 @@ export function MultipleSelect({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className={cn("w-[200px] p-0", popoverClassName)}>
+      <PopoverContent className={cn("w-[300px] p-0")}>
         <SelectCommand
           options={options}
           values={valuesToUse}
@@ -117,7 +147,7 @@ function SelectCommand({
   const rowVirtualizer = useVirtualizer({
     count: filtered.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 36,
+    estimateSize: () => 42,
     overscan: 15,
   });
 

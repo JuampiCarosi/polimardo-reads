@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useQuery, useQueryClient } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { Header } from "@/components/header";
 import { type Book } from "../api/books/[id]";
 import {
@@ -22,7 +22,14 @@ import { Stars } from "@/components/stars-rating";
 import { type BookRating } from "../api/books/[id]/rating";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
+import { BookReview } from "../api/books/[id]/reviews";
+import { format } from "date-fns";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import React from "react";
+import { useSession } from "next-auth/react";
 
 
 export const statusLabels = {
@@ -38,8 +45,49 @@ export const statusColors = {
 } as const;
 
 export default function Home() {
+  const [newReview, setNewReview] = React.useState("");
   const router = useRouter();
   const id = router.query.id;
+  
+  const { data: reviews, refetch } = useQuery<BookReview[]>({
+    queryKey: ["books", id, "reviews"],
+    enabled: typeof id === "string",
+  });
+
+  const postReviewMutation = useMutation({
+    onSuccess: async () => {
+      await refetch();
+      setNewReview("");
+    },
+    onError: (error: any) => {
+      toast.error("Hubo un error al agregar la review");
+      console.error(error);
+    },
+    mutationFn: async () => {
+      if (!newReview || newReview.length < 1 || typeof id !== "string") {
+        toast.error("La review no puede estar vacia");
+        return;
+      }
+      const res = await fetch(`/api/books/${id}/post_review`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          review: newReview,
+        }),
+      });
+      if (res.ok) {
+        toast.success("Review agregada correctamente");
+      }
+    },
+  });
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    postReviewMutation.mutate();
+  };
+  const session = useSession();
+
   const { data: book } = useQuery<Book>({
     queryKey: ["books", id],
     enabled: typeof id === "string",
@@ -170,6 +218,60 @@ export default function Home() {
           </div>
         </CardContent>
       </Card>
+      <div className="mx-auto mt-6 max-w-3xl">
+        <div className="mt-8">
+          <h2 className="mb-4 text-2xl font-bold text-slate-900">Reseñas de otros lectores</h2>
+            <div className="space-y-4">
+              {reviews?.map((review) => (
+                <div
+                  key={review.user_id}
+                  className="rounded-lg bg-white p-4 shadow"
+                >
+                  <div className="flex items-start space-x-4">
+                    <div className="flex flex-col items-center">
+                      <Avatar>
+                        <AvatarImage
+                          src={review.user_img || ""}
+                          alt={review.user_name || ""}
+                        />
+                        <AvatarFallback className="border border-slate-400">
+                          {review.user_name?.slice(0, 1)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="text-xs text-slate-500 mb-2 mt-2">
+                        {review.rating || "-"}⭐
+                      </div>
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-medium text-slate-900">
+                          {review.user_name || "Anónimo"}
+                        </h3>
+                        <p className="text-xs text-slate-500">
+                          {format(review.created_at, "dd-MM-yyyy")}
+                        </p>
+                      </div>
+                      <p className="mt-1 text-sm text-slate-700">
+                        {review.review}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          <form onSubmit={handleReviewSubmit} className="mt-4">
+            <Textarea
+              placeholder="Dejá tu opinión..."
+              value={newReview}
+              onChange={(e) => setNewReview(e.target.value)}
+              className="mb-4 mt-4 bg-white"
+            />
+            <Button disabled={postReviewMutation.isLoading} type="submit">
+              Post Review
+            </Button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 }

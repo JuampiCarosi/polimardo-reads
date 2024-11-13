@@ -37,7 +37,6 @@ export default function Component() {
     onSuccess: async () => {
       await refetch();
       setNewComment("");
-      toast.success("Comentario agregado");
     },
     onError: (error) => {
       toast.error("Hubo un error al agregar el comentario");
@@ -45,9 +44,10 @@ export default function Component() {
     },
     mutationFn: async () => {
       if (!newComment || newComment.length < 1 || typeof id !== "string") {
+        toast.error("El comentario no puede estar vacio");
         return;
       }
-      await fetch(`/api/lists/${id}/comment`, {
+      const res = await fetch(`/api/lists/${id}/comment`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -56,6 +56,9 @@ export default function Component() {
           comment: newComment,
         }),
       });
+      if (res.ok) {
+        toast.success("Comentario agregado correctamente");
+      }
     },
   });
 
