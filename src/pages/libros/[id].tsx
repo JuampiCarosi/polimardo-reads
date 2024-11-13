@@ -31,6 +31,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import React from "react";
 import { useSession } from "next-auth/react";
 
+
 export const statusLabels = {
   reading: "leyendo",
   read: "leído",
