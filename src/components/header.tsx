@@ -41,6 +41,9 @@ export function Header() {
           <Link className="hover:underline" href="/desafios">
             Desafíos
           </Link>
+          <Link className="hover:underline" href="/desafios/busqueda">
+            Descubrir desafios
+          </Link>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
