@@ -124,7 +124,7 @@ export default function Challenge() {
   });
 
   const handleEditChallenge = async (challengeId: string) => {
-    console.log("Edit challenge", challengeId);
+    await router.push(`/desafios/crear?mode=edit&id=${challengeId}`);
   };
 
   const handleAbandonChallenge = async (

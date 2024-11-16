@@ -28,7 +28,7 @@ export default function Desafios() {
           <div className="flex items-center justify-between"></div>
           <div className="flex justify-end py-4">
             <Button size="sm" asChild>
-              <Link href="/desafios/crear">Crear nuevo desafío</Link>
+              <Link href="/desafios/crear?mode=create">Crear Desafío</Link>
             </Button>
           </div>
           <Card className="border-slate-200 bg-white">
