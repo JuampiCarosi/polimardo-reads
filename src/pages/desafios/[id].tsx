@@ -122,6 +122,14 @@ export default function Challenge() {
     },
   });
 
+  const handleEditChallenge = async () => {
+    console.log("Edit challenge");
+  };
+
+  const handleAbandonChallenge = async () => {
+    console.log("Abandon challenge");
+  };
+
   return (
     <div className="min-h-screen bg-slate-100">
       <Header />
@@ -150,13 +158,31 @@ export default function Challenge() {
             <div className="mt-2 grid grid-cols-2 py-5 text-slate-600">
               {challenge?.description}
             </div>
-            <div className="flex gap-4 rounded-sm">
-              <Pill className="px-2 py-1" color={"green"}>
-                Comienza: {challenge?.start_date}
-              </Pill>
-              <Pill className="px-2 py-1" color={"red"}>
-                Finaliza: {challenge?.end_date}
-              </Pill>
+            <div className="flex justify-between">
+              <div className="flex gap-4 rounded-sm">
+                <Pill className="items-center px-2 py-1" color={"green"}>
+                  Comienza: {challenge?.start_date}
+                </Pill>
+                <Pill className="items-center px-2 py-1" color={"red"}>
+                  Finaliza: {challenge?.end_date}
+                </Pill>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleEditChallenge}
+                >
+                  Editar desafío
+                </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={handleAbandonChallenge}
+                >
+                  Abandonar desafío
+                </Button>
+              </div>
             </div>
             {typeof id === "string" && myChallengesIds?.includes(id) && (
               <div className="text-slate-600">
