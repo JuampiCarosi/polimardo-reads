@@ -50,6 +50,7 @@ export default function Challenge() {
   });
 
   const myChallengesIds = myChallenges?.map((challenge) => challenge.id);
+  const amICreator = challenge?.created_by === userId;
 
   const getBookData = async (id: string) => {
     const response = await fetch(`/api/books/${id}`);
@@ -189,9 +190,11 @@ export default function Challenge() {
                 </Pill>
               </div>
               <div className="flex gap-2">
-                <Button size="sm" onClick={() => handleEditChallenge(id)}>
-                  Editar desafío
-                </Button>
+                {myChallengesIds?.includes(id) && amICreator && (
+                  <Button size="sm" onClick={() => handleEditChallenge(id)}>
+                    Editar desafío
+                  </Button>
+                )}
                 {myChallengesIds?.includes(id) && userId && (
                   <Button
                     size="sm"
