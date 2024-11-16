@@ -107,7 +107,7 @@ export default function Challenge() {
         console.error("Invalid challenge ID");
         return;
       }
-      const response = await fetch(`/api/challenges/join`, {
+      const response = await fetch(`/api/challenges/participants`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -122,12 +122,33 @@ export default function Challenge() {
     },
   });
 
-  const handleEditChallenge = async () => {
-    console.log("Edit challenge");
+  const handleEditChallenge = async (challengeId: string) => {
+    console.log("Edit challenge", challengeId);
   };
 
-  const handleAbandonChallenge = async () => {
-    console.log("Abandon challenge");
+  const handleAbandonChallenge = async (
+    challengeId: string,
+    userId: string,
+  ) => {
+    const response = await fetch(`/api/challenges/participants`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId, challengeId }),
+    });
+
+    if (!response.ok) {
+      console.error("Error leaving challenge", response);
+      toast.error("Hubo un error al abandonar el desafío");
+      return;
+    }
+
+    toast.success("Abandonaste el desafío correctamente");
+    await refetchChallenges();
+    await refetchUserData();
+    await refetchbooksRead();
+    void queryClient.invalidateQueries("challenges?user=" + userId);
   };
 
   return (
@@ -171,14 +192,17 @@ export default function Challenge() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={handleEditChallenge}
+                  onClick={() => handleEditChallenge(id as string)}
                 >
                   Editar desafío
                 </Button>
                 <Button
                   variant="destructive"
                   size="sm"
-                  onClick={handleAbandonChallenge}
+                  onClick={() =>
+                    userId &&
+                    handleAbandonChallenge(id as string, userId.toString())
+                  }
                 >
                   Abandonar desafío
                 </Button>

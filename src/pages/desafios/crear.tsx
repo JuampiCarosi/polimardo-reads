@@ -69,7 +69,7 @@ function ChallengeCreationForm({ user }: { user: Session["user"] }) {
       if (res.status != 201) {
         throw new Error();
       }
-      await axios.post("/api/challenges/join", {
+      await axios.post("/api/challenges/participants", {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
         challengeId: res.data[0].id,
         userId: user.id,
