@@ -2,33 +2,13 @@ import { Header } from "@/components/header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-react";
-import Image from "next/image";
-import { useState } from "react";
 import { useQuery } from "react-query";
-import { type Genres } from "../api/books/genres";
-import { GenresSelector } from "@/components/genres-selector";
-import { toast } from "sonner";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import router, { useRouter } from "next/router";
-import { Label } from "@/components/ui/label";
-import { type ListDetailed } from "../api/lists/[id]";
-import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { type MyChallenges } from "../api/challenges/index";
 import { Progress } from "@/components/ui/progress";
-import { getServerAuthSession } from "@/server/auth";
-import { type GetServerSideProps } from "next";
 import { getServerSidePropsWithAuth } from "@/lib/with-auth";
+import router from "next/router";
 
 export default function Desafios() {
   const { data: session } = useSession();
