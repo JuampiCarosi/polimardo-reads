@@ -48,18 +48,17 @@ function ChallengeForm({
   );
 
   const handleSubmit = async () => {
-    const challengeData = {
-      id: initialId,
-      name: title,
-      description,
-      startDate,
-      endDate,
-      createdBy: user.id,
-      books: challengeBooks,
-    };
-
     try {
       if (mode === "create") {
+        const challengeData = {
+          title,
+          description,
+          startDate,
+          endDate,
+          createdBy: user.id,
+          books: challengeBooks,
+        };
+
         const res = await axios.post("/api/challenges", challengeData);
         if (res.status != 201) {
           throw new Error();
@@ -70,6 +69,16 @@ function ChallengeForm({
         });
         toast.success("Desafío creado correctamente");
       } else if (mode === "edit") {
+        const challengeData = {
+          id: initialId,
+          name: title,
+          description,
+          startDate,
+          endDate,
+          createdBy: user.id,
+          books: challengeBooks,
+        };
+
         await axios.put(`/api/challenges/${initialId}`, challengeData);
         toast.success("Desafío actualizado correctamente");
       }
