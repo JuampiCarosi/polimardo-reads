@@ -36,10 +36,11 @@ async function addNewBooks(challenge_id: string, challengeBooks: string[], curre
       const { error: insertError } = await supabase.from("challenges_books").insert(insertData);
 
       if (insertError) {
-        console.error(insertError);
+        console.log(insertError.message);
         return false;
       }
     }
+    return true;
 }
 
 async function removeOldBooks(challenge_id: string, challengeBooks: string[], currentBooks: string[]) {
@@ -53,6 +54,7 @@ async function removeOldBooks(challenge_id: string, challengeBooks: string[], cu
         return false;
       }
     }
+    return true;
 }
 
 const handler: NextApiHandler = async (req, res) => {
@@ -95,7 +97,7 @@ const handler: NextApiHandler = async (req, res) => {
       end_date: result.data.endDate,
     };
 
-    const { data, error } = await supabase.from("challenges").upsert(challengeData).eq("id", challenge_id);
+    const { error } = await supabase.from("challenges").upsert(challengeData).eq("id", challenge_id);
 
     if (error) {
       console.error(error);
@@ -121,11 +123,7 @@ const handler: NextApiHandler = async (req, res) => {
       return res.status(500).json({ error: "Error removing books" });
     }
 
-    if (!data?.[0]) {
-      return res.status(404).json({ error: "Challenge not found" });
-    }
-
-    return res.status(200).json(data[0] satisfies Challenge);
+    return res.status(200).json("Challenge updated");
   }
 };
 

@@ -125,6 +125,11 @@ export default function Challenge() {
 
   const handleEditChallenge = async (challengeId: string) => {
     await router.push(`/desafios/crear?mode=edit&challengeId=${challengeId}`);
+
+    await refetchChallenges();
+    await refetchUserData();
+    await refetchbooksRead();
+    void queryClient.invalidateQueries("challenges?user=" + userId);
   };
 
   const handleAbandonChallenge = async (
