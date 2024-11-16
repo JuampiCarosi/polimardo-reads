@@ -20,40 +20,37 @@ import router from "next/router";
 import { MultipleBookSelector } from "@/components/books-selector";
 import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 import type { Challenge } from "../api/challenges/[id]";
+import { useQuery } from "react-query";
 
 function ChallengeForm({
   user,
-  mode = "create", // Puede ser "create" o "edit"
-  initialData = {
-    id: "",
-    name: "",
-    description: "",
-    created_by: "",
-    start_date: "",
-    end_date: "",
-    participants: 0,
-    book_ids: [],
-  },
+  mode,
+  initialId,
 }: {
   user: Session["user"];
-  mode?: "create" | "edit";
-  initialData?: Challenge;
+  mode?: string;
+  initialId?: string;
 }) {
-  const [title, setTitle] = useState<string>(initialData.name ?? "");
+  const { data: initialData } = useQuery<Challenge>({
+    queryKey: ["challenges", initialId],
+    enabled: typeof initialId === "string",
+  });
+  const [title, setTitle] = useState<string>(initialData?.name ?? "");
   const [description, setDescription] = useState<string>(
-    initialData.description ?? "",
+    initialData?.description ?? "",
   );
   const [startDate, setStartDate] = useState<string>(
-    initialData.start_date ?? "",
+    initialData?.start_date ?? "",
   );
-  const [endDate, setEndDate] = useState<string>(initialData.end_date ?? "");
+  const [endDate, setEndDate] = useState<string>(initialData?.end_date ?? "");
   const [challengeBooks, setChallengeBooks] = useState<Array<string>>(
-    initialData.book_ids ?? [],
+    initialData?.book_ids ?? [],
   );
 
   const handleSubmit = async () => {
     const challengeData = {
-      title,
+      id: initialId,
+      name: title,
       description,
       startDate,
       endDate,
@@ -73,7 +70,7 @@ function ChallengeForm({
         });
         toast.success("Desafío creado correctamente");
       } else if (mode === "edit") {
-        await axios.put(`/api/challenges/${initialData.id}`, challengeData);
+        await axios.put(`/api/challenges/${initialId}`, challengeData);
         toast.success("Desafío actualizado correctamente");
       }
       await router.push("/desafios");
@@ -154,14 +151,10 @@ function ChallengeForm({
   );
 }
 
-export default function ChallengePage({
-  mode,
-  challengeData,
-}: {
-  mode: "create" | "edit";
-  challengeData?: Challenge;
-}) {
+export default function ChallengePage() {
   const { data: session } = useSession();
+  const mode = router.query.mode as string;
+  const challengeId = router.query.challengeId as string;
 
   return (
     <div>
@@ -172,7 +165,7 @@ export default function ChallengePage({
             <ChallengeForm
               user={session.user}
               mode={mode}
-              initialData={challengeData ?? ({} as Challenge)}
+              initialId={challengeId}
             />
           )}
         </div>
