@@ -28,10 +28,10 @@ export default function Challenge() {
   const { data: session } = useSession();
   const userId = session?.user?.id;
   const router = useRouter();
-  const { id } = router.query;
+  const { id } = router.query as { id: string };
 
   const { data: challenge, refetch: refetchChallenges } = useQuery<Challenge>({
-    queryKey: ["challenges", id as string],
+    queryKey: ["challenges", id],
     enabled: typeof id === "string",
   });
   console.log(challenge);
@@ -189,38 +189,33 @@ export default function Challenge() {
                 </Pill>
               </div>
               <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleEditChallenge(id as string)}
-                >
+                <Button size="sm" onClick={() => handleEditChallenge(id)}>
                   Editar desafío
                 </Button>
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  onClick={() =>
-                    userId &&
-                    handleAbandonChallenge(id as string, userId.toString())
-                  }
-                >
-                  Abandonar desafío
-                </Button>
+                {myChallengesIds?.includes(id) && userId && (
+                  <Button
+                    size="sm"
+                    onClick={() => handleAbandonChallenge(id, userId)}
+                    variant="destructive"
+                  >
+                    Abandonar desafío
+                  </Button>
+                )}
               </div>
             </div>
-            {typeof id === "string" && myChallengesIds?.includes(id) && (
+            {myChallengesIds?.includes(id) && (
               <div className="text-slate-600">
                 Progreso del desafío:{" "}
                 {formatNumber(getPartialProgress(), { emptyValues: "0" })}%
               </div>
             )}
             <div className="mb-2 flex w-full justify-center">
-              {typeof id === "string" && myChallengesIds?.includes(id) && (
+              {myChallengesIds?.includes(id) && (
                 <Progress value={getPartialProgress()} />
               )}
             </div>
             <div className="flex justify-end">
-              {typeof id === "string" && !myChallengesIds?.includes(id) && (
+              {!myChallengesIds?.includes(id) && (
                 <Button
                   size="sm"
                   onClick={() => {
