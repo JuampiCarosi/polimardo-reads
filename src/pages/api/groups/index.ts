@@ -1,4 +1,5 @@
 import { getServerAuthSession } from "@/server/auth";
+import { pushNotification } from "@/server/push-notification";
 import { supabase } from "@/server/supabase";
 import { type NextApiHandler } from "next";
 import { z } from "zod";
@@ -88,14 +89,24 @@ const handler: NextApiHandler = async (req, res) => {
       }
     }
 
+    const { error: notificationError } = await pushNotification({
+      title: `${session.user.name} te invitó al grupo ${parseResult.data.title}!`,
+      users: parseResult.data.members,
+      url: `/grupos/invitaciones`,
+    });
+
+    if (notificationError) {
+      console.log(notificationError);
+      res.status(500).json({ error: notificationError.message });
+      return;
+    }
+
     res.status(201).json({ id });
     return;
   }
 
   if (req.method === "PATCH") {
-    const result = z
-    .object({ id: z.string() })
-    .safeParse(req.body);
+    const result = z.object({ id: z.string() }).safeParse(req.body);
 
     if (!result.success) {
       console.log(result.error);
@@ -109,7 +120,7 @@ const handler: NextApiHandler = async (req, res) => {
       .from("group_members")
       .update({ has_accepted: true })
       .eq("id", id);
-    
+
     if (error) {
       console.log(error);
       return res.status(500).json({ error: error.message });
@@ -120,9 +131,7 @@ const handler: NextApiHandler = async (req, res) => {
   }
 
   if (req.method === "DELETE") {
-    const result = z
-      .object({ id: z.string() })
-      .safeParse(req.body);
+    const result = z.object({ id: z.string() }).safeParse(req.body);
 
     if (!result.success) {
       console.log(result.error);
