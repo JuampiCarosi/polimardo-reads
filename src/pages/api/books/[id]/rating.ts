@@ -89,7 +89,6 @@ export default async function handler(
 
   if (data.length !== 1) {
     console.error("Data length of upsert is not 1, prohibeted status");
-    console.log(data);
     res.status(500).json({
       error: "Unexpected error happend updating book status",
     });

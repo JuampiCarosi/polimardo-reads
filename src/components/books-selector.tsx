@@ -287,7 +287,7 @@ function MultipleSelectCommand({
         onValueChange={setSearch}
         placeholder="Buscar..."
       />
-      <CommandEmpty>No framework found.</CommandEmpty>
+      <CommandEmpty>No se encontraron libros.</CommandEmpty>
       <CommandList ref={parentRef}>
         <CommandGroup>
           <div

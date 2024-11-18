@@ -158,7 +158,7 @@ function SelectCommand({
         onValueChange={setSearch}
         placeholder="Buscar..."
       />
-      <CommandEmpty>No framework found.</CommandEmpty>
+      <CommandEmpty>No se encontraron amigos.</CommandEmpty>
       <CommandList ref={parentRef}>
         <CommandGroup>
           <div
