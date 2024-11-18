@@ -1,6 +1,6 @@
 import { supabase } from "@/server/supabase";
-import { NextApiHandler } from "next";
-import { promise, z } from "zod";
+import type { NextApiHandler } from "next";
+import { z } from "zod";
 
 const postSchema = z.object({
   title: z.string(),

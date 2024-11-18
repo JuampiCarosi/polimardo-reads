@@ -98,30 +98,32 @@ export function MultipleBookSelector({
 }: {
   placeholder?: string;
   className?: string;
-  value?: string[];
-  setValue?: React.Dispatch<React.SetStateAction<string[]>>;
+  value: BookRaw[];
+  setValue: React.Dispatch<React.SetStateAction<BookRaw[]>>;
   valuesClassName?: string;
   children?: React.ReactNode;
 }) {
   const [open, setOpen] = React.useState(false);
-  const [_value, _setValue] = React.useState<string[]>([]);
+  // const [_value, _setValue] = React.useState<string[]>([]);
   const [search, setSearch] = React.useState("");
 
-  const valueToUse = value ?? _value;
-  const setValueToUse = setValue ?? _setValue;
+  const valueToUse = value; //?? _value;
+  const setValueToUse = setValue; //?? _setValue;
 
   const { data, isLoading } = useQuery<BookRaw[]>({
     queryKey: ["books", "search", `?q=${search}&filter=all`],
   });
 
   const selectedOptions = React.useMemo(
-    () => valueToUse.map((value) => data?.find((o) => o.id === value)?.title),
-    [data, valueToUse],
+    () => valueToUse.map((value) => value.title),
+    [valueToUse],
   );
 
-  function toggleValue(value: string) {
+  function toggleValue(value: BookRaw) {
     setValueToUse((prev) =>
-      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value],
+      prev.some((p) => p.id === value.id)
+        ? prev.filter((v) => v.id !== value.id)
+        : [...prev, value],
     );
   }
 
@@ -263,9 +265,10 @@ function MultipleSelectCommand({
   data,
   search,
   setSearch,
+  isLoading,
 }: {
-  values: string[];
-  toggleValue: (value: string) => void;
+  values: BookRaw[];
+  toggleValue: (value: BookRaw) => void;
   data: BookRaw[];
   search: string;
   setSearch: React.Dispatch<React.SetStateAction<string>>;
@@ -287,7 +290,18 @@ function MultipleSelectCommand({
         onValueChange={setSearch}
         placeholder="Buscar..."
       />
-      <CommandEmpty>No se encontraron libros.</CommandEmpty>
+      <CommandEmpty className="text-slate-700">
+        {isLoading ? (
+          <div className="flex w-full items-center justify-center gap-2">
+            Buscando
+            <LoadingSpinner />
+          </div>
+        ) : search.length === 0 ? (
+          "Ingrese un termino de busqueda."
+        ) : (
+          "No se encontraron libros."
+        )}
+      </CommandEmpty>
       <CommandList ref={parentRef}>
         <CommandGroup>
           <div
@@ -304,7 +318,8 @@ function MultipleSelectCommand({
                   key={virtualRow.key}
                   value={o.id}
                   onSelect={(currentValue) => {
-                    toggleValue(currentValue);
+                    const val = data.find((o) => o.id === currentValue)!;
+                    toggleValue(val);
                   }}
                   style={{
                     position: "absolute",
@@ -318,7 +333,9 @@ function MultipleSelectCommand({
                   <Check
                     className={cn(
                       "mr-2 h-4 w-4",
-                      values.includes(o.id) ? "opacity-100" : "opacity-0",
+                      values.some((v) => v.id == o.id)
+                        ? "opacity-100"
+                        : "opacity-0",
                     )}
                   />
                   {o.title}

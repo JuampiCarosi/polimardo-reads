@@ -28,10 +28,10 @@ export default function Challenge() {
   const { data: session } = useSession();
   const userId = session?.user?.id;
   const router = useRouter();
-  const { id } = router.query;
+  const { id } = router.query as { id: string };
 
   const { data: challenge, refetch: refetchChallenges } = useQuery<Challenge>({
-    queryKey: ["challenges", id as string],
+    queryKey: ["challenges", id],
     enabled: typeof id === "string",
   });
 
@@ -49,6 +49,7 @@ export default function Challenge() {
   });
 
   const myChallengesIds = myChallenges?.map((challenge) => challenge.id);
+  const amICreator = challenge?.created_by === userId;
 
   const getBookData = async (id: string) => {
     const response = await fetch(`/api/books/${id}`);
@@ -106,7 +107,7 @@ export default function Challenge() {
         console.error("Invalid challenge ID");
         return;
       }
-      const response = await fetch(`/api/challenges/join`, {
+      const response = await fetch(`/api/challenges/participants`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -120,6 +121,40 @@ export default function Challenge() {
       }
     },
   });
+
+  const handleEditChallenge = async (challengeId: string) => {
+    await router.push(`/desafios/crear?mode=edit&challengeId=${challengeId}`);
+
+    await refetchChallenges();
+    await refetchUserData();
+    await refetchbooksRead();
+    void queryClient.invalidateQueries("challenges?user=" + userId);
+  };
+
+  const handleAbandonChallenge = async (
+    challengeId: string,
+    userId: string,
+  ) => {
+    const response = await fetch(`/api/challenges/participants`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId, challengeId }),
+    });
+
+    if (!response.ok) {
+      console.error("Error leaving challenge", response);
+      toast.error("Hubo un error al abandonar el desafío");
+      return;
+    }
+
+    toast.success("Abandonaste el desafío correctamente");
+    await refetchChallenges();
+    await refetchUserData();
+    await refetchbooksRead();
+    void queryClient.invalidateQueries("challenges?user=" + userId);
+  };
 
   return (
     <div className="min-h-screen bg-slate-100">
@@ -149,27 +184,45 @@ export default function Challenge() {
             <div className="mt-2 grid grid-cols-2 py-5 text-slate-600">
               {challenge?.description}
             </div>
-            <div className="flex gap-4 rounded-sm">
-              <Pill className="px-2 py-1" color={"green"}>
-                Comienza: {challenge?.start_date}
-              </Pill>
-              <Pill className="px-2 py-1" color={"red"}>
-                Finaliza: {challenge?.end_date}
-              </Pill>
+            <div className="flex justify-between">
+              <div className="flex gap-4 rounded-sm">
+                <Pill className="items-center px-2 py-1" color={"green"}>
+                  Comienza: {challenge?.start_date}
+                </Pill>
+                <Pill className="items-center px-2 py-1" color={"red"}>
+                  Finaliza: {challenge?.end_date}
+                </Pill>
+              </div>
+              <div className="flex gap-2">
+                {myChallengesIds?.includes(id) && amICreator && (
+                  <Button size="sm" onClick={() => handleEditChallenge(id)}>
+                    Editar desafío
+                  </Button>
+                )}
+                {myChallengesIds?.includes(id) && userId && (
+                  <Button
+                    size="sm"
+                    onClick={() => handleAbandonChallenge(id, userId)}
+                    variant="destructive"
+                  >
+                    Abandonar desafío
+                  </Button>
+                )}
+              </div>
             </div>
-            {typeof id === "string" && myChallengesIds?.includes(id) && (
+            {myChallengesIds?.includes(id) && (
               <div className="text-slate-600">
                 Progreso del desafío:{" "}
                 {formatNumber(getPartialProgress(), { emptyValues: "0" })}%
               </div>
             )}
             <div className="mb-2 flex w-full justify-center">
-              {typeof id === "string" && myChallengesIds?.includes(id) && (
+              {myChallengesIds?.includes(id) && (
                 <Progress value={getPartialProgress()} />
               )}
             </div>
             <div className="flex justify-end">
-              {typeof id === "string" && !myChallengesIds?.includes(id) && (
+              {!myChallengesIds?.includes(id) && (
                 <Button
                   size="sm"
                   onClick={() => {
