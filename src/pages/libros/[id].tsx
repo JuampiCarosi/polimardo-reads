@@ -323,7 +323,7 @@ function BookStatusPill({ book }: { book: Book }) {
     ),
     null: (
       <div className="cursor-pointer text-nowrap rounded-full border border-slate-400 bg-slate-100 px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-200">
-        Agregar a biblioteca +
+        + Agregar a biblioteca
       </div>
     ),
     wantToRead: null,
@@ -332,7 +332,9 @@ function BookStatusPill({ book }: { book: Book }) {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>{pill[book.status ?? "null"]}</DropdownMenuTrigger>
+      <DropdownMenuTrigger className="px-2">
+        {pill[book.status ?? "null"]}
+      </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuGroup>
           {book.status !== "read" && (

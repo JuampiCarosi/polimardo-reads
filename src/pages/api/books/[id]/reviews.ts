@@ -37,8 +37,7 @@ const handler: NextApiHandler = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 
-  const reviews = data
-  .map((review) => ({
+  const reviews = data.map((review) => ({
     user_id: review.user_id,
     user_name: review.user_name,
     user_img: review.user_img,
@@ -48,9 +47,7 @@ const handler: NextApiHandler = async (req, res) => {
     created_at: review.created_at,
   }));
 
-  console.log(reviews);
   res.status(200).json(reviews);
 };
-
 
 export default handler;

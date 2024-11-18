@@ -34,7 +34,6 @@ export default function Challenge() {
     queryKey: ["challenges", id],
     enabled: typeof id === "string",
   });
-  console.log(challenge);
 
   const { data: creator, refetch: refetchUserData } = useQuery<User>({
     queryKey: ["users", `?id=${challenge?.created_by}`],
