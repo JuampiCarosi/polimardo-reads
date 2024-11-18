@@ -21,6 +21,7 @@ import { MultipleBookSelector } from "@/components/books-selector";
 import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 import type { Challenge } from "../api/challenges/[id]";
 import { useQuery } from "react-query";
+import { type BookRaw } from "../api/books/[id]";
 
 function ChallengeForm({
   user,
@@ -43,8 +44,8 @@ function ChallengeForm({
   const [endDate, setEndDate] = useState<string | undefined>(
     challenge?.end_date,
   );
-  const [challengeBooks, setChallengeBooks] = useState<string[]>(
-    challenge?.book_ids ?? [],
+  const [challengeBooks, setChallengeBooks] = useState<BookRaw[]>(
+    challenge?.books ?? [],
   );
 
   const handleSubmit = async () => {

@@ -1,6 +1,7 @@
 import { supabase } from "@/server/supabase";
 import { type NextApiHandler } from "next";
 import { z } from "zod";
+import { type BookRaw } from "../books/[id]";
 
 export type Challenge = {
   id: string;
@@ -10,7 +11,7 @@ export type Challenge = {
   start_date: string;
   end_date: string;
   participants: number;
-  book_ids: string[];
+  books: BookRaw[];
 };
 
 const putSchema = z.object({
@@ -23,38 +24,55 @@ const putSchema = z.object({
   books: z.array(z.string()),
 });
 
-async function addNewBooks(challenge_id: string, challengeBooks: string[], currentBooks: string[]) {
+async function addNewBooks(
+  challenge_id: string,
+  challengeBooks: string[],
+  currentBooks: string[],
+) {
+  const newBooks = challengeBooks.filter(
+    (book) => !currentBooks.includes(book),
+  );
 
-    const newBooks = challengeBooks.filter((book) => !currentBooks.includes(book));
+  if (newBooks.length > 0) {
+    const insertData = newBooks.map((book) => ({
+      challenge_id: challenge_id,
+      book_id: book,
+    }));
 
-    if (newBooks.length > 0) {
-      const insertData = newBooks.map((book) => ({
-        challenge_id: challenge_id,
-        book_id: book,
-      }));
+    const { error: insertError } = await supabase
+      .from("challenges_books")
+      .insert(insertData);
 
-      const { error: insertError } = await supabase.from("challenges_books").insert(insertData);
-
-      if (insertError) {
-        console.log(insertError.message);
-        return false;
-      }
+    if (insertError) {
+      console.log(insertError.message);
+      return false;
     }
-    return true;
+  }
+  return true;
 }
 
-async function removeOldBooks(challenge_id: string, challengeBooks: string[], currentBooks: string[]) {
-  const deleteBooks = currentBooks.filter((book) => !challengeBooks.includes(book));
+async function removeOldBooks(
+  challenge_id: string,
+  challengeBooks: string[],
+  currentBooks: string[],
+) {
+  const deleteBooks = currentBooks.filter(
+    (book) => !challengeBooks.includes(book),
+  );
 
-    if (deleteBooks.length > 0) {
-      const { error: deleteError } = await supabase.from("challenges_books").delete().eq("challenge_id", challenge_id).in("book_id", deleteBooks);
+  if (deleteBooks.length > 0) {
+    const { error: deleteError } = await supabase
+      .from("challenges_books")
+      .delete()
+      .eq("challenge_id", challenge_id)
+      .in("book_id", deleteBooks);
 
-      if (deleteError) {
-        console.error(deleteError);
-        return false;
-      }
+    if (deleteError) {
+      console.error(deleteError);
+      return false;
     }
-    return true;
+  }
+  return true;
 }
 
 const handler: NextApiHandler = async (req, res) => {
@@ -77,8 +95,25 @@ const handler: NextApiHandler = async (req, res) => {
     if (!data?.[0]) {
       return res.status(404).json({ error: "Challenge not found" });
     }
+    const books = await supabase
+      .from("books_detailed")
+      .select("*")
+      .in("id", data[0].book_ids);
 
-    return res.status(200).json(data[0] satisfies Challenge);
+    if (books.error) {
+      console.error(books.error);
+      return res.status(500).json({ error: books.error.message });
+    }
+
+    const challenge = {
+      ...data[0],
+      books: books.data.map((book) => ({
+        ...book,
+        genres: book.genres.replace(/[\[\]']/g, "").split(",") ?? [],
+      })),
+    };
+
+    return res.status(200).json(challenge satisfies Challenge);
   }
 
   if (req.method === "PUT") {
@@ -97,7 +132,10 @@ const handler: NextApiHandler = async (req, res) => {
       end_date: result.data.endDate,
     };
 
-    const { error } = await supabase.from("challenges").upsert(challengeData).eq("id", challenge_id);
+    const { error } = await supabase
+      .from("challenges")
+      .upsert(challengeData)
+      .eq("id", challenge_id);
 
     if (error) {
       console.error(error);
@@ -105,20 +143,23 @@ const handler: NextApiHandler = async (req, res) => {
     }
 
     const challengeBooks = result.data.books;
-    const { data: bookData, error: bookError } = await supabase.from("challenges_books").select("*").eq("challenge_id", challenge_id);
+    const { data: bookData, error: bookError } = await supabase
+      .from("challenges_books")
+      .select("*")
+      .eq("challenge_id", challenge_id);
 
     if (bookError) {
       console.error(bookError);
       return res.status(500).json({ error: bookError.message });
     }
     const currentBooks = bookData.map((book) => book.book_id);
-  
-    if (!await addNewBooks(challenge_id, challengeBooks, currentBooks)) {
+
+    if (!(await addNewBooks(challenge_id, challengeBooks, currentBooks))) {
       console.error("Error adding books");
       return res.status(500).json({ error: "Error adding books" });
     }
-    
-    if (!await removeOldBooks(challenge_id, challengeBooks, currentBooks)) {
+
+    if (!(await removeOldBooks(challenge_id, challengeBooks, currentBooks))) {
       console.error("Error removing books");
       return res.status(500).json({ error: "Error removing books" });
     }
