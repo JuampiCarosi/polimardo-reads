@@ -22,9 +22,7 @@ export type Discussion = {
 
 const handler: NextApiHandler = async (req, res) => {
   if (req.method === "GET") {
-    const { id } = req.query;
-
-    const parseResult = z.string().safeParse(id);
+    const parseResult = z.string().safeParse(req.query.discussionId);
     const session = await getServerAuthSession({ req, res });
 
     if (!session) {

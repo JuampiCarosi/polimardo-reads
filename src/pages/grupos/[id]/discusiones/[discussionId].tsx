@@ -20,8 +20,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 import { type GroupInfo } from "@/pages/api/groups/[id]";
-import { type Discussion } from "@/pages/api/groups/discussions/[id]";
-import { group } from "console";
+import { type Discussion } from "@/pages/api/groups/[id]/discussions/[discussionId]";
 import { format } from "date-fns";
 import { MessageSquare } from "lucide-react";
 import { useRouter } from "next/router";
@@ -31,11 +30,11 @@ import { toast } from "sonner";
 
 export default function Discusion() {
   const [newComment, setNewComment] = React.useState("");
-  const { discussionId } = useRouter().query;
+  const { discussionId, id } = useRouter().query;
 
   const { data, refetch } = useQuery<Discussion>({
-    queryKey: ["groups", "discussions", discussionId as string],
-    enabled: typeof discussionId === "string",
+    queryKey: ["groups", id as string, "discussions", discussionId as string],
+    enabled: typeof discussionId === "string" && typeof id === "string",
   });
 
   const postCommentMutation = useMutation({
@@ -51,13 +50,14 @@ export default function Discusion() {
       if (
         !newComment ||
         newComment.length < 1 ||
-        typeof discussionId !== "string"
+        typeof discussionId !== "string" ||
+        typeof id !== "string"
       ) {
         toast.error("El comentario no puede estar vacio");
         return;
       }
       const res = await fetch(
-        `/api/groups/discussions/${discussionId}/comment`,
+        `/api/groups/${id}/discussions/${discussionId}/comment`,
         {
           method: "POST",
           headers: {

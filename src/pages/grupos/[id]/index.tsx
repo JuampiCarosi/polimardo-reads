@@ -183,7 +183,7 @@ function CreateDiscussionDialog() {
     }
     setOpen(false);
 
-    const res = await fetch("/api/groups/discussions", {
+    const res = await fetch(`/api/groups/${id}/discussions`, {
       method: "POST",
       body: JSON.stringify({ title, description, group_id: id }),
       headers: {
