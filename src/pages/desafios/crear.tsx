@@ -25,27 +25,26 @@ import { useQuery } from "react-query";
 function ChallengeForm({
   user,
   mode,
-  initialId,
+  challenge,
 }: {
   user: Session["user"];
-  mode?: string;
-  initialId?: string;
+  challenge?: Challenge;
+  mode: "create" | "edit";
 }) {
   const router = useRouter();
-  const { data: initialData } = useQuery<Challenge>({
-    queryKey: ["challenges", initialId],
-    enabled: typeof initialId === "string",
-  });
-  const [title, setTitle] = useState<string>(initialData?.name ?? "");
-  const [description, setDescription] = useState<string>(
-    initialData?.description ?? "",
+
+  const [title, setTitle] = useState<string | undefined>(challenge?.name);
+  const [description, setDescription] = useState<string | undefined>(
+    challenge?.description,
   );
-  const [startDate, setStartDate] = useState<string>(
-    initialData?.start_date ?? "",
+  const [startDate, setStartDate] = useState<string | undefined>(
+    challenge?.start_date,
   );
-  const [endDate, setEndDate] = useState<string>(initialData?.end_date ?? "");
-  const [challengeBooks, setChallengeBooks] = useState<Array<string>>(
-    initialData?.book_ids ?? [],
+  const [endDate, setEndDate] = useState<string | undefined>(
+    challenge?.end_date,
+  );
+  const [challengeBooks, setChallengeBooks] = useState<string[]>(
+    challenge?.book_ids ?? [],
   );
 
   const handleSubmit = async () => {
@@ -69,9 +68,9 @@ function ChallengeForm({
           userId: user.id,
         });
         toast.success("Desafío creado correctamente");
-      } else if (mode === "edit") {
+      } else if (mode === "edit" && challenge) {
         const challengeData = {
-          id: initialId,
+          id: challenge.id,
           name: title,
           description,
           startDate,
@@ -80,7 +79,7 @@ function ChallengeForm({
           books: challengeBooks,
         };
 
-        await axios.put(`/api/challenges/${initialId}`, challengeData);
+        await axios.put(`/api/challenges/${challenge.id}`, challengeData);
         toast.success("Desafío actualizado correctamente");
       }
       await router.push("/desafios");
@@ -164,21 +163,31 @@ function ChallengeForm({
 export default function ChallengePage() {
   const { data: session } = useSession();
   const router = useRouter();
-  const mode = router.query.mode as string;
+  const mode = router.query.mode as "create" | "edit";
   const challengeId = router.query.challengeId as string;
+
+  const { data: challenge } = useQuery<Challenge>({
+    queryKey: ["challenges", challengeId],
+    enabled: typeof challengeId === "string",
+  });
 
   return (
     <div>
       <div className="min-h-screen bg-slate-100">
         <Header />
         <div className="position-relative mx-auto mt-14 items-center">
-          {session && (
-            <ChallengeForm
-              user={session.user}
-              mode={mode}
-              initialId={challengeId}
-            />
-          )}
+          {session &&
+            (mode === "create" ? (
+              <ChallengeForm user={session.user} mode={mode} />
+            ) : (
+              challenge && (
+                <ChallengeForm
+                  user={session.user}
+                  mode={mode}
+                  challenge={challenge}
+                />
+              )
+            ))}
         </div>
       </div>
     </div>
