@@ -16,7 +16,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { toast } from "sonner";
-import router from "next/router";
+import { useRouter } from "next/router";
 import { MultipleBookSelector } from "@/components/books-selector";
 import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 import type { Challenge } from "../api/challenges/[id]";
@@ -31,6 +31,7 @@ function ChallengeForm({
   mode?: string;
   initialId?: string;
 }) {
+  const router = useRouter();
   const { data: initialData } = useQuery<Challenge>({
     queryKey: ["challenges", initialId],
     enabled: typeof initialId === "string",
@@ -162,6 +163,7 @@ function ChallengeForm({
 
 export default function ChallengePage() {
   const { data: session } = useSession();
+  const router = useRouter();
   const mode = router.query.mode as string;
   const challengeId = router.query.challengeId as string;
 
