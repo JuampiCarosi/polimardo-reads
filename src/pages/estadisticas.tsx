@@ -69,7 +69,7 @@ export default function Stats() {
         <h1 className="mb-6 text-3xl font-bold text-slate-800">
           Estadisticas de Lectura
         </h1>
-        <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-4 md:grid-cols-2 md:gap-6">
           <Card>
             <CardHeader>
               <CardTitle>Lectura Mensual</CardTitle>
