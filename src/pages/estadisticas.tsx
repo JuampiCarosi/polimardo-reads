@@ -22,11 +22,6 @@ import { Header } from "@/components/header";
 import { useQuery } from "react-query";
 import type { Book } from "./api/books/[id]";
 
-const comparisonData = [
-  { name: "You", books: 44 },
-  { name: "Friends' Average", books: 36 },
-];
-
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 
 export default function Stats() {
@@ -123,35 +118,6 @@ export default function Stats() {
                     <Tooltip />
                     <Legend />
                   </PieChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Comparacion de Lectura</CardTitle>
-              <CardDescription>
-                Tu cantidad de libros leidos VS la media de tus amigos
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[250px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={comparisonData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="books">
-                      {comparisonData.map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={COLORS[index % COLORS.length]}
-                        />
-                      ))}
-                    </Bar>
-                  </BarChart>
                 </ResponsiveContainer>
               </div>
             </CardContent>
