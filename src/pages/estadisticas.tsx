@@ -19,6 +19,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Header } from "@/components/header";
+import { useQuery } from "react-query";
+import type { Book } from "./api/books/[id]";
 
 const monthlyReadingData = [
   { month: "Jan", books: 3 },
@@ -35,14 +37,6 @@ const monthlyReadingData = [
   { month: "Dec", books: 2 },
 ];
 
-const bookCategoriesData = [
-  { category: "Fiction", value: 40 },
-  { category: "Non-Fiction", value: 30 },
-  { category: "Science", value: 15 },
-  { category: "Biography", value: 10 },
-  { category: "Others", value: 5 },
-];
-
 const comparisonData = [
   { name: "You", books: 44 },
   { name: "Friends' Average", books: 36 },
@@ -50,7 +44,33 @@ const comparisonData = [
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 
-export default function Component() {
+export default function Stats() {
+  const { data } = useQuery<Book[]>({
+    queryKey: ["books", "library"],
+  });
+
+  const bookGenresData: Array<{ genre: string; value: number }> = [];
+
+  data?.forEach((book) => {
+    const genresString = (
+      Array.isArray(book.genres) ? book.genres.join(", ") : book.genres
+    ).replace(/[\[\]']+/g, "");
+
+    if (genresString) {
+      const genresArray = genresString.split(", ");
+      genresArray.forEach((genre) => {
+        const genreIndex = bookGenresData.findIndex(
+          (genreData) => genreData.genre === genre,
+        );
+        if (genreIndex === -1) {
+          bookGenresData.push({ genre, value: 1 });
+        } else {
+          if (bookGenresData[genreIndex]) bookGenresData[genreIndex].value += 1;
+        }
+      });
+    }
+  });
+
   return (
     <div className="min-h-screen bg-slate-100">
       <Header />
@@ -93,18 +113,18 @@ export default function Component() {
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
-                      data={bookCategoriesData}
+                      data={bookGenresData}
                       dataKey="value"
-                      nameKey="category"
+                      nameKey="genre"
                       cx="50%"
                       cy="50%"
                       outerRadius={70}
                       fill="#8884d8"
                       label
                     >
-                      {bookCategoriesData.map((entry, index) => (
+                      {bookGenresData.map((entry, index) => (
                         <Cell
-                          key={`cell-${index}`}
+                          key={`cell-${entry.genre}`}
                           fill={COLORS[index % COLORS.length]}
                         />
                       ))}
