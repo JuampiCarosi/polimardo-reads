@@ -51,6 +51,11 @@ export default function Stats() {
     }
   });
 
+  bookGenresData.sort((a, b) => b.value - a.value);
+  if (bookGenresData.length > 5) {
+    bookGenresData.splice(5, bookGenresData.length - 5);
+  }
+
   const { data: monthlyData } = useQuery<
     Array<{ month: string; books: number }>
   >({
@@ -89,9 +94,9 @@ export default function Stats() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Categorias de libros</CardTitle>
+              <CardTitle>Generos de libros</CardTitle>
               <CardDescription>
-                Porcentaje de libros leidos por categoria
+                Tu top 5 generos de libros leidos
               </CardDescription>
             </CardHeader>
             <CardContent>
