@@ -22,21 +22,6 @@ import { Header } from "@/components/header";
 import { useQuery } from "react-query";
 import type { Book } from "./api/books/[id]";
 
-const monthlyReadingData = [
-  { month: "Jan", books: 3 },
-  { month: "Feb", books: 4 },
-  { month: "Mar", books: 2 },
-  { month: "Apr", books: 5 },
-  { month: "May", books: 3 },
-  { month: "Jun", books: 6 },
-  { month: "Jul", books: 4 },
-  { month: "Aug", books: 3 },
-  { month: "Sep", books: 5 },
-  { month: "Oct", books: 4 },
-  { month: "Nov", books: 3 },
-  { month: "Dec", books: 2 },
-];
-
 const comparisonData = [
   { name: "You", books: 44 },
   { name: "Friends' Average", books: 36 },
@@ -71,6 +56,12 @@ export default function Stats() {
     }
   });
 
+  const { data: monthlyData } = useQuery<
+    Array<{ month: string; books: number }>
+  >({
+    queryKey: ["statistics"],
+  });
+
   return (
     <div className="min-h-screen bg-slate-100">
       <Header />
@@ -89,7 +80,7 @@ export default function Stats() {
             <CardContent>
               <div className="h-[250px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={monthlyReadingData}>
+                  <BarChart data={monthlyData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis />
