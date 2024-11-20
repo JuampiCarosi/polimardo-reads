@@ -152,6 +152,11 @@ export function Header() {
               >
                 Invitaciones Grupos
               </DropdownMenuCheckboxItem>
+              <DropdownMenuCheckboxItem
+                onClick={() => router.push(`/perfil/${user?.id}/foros`)}
+              >
+                Mis foros
+              </DropdownMenuCheckboxItem>
               <DropdownMenuCheckboxItem onClick={() => signOut()}>
                 Cerrar sesión
               </DropdownMenuCheckboxItem>
