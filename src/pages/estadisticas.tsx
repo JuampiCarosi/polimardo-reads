@@ -78,17 +78,18 @@ export default function Stats() {
     queryKey: ["myFriends"],
   });
 
-  const friends = myFriends.data?.map((friendship) => ({
-    friend_name:
-      friendship.user_id === session.data?.user.id
-        ? friendship.friend_name
-        : friendship.user_name,
-
-    friend_id:
-      friendship.user_id === session.data?.user.id
-        ? friendship.friend_id
-        : friendship.user_id,
-  }));
+  const friends = myFriends.data
+    ?.filter((friendship) => friendship.is_added)
+    ?.map((friendship) => ({
+      friend_name:
+        friendship.user_id === session.data?.user.id
+          ? friendship.friend_name
+          : friendship.user_name,
+      friend_id:
+        friendship.user_id === session.data?.user.id
+          ? friendship.friend_id
+          : friendship.user_id,
+    }));
 
   const [selectedFriend, setSelectedFriend] = useState<{
     friend_id: string;
