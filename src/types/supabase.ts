@@ -956,6 +956,17 @@ export type Database = {
           description: string
         }[]
       }
+      get_forum_info: {
+        Args: {
+          input_forum_id: string
+        }
+        Returns: {
+          id: string
+          name: string
+          status: boolean
+          discussions: Json
+        }[]
+      }
       get_friends_data: {
         Args: {
           input_user_id: string
