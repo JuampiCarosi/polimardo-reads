@@ -23,7 +23,7 @@ export default async function handler(
         return res.status(500).json({ error: error.message });
     }
 
-    const books = data;
+    const readBooks = data.filter((book) => book.status === "read");
 
     const booksPerMonth = [
         { month: "Jan", books: 0 },
@@ -40,7 +40,7 @@ export default async function handler(
         { month: "Dec", books: 0 },
     ];
     
-    books.forEach((book) => {
+    readBooks.forEach((book) => {
         const month = new Date(book.created_at).toLocaleString('default', { month: 'short' });
         const monthIndex = booksPerMonth.findIndex((data) => data.month === month);
         if (booksPerMonth[monthIndex])

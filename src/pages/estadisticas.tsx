@@ -38,13 +38,14 @@ const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 const fetchFriendData = async (friendId: string, friendName: string) => {
   return new Promise<{ name: string; books: number }>((resolve, reject) => {
     const name = friendName;
-    const books = useQuery<Book[]>({
-      queryKey: ["books", "library", friendId],
+    const books = useQuery<number>({
+      queryKey: ["statistics", friendId],
     });
 
     if (books.data) {
-      resolve({ name, books: books.data?.length });
+      resolve({ name, books: books.data });
     } else {
+      console.log("ERRRORRRRR");
       reject(new Error("Failed to fetch friend's data. Please try again."));
     }
   });
@@ -106,28 +107,26 @@ export default function Stats() {
         : friendship.user_id,
   }));
 
-  const [selectedFriend, setSelectedFriend] = useState(
-    friends ? friends[0] : null,
-  );
+  const [selectedFriend, setSelectedFriend] = useState<{
+    friend_id: string;
+    friend_name: string;
+  } | null>(null);
 
   const [comparisonData, setComparisonData] = useState<
     Array<{ name: string; books: number }>
   >([{ name: "You", books: data?.length ?? 0 }]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (selectedFriend) {
-      setIsLoading(true);
-      setError(null);
+      console.log("Fetching friend's data...");
+      console.log(selectedFriend);
       fetchFriendData(selectedFriend?.friend_id, selectedFriend?.friend_name)
         .then((friendData) => {
           setComparisonData([{ name: "You", books: 8 }, friendData]);
-          setIsLoading(false);
         })
-        .catch((_) => {
-          setError("Failed to fetch friend's data. Please try again.");
-          setIsLoading(false);
+        .catch((error) => {
+          console.log(error);
+          console.log("Failed to fetch friend's data. Please try again.");
         });
     }
   }, [selectedFriend]);
@@ -196,59 +195,61 @@ export default function Stats() {
               </div>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Comparacion de Lectura</CardTitle>
-              <CardDescription>
-                Tu cantidad de libros leidos VS un amigo en particular
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="mb-4">
-                <Select
-                  value={selectedFriend?.friend_name}
-                  onValueChange={(value) => {
-                    const friend = friends?.find(
-                      (f) => f.friend_name === value,
-                    );
-                    setSelectedFriend(friend ?? null);
-                  }}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Selecciona a un amigo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {friends?.map((friend) => (
-                      <SelectItem
-                        key={friend.friend_name}
-                        value={friend.friend_name}
-                      >
-                        {friend.friend_name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <div className="h-[250px] w-full pt-8">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={comparisonData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="books">
-                        {comparisonData.map((entry, index) => (
-                          <Cell
-                            key={`cell-${index}`}
-                            fill={COLORS[index % COLORS.length]}
-                          />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
+          <div className="col-span-2 flex justify-center">
+            <Card>
+              <CardHeader>
+                <CardTitle>Comparacion de Lectura</CardTitle>
+                <CardDescription>
+                  Tu cantidad de libros leidos VS un amigo en particular
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="mb-4">
+                  <Select
+                    value={selectedFriend?.friend_name}
+                    onValueChange={(value) => {
+                      const friend = friends?.find(
+                        (f) => f.friend_name === value,
+                      );
+                      setSelectedFriend(friend ?? null);
+                    }}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Selecciona a un amigo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {friends?.map((friend) => (
+                        <SelectItem
+                          key={friend.friend_name}
+                          value={friend.friend_name}
+                        >
+                          {friend.friend_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <div className="h-[250px] w-full pt-8">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={comparisonData}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Bar dataKey="books">
+                          {comparisonData.map((entry, index) => (
+                            <Cell
+                              key={`cell-${index}`}
+                              fill={COLORS[index % COLORS.length]}
+                            />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </div>
