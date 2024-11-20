@@ -100,16 +100,23 @@ export default function Stats() {
     queryKey: ["statistics", selectedFriend?.friend_id],
   });
 
-  const comparisonData = [
-    {
-      name: session.data?.user.name,
-      books: data?.length ?? 0,
-    },
-    {
-      name: selectedFriend?.friend_name,
-      books: selectedFriendBooksRead.data ?? 0,
-    },
-  ];
+  const comparisonData = selectedFriend
+    ? [
+        {
+          name: session.data?.user.name,
+          books: data?.length ?? 0,
+        },
+        {
+          name: selectedFriend.friend_name,
+          books: selectedFriendBooksRead.data ?? 0,
+        },
+      ]
+    : [
+        {
+          name: session.data?.user.name,
+          books: data?.length ?? 0,
+        },
+      ];
 
   return (
     <div className="min-h-screen bg-slate-100">
