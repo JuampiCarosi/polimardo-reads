@@ -67,6 +67,9 @@ export function Header() {
           <Link className="hover:underline" href="/desafios/busqueda">
             Descubrir desafios
           </Link>
+          <Link className="hover:underline" href="/estadisticas">
+            Mis Estadisticas
+          </Link>
         </div>
         <div className="flex items-center gap-5">
           <Popover open={open} onOpenChange={setOpen}>
