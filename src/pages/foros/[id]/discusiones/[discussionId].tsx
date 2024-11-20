@@ -24,10 +24,12 @@ import { type Discussion } from "@/pages/api/groups/[id]/discussions/[discussion
 import { format } from "date-fns";
 import { MessageSquare } from "lucide-react";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { use } from "react";
 import { useMutation, useQuery } from "react-query";
 import { toast } from "sonner";
 import { ForumInfo } from "@/pages/api/forums/[id]";
+import { Pill } from "@/components/pill";
+import { useSession } from "next-auth/react";
 
 export default function Discusion() {
   const [newComment, setNewComment] = React.useState("");
@@ -134,7 +136,12 @@ export default function Discusion() {
                     <div className="flex items-center justify-between">
                       <h3 className="text-sm font-medium text-slate-900">
                         {comment.user_name}
+                        {forumData?.created_by === comment.created_by && (<Pill
+                        color="green">
+                          Autor del foro
+                        </Pill>)}
                       </h3>
+                        
                       <p className="text-xs text-slate-500">
                         {format(comment.created_at, "dd-MM-yyyy")}
                       </p>

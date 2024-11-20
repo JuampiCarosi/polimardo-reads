@@ -965,8 +965,8 @@ export type Database = {
           created_at: string
           created_by: string
           discussion_id: string
-          user_name: string
           comment: string
+          user_name: string
           user_img: string
         }[]
       }
