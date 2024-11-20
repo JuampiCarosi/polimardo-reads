@@ -52,7 +52,7 @@ export default function Page() {
         <CardContent>
           <div className="mb-6 flex">
             <Input
-              placeholder="Search items..."
+              placeholder="Buscar libros..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="mr-2"
@@ -90,7 +90,9 @@ export default function Page() {
             </TableBody>
           </Table>
           {data?.length === 0 && (
-            <p className="mt-4 text-center text-gray-500">No results found</p>
+            <p className="mt-4 text-center text-gray-500">
+              No se encontraron libros...
+            </p>
           )}
         </CardContent>
       </Card>

@@ -36,7 +36,7 @@ export default function Page() {
         <CardContent>
           <div className="mb-6 flex">
             <Input
-              placeholder="Search items..."
+              placeholder="Buscar foros..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="mr-2"
