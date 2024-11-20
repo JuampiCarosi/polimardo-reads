@@ -967,7 +967,7 @@ export type Database = {
           discussion_id: string
           user_name: string
           comment: string
-          image: string
+          user_img: string
         }[]
       }
       get_forum_discussion_info: {
