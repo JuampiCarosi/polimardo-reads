@@ -62,9 +62,11 @@ export default function Challenge() {
   };
 
   const getPartialProgress = () => {
-    const totalBooks = challenge?.book_ids.length;
+    const totalBooks = challenge?.books.length;
     const readBooks = bookRead?.filter(
-      (book) => challenge?.book_ids.includes(book.id) && book.status === "read",
+      (book) =>
+        challenge?.books.map((b) => b.id).includes(book.id) &&
+        book.status === "read",
     ).length;
     if (readBooks !== undefined && totalBooks !== undefined && totalBooks > 0) {
       return (readBooks / totalBooks) * 100;
@@ -76,10 +78,10 @@ export default function Challenge() {
 
   useEffect(() => {
     const fetchBooks = async () => {
-      if (!challenge?.book_ids) return;
+      if (!challenge?.books) return;
       try {
         const booksData = await Promise.all(
-          challenge.book_ids.map((book_id) => getBookData(book_id)),
+          challenge.books.map((book) => getBookData(book.id)),
         );
         setBooks(booksData);
       } catch (error) {
@@ -176,8 +178,8 @@ export default function Challenge() {
                   : "Participantes"}
               </Pill>
               <Pill color={"yellow"}>
-                {challenge?.book_ids?.length ?? 0}{" "}
-                {(challenge?.book_ids?.length ?? 0) > 1 ? "Libros" : "Libro"}
+                {challenge?.books?.length ?? 0}{" "}
+                {(challenge?.books?.length ?? 0) > 1 ? "Libros" : "Libro"}
               </Pill>
             </div>
 
