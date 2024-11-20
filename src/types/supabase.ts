@@ -994,6 +994,18 @@ export type Database = {
           discussions: Json
         }[]
       }
+      get_forums: {
+        Args: {
+          input: string
+        }
+        Returns: {
+          id: string
+          name: string
+          status: boolean
+          created_by: string
+          discussions: number
+        }[]
+      }
       get_friends_data: {
         Args: {
           input_user_id: string

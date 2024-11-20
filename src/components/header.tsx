@@ -6,6 +6,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuCheckboxItem,
+  DropdownMenuSeparator,
 } from "./ui/dropdown-menu";
 import Link from "next/link";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -46,27 +47,48 @@ export function Header() {
       </div>
       <div className="flex items-center gap-10">
         <div className="flex items-center space-x-8 font-medium">
-          <Link className="hover:underline" href="/">
+          <Link className="hover:scale-105" href="/">
             Home
           </Link>
-          <Link className="hover:underline" href="/busqueda">
-            Buscar
-          </Link>
-          <Link className="hover:underline" href="/libros/biblioteca">
+          <Link className="hover:scale-105" href="/libros/biblioteca">
             Mis libros
           </Link>
-          <Link className="hover:underline" href="/listas">
+          <Link className="hover:scale-105" href="/listas">
             Listas
           </Link>
-          <Link className="hover:underline" href="/descubrir-amigos">
+          <Link className="hover:scale-105" href="/descubrir-amigos">
             Descubrir Amigos
           </Link>
-          <Link className="hover:underline" href="/desafios">
+          <Link className="hover:scale-105" href="/desafios">
             Desafíos
           </Link>
-          <Link className="hover:underline" href="/desafios/busqueda">
-            Descubrir desafios
-          </Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              className="cursor-pointer hover:scale-105"
+              asChild
+            >
+              <p>Buscar</p>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuCheckboxItem
+                onClick={() => router.push("/busqueda")}
+              >
+                Libros
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuCheckboxItem
+                onClick={() => router.push(`/foros/busqueda`)}
+              >
+                Foros
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuCheckboxItem
+                onClick={() => router.push(`/desafios/busqueda`)}
+              >
+                Desafios
+              </DropdownMenuCheckboxItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         <div className="flex items-center gap-5">
           <Popover open={open} onOpenChange={setOpen}>
@@ -113,7 +135,7 @@ export function Header() {
             </PopoverContent>
           </Popover>
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger className="cursor-pointer" asChild>
               <Avatar>
                 <AvatarImage
                   src={session.data?.user.image ?? undefined}
