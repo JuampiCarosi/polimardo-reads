@@ -35,11 +35,11 @@ const handler: NextApiHandler = async (req, res) => {
     }
     const discussionId = parseResult.data;
 
-    const discussionInfoPromise = supabase.rpc("get_discussion_info", {
+    const discussionInfoPromise = supabase.rpc("get_forum_discussion_info", {
       input_discussion_id: discussionId,
     });
 
-    const commentsPromise = supabase.rpc("get_discussion_comments", {
+    const commentsPromise = supabase.rpc("get_forum_discussion_comments", {
       input_discussion_id: discussionId,
     });
 
@@ -48,6 +48,7 @@ const handler: NextApiHandler = async (req, res) => {
       commentsPromise,
     ]);
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const discussionInfoData = discussionInfo.data?.[0];
 
     if (discussionInfo.error) {

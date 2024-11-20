@@ -86,6 +86,7 @@ export default function Forum() {
                         </Badge>
                       </CardHeader>
                       <CardContent>
+                        {/* Quizas podria ir la persona q abrio la discusion en vez d esto fake xd  */}
                         <p className="text-sm text-slate-600">
                           Última actividad: {new Date().toLocaleDateString()}
                         </p>

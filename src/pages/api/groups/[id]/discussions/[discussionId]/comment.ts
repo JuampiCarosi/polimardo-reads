@@ -7,7 +7,7 @@ import { z } from "zod";
 const schema = z.object({
   comment: z.string(),
   discussionId: z.string(),
-  groupId: z.string(),
+  forumId: z.string(),
 });
 
 const handler: NextApiHandler = async (req, res) => {
@@ -17,7 +17,7 @@ const handler: NextApiHandler = async (req, res) => {
     const parseResult = schema.safeParse({
       ...req.body,
       discussionId,
-      groupId: id,
+      forumId: id,
     });
 
     if (!parseResult.success) {
@@ -30,7 +30,7 @@ const handler: NextApiHandler = async (req, res) => {
       return res.status(401).json({ error: "Unauthorized" });
     }
 
-    const { error } = await supabase.from("discussion_comments").insert({
+    const { error } = await supabase.from("forum_discussion_comments").insert({
       discussion_id: parseResult.data.discussionId,
       created_by: session.user.id,
       comment: parseResult.data.comment,
@@ -38,17 +38,6 @@ const handler: NextApiHandler = async (req, res) => {
 
     if (error) {
       return res.status(500).json({ error: "Error adding comment" });
-    }
-
-    const { error: notificationErr } = await groupNotification({
-      title: `${session.user.name} ha comentado en una discusión`,
-      url: `/grupos/${parseResult.data.groupId}/discusiones/${parseResult.data.discussionId}`,
-      groupId: parseResult.data.groupId,
-      excludeUser: session.user.id,
-    });
-
-    if (notificationErr) {
-      console.error(notificationErr);
     }
 
     return res.status(200).json({ message: "Comment added" });

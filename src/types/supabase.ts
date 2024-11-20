@@ -531,10 +531,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "forum_discussion_comments__discussion_id_fkey"
+            foreignKeyName: "forum_discussion_comments_discussion_id_fkey"
             columns: ["discussion_id"]
             isOneToOne: false
-            referencedRelation: "group_discussions"
+            referencedRelation: "forum_discussions"
             referencedColumns: ["id"]
           },
         ]
@@ -566,10 +566,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "forum_discussions_group_id_fkey"
+            foreignKeyName: "forum_discussions_forum_id_fkey"
             columns: ["forum_id"]
             isOneToOne: false
-            referencedRelation: "groups"
+            referencedRelation: "forums"
             referencedColumns: ["id"]
           },
         ]
@@ -945,6 +945,32 @@ export type Database = {
         }[]
       }
       get_discussion_info: {
+        Args: {
+          input_discussion_id: string
+        }
+        Returns: {
+          id: string
+          created_at: string
+          user_name: string
+          title: string
+          description: string
+        }[]
+      }
+      get_forum_discussion_comments: {
+        Args: {
+          input_discussion_id: string
+        }
+        Returns: {
+          id: string
+          created_at: string
+          created_by: string
+          discussion_id: string
+          user_name: string
+          comment: string
+          image: string
+        }[]
+      }
+      get_forum_discussion_info: {
         Args: {
           input_discussion_id: string
         }
