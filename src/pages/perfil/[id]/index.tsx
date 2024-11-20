@@ -1,5 +1,5 @@
 import { Header } from "@/components/header";
-import { type User } from "../api/users";
+import { type User } from "../../api/users";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -12,10 +12,10 @@ import {
 import { Cake, Flag, Mail, MapPin, User as UserComponent } from "lucide-react";
 import { useRouter } from "next/router";
 import { useQuery } from "react-query";
-import { type Genres } from "../api/user-preferred-genres";
+import { type Genres } from "../../api/user-preferred-genres";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { type Friendship } from "../api/myFriends";
+import { type Friendship } from "../../api/myFriends";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import { getServerSidePropsWithAuth } from "@/lib/with-auth";

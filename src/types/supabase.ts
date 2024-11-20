@@ -507,6 +507,97 @@ export type Database = {
           },
         ]
       }
+      forum_discussion_comments: {
+        Row: {
+          comment: string
+          created_at: string
+          created_by: string
+          discussion_id: string
+          id: string
+        }
+        Insert: {
+          comment: string
+          created_at?: string
+          created_by: string
+          discussion_id?: string
+          id?: string
+        }
+        Update: {
+          comment?: string
+          created_at?: string
+          created_by?: string
+          discussion_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_discussion_comments__discussion_id_fkey"
+            columns: ["discussion_id"]
+            isOneToOne: false
+            referencedRelation: "group_discussions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forum_discussions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          forum_id: string
+          id: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          forum_id: string
+          id?: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          forum_id?: string
+          id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forum_discussions_group_id_fkey"
+            columns: ["forum_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forums: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          name: string
+          status: boolean
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          name: string
+          status?: boolean
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          name?: string
+          status?: boolean
+        }
+        Relationships: []
+      }
       friendships: {
         Row: {
           created_at: string
@@ -948,6 +1039,17 @@ export type Database = {
           books_count: number
           users_count: number
           votes_count: number
+        }[]
+      }
+      get_my_forums: {
+        Args: {
+          input_user_id: string
+        }
+        Returns: {
+          id: string
+          name: string
+          status: boolean
+          discussions_count: number
         }[]
       }
       get_popular_list: {
