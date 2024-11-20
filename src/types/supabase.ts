@@ -990,6 +990,7 @@ export type Database = {
           id: string
           name: string
           status: boolean
+          created_by: string
           discussions: Json
         }[]
       }

@@ -7,7 +7,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { MessageSquare, Users } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { use, useState } from "react";
 import { useQuery, useQueryClient } from "react-query";
 import { FriendsSelector } from "@/components/friends-selector";
 import {
@@ -33,17 +33,21 @@ import {
 import { cn } from "@/lib/utils";
 import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 import { ForumInfo } from "@/pages/api/forums/[id]";
+import { Pill } from "@/components/pill";
+import { useSession } from "next-auth/react";
 
 export default function Forum() {
-  const [activeTab, setActiveTab] = useState("discussions");
   const { query } = useRouter();
+  const queryClient = useQueryClient();
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const userId = useSession().data?.user.id;
 
   const { data } = useQuery<ForumInfo>({
     queryKey: ["forums", query.id as string],
     enabled: typeof query.id === "string",
   });
 
-  console.log(data);
 
   return (
     <div className="min-h-screen bg-slate-100">
@@ -53,11 +57,40 @@ export default function Forum() {
           <CardHeader className="flex flex-row items-center justify-between space-y-0">
             <div className="space-y-1">
               <CardTitle className="text-lg font-bold">{data?.name}</CardTitle>
+              <Pill
+              color={data?.status === true ? "green" : "red"}>
+                {data?.status === true ? "Abierto" : "Cerrado"}
+              </Pill>
             </div>
+            {data?.created_by == userId && (<div className="flex justify-end">
+              <Button
+              onClick={
+                async () => {
+                  if (typeof query.id === "string") {
+                    const res = await fetch(`/api/forums/${query.id}/status`, {
+                      method: "PATCH",
+                      headers: {
+                        "Content-Type": "application/json",
+                      },
+                      body: JSON.stringify({ status: !data?.status }),
+                    });
+                    if (res.ok) {
+                      toast.success("Foro actualizado");
+                    } else {
+                      toast.error("Error actualizando foro");
+                    }
+                  }
+                  void queryClient.invalidateQueries(["forums", query.id as string]);
+                }
+              }
+              >
+                {data?.status === true ? "Cerrar foro" : "Abrir foro"}
+              </Button>
+
+            </div>)}
           </CardHeader>
           <CardContent>
             <Tabs
-              value={activeTab}
               defaultValue="discussions"
               className="space-y-4"
             >
@@ -95,7 +128,7 @@ export default function Forum() {
                   </Card>
                 ))}
 
-                <CreateDiscussionDialog />
+                {data?.status && <CreateDiscussionDialog />}
               </TabsContent>
             </Tabs>
           </CardContent>

@@ -6,6 +6,8 @@ import { z } from "zod";
 export type ForumInfo = {
     id: string;
     name: string | null;
+    status: boolean;
+    created_by: string;
     discussions: Array<{
       created_at: string;
       created_by: string | null;

@@ -27,6 +27,7 @@ import { useRouter } from "next/router";
 import React from "react";
 import { useMutation, useQuery } from "react-query";
 import { toast } from "sonner";
+import { ForumInfo } from "@/pages/api/forums/[id]";
 
 export default function Discusion() {
   const [newComment, setNewComment] = React.useState("");
@@ -35,6 +36,11 @@ export default function Discusion() {
   const { data, refetch } = useQuery<Discussion>({
     queryKey: ["forums", id as string, "discussions", discussionId as string],
     enabled: typeof discussionId === "string" && typeof id === "string",
+  });
+
+  const {data: forumData} = useQuery<ForumInfo>({
+    queryKey: ["forums", id as string],
+    enabled: typeof id === "string",
   });
   
 
@@ -142,8 +148,8 @@ export default function Discusion() {
             ))}
           </div>
         </ScrollArea>
-
-        <form
+        {forumData?.status && (
+          <form
           onSubmit={(e) => {
             e.preventDefault();
             postCommentMutation.mutate();
@@ -159,7 +165,10 @@ export default function Discusion() {
           <Button disabled={postCommentMutation.isLoading} type="submit">
             Post Comment
           </Button>
-        </form>
+        </form>)
+ 
+        }
+        
       </div>
     </div>
   );
