@@ -31,25 +31,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
-
-const fetchFriendData = async (friendId: string, friendName: string) => {
-  return new Promise<{ name: string; books: number }>((resolve, reject) => {
-    const name = friendName;
-    const books = useQuery<number>({
-      queryKey: ["statistics", friendId],
-    });
-
-    if (books.data) {
-      resolve({ name, books: books.data });
-    } else {
-      console.log("ERRRORRRRR");
-      reject(new Error("Failed to fetch friend's data. Please try again."));
-    }
-  });
-};
 
 export default function Stats() {
   const session = useSession();
@@ -112,24 +95,20 @@ export default function Stats() {
     friend_name: string;
   } | null>(null);
 
-  const [comparisonData, setComparisonData] = useState<
-    Array<{ name: string; books: number }>
-  >([{ name: "You", books: data?.length ?? 0 }]);
+  const selectedFriendBooksRead = useQuery<number>({
+    queryKey: ["statistics", selectedFriend?.friend_id],
+  });
 
-  useEffect(() => {
-    if (selectedFriend) {
-      console.log("Fetching friend's data...");
-      console.log(selectedFriend);
-      fetchFriendData(selectedFriend?.friend_id, selectedFriend?.friend_name)
-        .then((friendData) => {
-          setComparisonData([{ name: "You", books: 8 }, friendData]);
-        })
-        .catch((error) => {
-          console.log(error);
-          console.log("Failed to fetch friend's data. Please try again.");
-        });
-    }
-  }, [selectedFriend]);
+  const comparisonData = [
+    {
+      name: session.data?.user.name,
+      books: data?.length ?? 0,
+    },
+    {
+      name: selectedFriend?.friend_name,
+      books: selectedFriendBooksRead.data ?? 0,
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-slate-100">
@@ -196,11 +175,11 @@ export default function Stats() {
             </CardContent>
           </Card>
           <div className="col-span-2 flex justify-center">
-            <Card>
+            <Card className="mx-auto w-full max-w-3xl">
               <CardHeader>
-                <CardTitle>Comparacion de Lectura</CardTitle>
+                <CardTitle>Comparación de Lectura</CardTitle>
                 <CardDescription>
-                  Tu cantidad de libros leidos VS un amigo en particular
+                  Tu cantidad de libros leídos VS un amigo en particular
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -228,24 +207,28 @@ export default function Stats() {
                       ))}
                     </SelectContent>
                   </Select>
-                  <div className="h-[250px] w-full pt-8">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={comparisonData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Bar dataKey="books">
-                          {comparisonData.map((entry, index) => (
-                            <Cell
-                              key={`cell-${index}`}
-                              fill={COLORS[index % COLORS.length]}
-                            />
-                          ))}
-                        </Bar>
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
+                </div>
+                <div className="h-[300px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={comparisonData}
+                      margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="books" name="Libros leidos" fill="#8884d8">
+                        {comparisonData.map((entry, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={COLORS[index % COLORS.length]}
+                          />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
                 </div>
               </CardContent>
             </Card>
