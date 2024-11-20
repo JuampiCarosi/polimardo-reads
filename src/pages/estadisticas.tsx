@@ -221,6 +221,7 @@ export default function Stats() {
                     <BarChart
                       data={comparisonData}
                       margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                      barSize={70}
                     >
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="name" />
