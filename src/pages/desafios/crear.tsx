@@ -77,7 +77,7 @@ function ChallengeForm({
           startDate,
           endDate,
           createdBy: user.id,
-          books: challengeBooks,
+          books: challengeBooks.map((book) => book.id),
         };
 
         await axios.put(`/api/challenges/${challenge.id}`, challengeData);
