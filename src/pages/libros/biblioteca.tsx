@@ -25,6 +25,12 @@ export default function Page() {
     queryKey: ["books", "library"],
   });
 
+  const readBooks = data?.filter((book) => book.status === "read");
+  const wantToReadBooks = data?.filter((book) => book.status === "wantToRead");
+  const currentlyReadingBooks = data?.filter(
+    (book) => book.status === "reading",
+  );
+
   const queryClient = useQueryClient();
 
   async function handleRatingChange(bookId: string, rating: number | null) {
@@ -67,60 +73,75 @@ export default function Page() {
       <Header />
       <Card className="mx-auto mt-4 w-full max-w-4xl">
         <CardHeader>
-          <CardTitle>Mi Biblioteca</CardTitle>
+          <CardTitle className="text-2xl">Mi Biblioteca</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Preview</TableHead>
-                <TableHead>Nombre</TableHead>
-                <TableHead>Autor</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead className="text-center">Calificacion</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data?.map((item) => (
-                <TableRow
-                  onClick={() => router.push(`/libros/${item.id}`)}
-                  key={item.isbn}
-                  className="cursor-pointer"
-                >
-                  <TableCell>
-                    {item.cover_img && (
-                      <Image
-                        src={item.cover_img}
-                        alt={item.title}
-                        width={40}
-                        height={40}
-                      />
-                    )}
-                  </TableCell>
-                  <TableCell>{item.title}</TableCell>
-                  <TableCell>{item.author}</TableCell>
-                  <TableCell>
-                    <Pill
-                      className="px-2 py-1"
-                      color={statusColors[item.status!]}
-                    >
-                      {statusLabels[item.status!]}
-                    </Pill>
-                  </TableCell>
-                  <TableCell className="text-center">
-                    <Stars
-                      rating={item.selfRating ?? undefined}
-                      onClick={(rating) => handleRatingChange(item.id, rating)}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <div className="mb-4">
+            <h2 className="mb-2 text-xl">Libros leidos</h2>
+            {BooksTableDisplayer(readBooks ?? [])}
+          </div>
+          <div className="mb-4">
+            <h2 className="mb-2 text-xl">
+              Libros que estas leyendo actualmente
+            </h2>
+            {BooksTableDisplayer(currentlyReadingBooks ?? [])}
+          </div>
+          <div className="mb-4">
+            <h2 className="mb-2 text-xl">Libros para un futuro</h2>
+            {BooksTableDisplayer(wantToReadBooks ?? [])}
+          </div>
         </CardContent>
       </Card>
     </div>
   );
+  function BooksTableDisplayer(data: Book[]) {
+    return (
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Preview</TableHead>
+            <TableHead>Nombre</TableHead>
+            <TableHead>Autor</TableHead>
+            <TableHead>Estado</TableHead>
+            <TableHead className="text-center">Calificacion</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {data?.map((item) => (
+            <TableRow
+              onClick={() => router.push(`/libros/${item.id}`)}
+              key={item.isbn}
+              className="cursor-pointer"
+            >
+              <TableCell>
+                {item.cover_img && (
+                  <Image
+                    src={item.cover_img}
+                    alt={item.title}
+                    width={40}
+                    height={40}
+                  />
+                )}
+              </TableCell>
+              <TableCell>{item.title}</TableCell>
+              <TableCell>{item.author}</TableCell>
+              <TableCell>
+                <Pill className="px-2 py-1" color={statusColors[item.status!]}>
+                  {statusLabels[item.status!]}
+                </Pill>
+              </TableCell>
+              <TableCell className="text-center">
+                <Stars
+                  rating={item.selfRating ?? undefined}
+                  onClick={(rating) => handleRatingChange(item.id, rating)}
+                />
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    );
+  }
 }
 
 export const getServerSideProps = getServerSidePropsWithAuth();
