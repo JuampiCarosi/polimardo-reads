@@ -73,22 +73,42 @@ export default function Page() {
       <Header />
       <Card className="mx-auto mt-4 w-full max-w-4xl">
         <CardHeader>
-          <CardTitle className="text-2xl">Mi Biblioteca</CardTitle>
+          <CardTitle className="text-3xl">Mi Biblioteca</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="mb-4">
-            <h2 className="mb-2 text-xl">Libros leidos</h2>
-            {BooksTableDisplayer(readBooks ?? [])}
+            <h2 className="mb-2 text-2xl font-semibold">Libros leidos</h2>
+            {readBooks?.length ? (
+              BooksTableDisplayer(readBooks)
+            ) : (
+              <span className="pb-4 pt-4">
+                No tienes libros marcados como leidos actualmente
+              </span>
+            )}
           </div>
           <div className="mb-4">
-            <h2 className="mb-2 text-xl">
+            <h2 className="mb-2 text-2xl font-semibold">
               Libros que estas leyendo actualmente
             </h2>
-            {BooksTableDisplayer(currentlyReadingBooks ?? [])}
+            {currentlyReadingBooks?.length ? (
+              BooksTableDisplayer(currentlyReadingBooks)
+            ) : (
+              <span className="pb-4 pt-4">
+                No estas leyendo libros actualmente
+              </span>
+            )}
           </div>
           <div className="mb-4">
-            <h2 className="mb-2 text-xl">Libros para un futuro</h2>
-            {BooksTableDisplayer(wantToReadBooks ?? [])}
+            <h2 className="mb-2 text-2xl font-semibold">
+              Libros para un futuro
+            </h2>
+            {wantToReadBooks?.length ? (
+              BooksTableDisplayer(wantToReadBooks)
+            ) : (
+              <span className="pb-4 pt-4">
+                No tienes ningun libro para leer en un futuro actualmente
+              </span>
+            )}
           </div>
         </CardContent>
       </Card>
