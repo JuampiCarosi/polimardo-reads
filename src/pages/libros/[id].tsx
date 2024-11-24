@@ -28,7 +28,6 @@ import { type BookReview } from "../api/books/[id]/reviews";
 import { format } from "date-fns";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import React from "react";
-import { useSession } from "next-auth/react";
 import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 import { z } from "zod";
 
@@ -321,13 +320,21 @@ function BookStatusPill({ book }: { book: Book }) {
         {statusLabels.read}
       </div>
     ),
+    wantToRead: (
+      <div className="cursor-pointer text-nowrap rounded-full border border-blue-400 bg-blue-100 px-2.5 py-0.5 text-xs text-blue-700 hover:bg-blue-200">
+        {statusLabels.wantToRead}
+      </div>
+    ),
+    reading: (
+      <div className="cursor-pointer text-nowrap rounded-full border border-yellow-400 bg-yellow-100 px-2.5 py-0.5 text-xs text-yellow-700 hover:bg-yellow-200">
+        {statusLabels.reading}
+      </div>
+    ),
     null: (
       <div className="cursor-pointer text-nowrap rounded-full border border-slate-400 bg-slate-100 px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-200">
         + Agregar a biblioteca
       </div>
     ),
-    wantToRead: null,
-    reading: null,
   } as const;
 
   return (
@@ -343,6 +350,22 @@ function BookStatusPill({ book }: { book: Book }) {
               className="px-2 py-1"
             >
               <span className="text-xs">Marcar como leído</span>
+            </DropdownMenuItem>
+          )}
+          {book.status === null && (
+            <DropdownMenuItem
+              onClick={() => updateStatus("wantToRead")}
+              className="px-2 py-1"
+            >
+              <span className="text-xs">Marcar para leer en un futuro</span>
+            </DropdownMenuItem>
+          )}
+          {book.status !== "reading" && book.status !== "read" && (
+            <DropdownMenuItem
+              onClick={() => updateStatus("reading")}
+              className="px-2 py-1"
+            >
+              <span className="text-xs">Marcar como lectura en curso</span>
             </DropdownMenuItem>
           )}
           {book.status !== null && (
