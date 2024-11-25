@@ -28,7 +28,6 @@ import { type BookReview } from "../api/books/[id]/reviews";
 import { format } from "date-fns";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import React from "react";
-import { useSession } from "next-auth/react";
 import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 import { z } from "zod";
 
@@ -139,7 +138,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100">
+    <div className="min-h-screen bg-slate-100 pb-7">
       <Header />
       <Card className="mx-auto mt-6 max-w-3xl">
         <CardHeader>
@@ -149,7 +148,16 @@ export default function Home() {
                 {book?.title}{" "}
                 <span className="text-slate-600">#{book?.isbn}</span>
               </CardTitle>
-              <CardDescription>by {book?.author}</CardDescription>
+              <CardDescription>
+                <a
+                  href={`https://www.wikipedia.org/wiki/${book?.author}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-slate-500 hover:underline"
+                >
+                  {book?.author}
+                </a>
+              </CardDescription>
               <div className="flex flex-wrap items-center gap-1 pt-2">
                 {book?.genres.map((genre) => (
                   <Badge
