@@ -1,29 +1,34 @@
-import { useQuery, useQueryClient } from "react-query";
-import { type Book } from "../api/books/[id]";
-import { Header } from "@/components/header";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  TableHeader,
-  TableRow,
-  TableHead,
+  Table,
   TableBody,
   TableCell,
-  Table,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
+import { BookOpen, CheckCircle2, Library } from "lucide-react";
 import Image from "next/image";
-import { Pill } from "@/components/pill";
-import { statusColors, statusLabels } from "./[id]";
+import { getServerSidePropsWithAuth } from "@/lib/with-auth";
+import type { Book } from "../api/books/[id]";
+import { Stars } from "@/components/stars-rating";
 
 import { toast } from "sonner";
-import { type BookRating } from "../api/books/[id]/rating";
-import { Stars } from "@/components/stars-rating";
+import type { BookRating } from "../api/books/[id]/rating";
 import { useRouter } from "next/router";
-import { getServerSidePropsWithAuth } from "@/lib/with-auth";
+import { useQuery, useQueryClient } from "react-query";
+import { Header } from "@/components/header";
 
-export default function Page() {
+export default function LibraryView() {
   const { data } = useQuery<Book[]>({
     queryKey: ["books", "library"],
   });
+
+  const readBooks = data?.filter((book) => book.status === "read");
+  const wantToReadBooks = data?.filter((book) => book.status === "wantToRead");
+  const currentlyReadingBooks = data?.filter(
+    (book) => book.status === "reading",
+  );
 
   const queryClient = useQueryClient();
 
@@ -60,66 +65,123 @@ export default function Page() {
     await queryClient.invalidateQueries(["books", "library"]);
   }
 
-  const router = useRouter();
-
   return (
     <div className="min-h-screen bg-slate-100">
       <Header />
-      <Card className="mx-auto mt-4 w-full max-w-4xl">
-        <CardHeader>
-          <CardTitle>Mi Biblioteca</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <h1 className="mb-6 text-3xl font-bold text-slate-800">
+            Mi Biblioteca
+          </h1>
+
+          <div className="space-y-8">
+            <BookSection
+              title="Libros leídos"
+              icon={CheckCircle2}
+              books={readBooks ?? []}
+              emptyMessage="No tienes libros marcados como leídos actualmente"
+              onRatingChange={handleRatingChange}
+            />
+            <BookSection
+              title="Leyendo actualmente"
+              icon={BookOpen}
+              books={currentlyReadingBooks ?? []}
+              emptyMessage="No estás leyendo libros actualmente"
+              onRatingChange={handleRatingChange}
+            />
+            <BookSection
+              title="Libros para un futuro"
+              icon={Library}
+              books={wantToReadBooks ?? []}
+              emptyMessage="No tienes ningún libro para leer en un futuro actualmente"
+              onRatingChange={handleRatingChange}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface BookSectionProps {
+  title: string;
+  icon: React.ElementType;
+  books: Book[];
+  emptyMessage: string;
+  onRatingChange: (bookId: string, rating: number | null) => Promise<void>;
+}
+
+function BookSection({
+  title,
+  icon: Icon,
+  books,
+  emptyMessage,
+  onRatingChange: handleRatingChange,
+}: BookSectionProps) {
+  const router = useRouter();
+
+  return (
+    <Card className="overflow-hidden shadow-lg transition-shadow duration-300 hover:shadow-xl">
+      <CardHeader className="bg-slate-200 py-3">
+        <CardTitle className="flex items-center gap-2 text-lg font-semibold text-slate-800">
+          <Icon className="size-5 text-slate-600" />
+          {title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-0">
+        {books.length > 0 ? (
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Preview</TableHead>
+              <TableRow className="bg-slate-1">
+                <TableHead className="w-[100px]">Portada</TableHead>
                 <TableHead>Nombre</TableHead>
-                <TableHead>Autor</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead className="text-center">Calificacion</TableHead>
+                <TableHead className="hidden sm:table-cell">Autor</TableHead>
+                <TableHead className="text-right">Calificación</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {data?.map((item) => (
+              {books.map((book) => (
                 <TableRow
-                  onClick={() => router.push(`/libros/${item.id}`)}
-                  key={item.isbn}
-                  className="cursor-pointer"
+                  key={book.isbn}
+                  className="group cursor-pointer px-11 transition-colors hover:bg-slate-50"
+                  onClick={() => router.push(`/libros/${book.id}`)}
                 >
-                  <TableCell>
-                    {item.cover_img && (
+                  <TableCell className="p-2">
+                    {book.cover_img ? (
                       <Image
-                        src={item.cover_img}
-                        alt={item.title}
-                        width={40}
-                        height={40}
+                        src={book.cover_img}
+                        alt={book.title}
+                        width={60}
+                        height={90}
+                        className="rounded-sm object-cover shadow-sm transition-transform duration-300 group-hover:scale-105"
                       />
+                    ) : (
+                      <div className="flex h-[90px] w-[60px] items-center justify-center rounded-sm bg-slate-200 text-slate-400">
+                        <Library className="h-8 w-8" />
+                      </div>
                     )}
                   </TableCell>
-                  <TableCell>{item.title}</TableCell>
-                  <TableCell>{item.author}</TableCell>
-                  <TableCell>
-                    <Pill
-                      className="px-2 py-1"
-                      color={statusColors[item.status!]}
-                    >
-                      {statusLabels[item.status!]}
-                    </Pill>
+                  <TableCell className="font-medium">{book.title}</TableCell>
+                  <TableCell className="hidden text-slate-600 sm:table-cell">
+                    {book.author}
                   </TableCell>
-                  <TableCell className="text-center">
+                  <TableCell className="text-right">
                     <Stars
-                      rating={item.selfRating ?? undefined}
-                      onClick={(rating) => handleRatingChange(item.id, rating)}
+                      rating={book.selfRating ?? undefined}
+                      onClick={(rating) => handleRatingChange(book.id, rating)}
                     />
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-        </CardContent>
-      </Card>
-    </div>
+        ) : (
+          <div className="flex items-center justify-center p-8 text-center text-slate-500">
+            {emptyMessage}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
