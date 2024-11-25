@@ -70,7 +70,7 @@ export default function LibraryView() {
       <Header />
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <h1 className="mb-8 text-center text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
+          <h1 className="mb-6 text-3xl font-bold text-slate-800">
             Mi Biblioteca
           </h1>
 
@@ -122,9 +122,9 @@ function BookSection({
 
   return (
     <Card className="overflow-hidden shadow-lg transition-shadow duration-300 hover:shadow-xl">
-      <CardHeader className="bg-slate-300">
-        <CardTitle className="flex items-center gap-2 text-2xl font-semibold text-slate-800">
-          <Icon className="h-6 w-6 text-slate-600" />
+      <CardHeader className="bg-slate-200 py-3">
+        <CardTitle className="flex items-center gap-2 text-lg font-semibold text-slate-800">
+          <Icon className="size-5 text-slate-600" />
           {title}
         </CardTitle>
       </CardHeader>
