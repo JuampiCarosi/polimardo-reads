@@ -31,15 +31,35 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useSession } from "next-auth/react";
+import type { MyChallenges } from "./api/challenges";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
 
 export default function Stats() {
   const session = useSession();
+  const userId = session.data?.user.id;
 
   const { data } = useQuery<Book[]>({
     queryKey: ["books", "library"],
   });
+
+  const { data: myChallenges } = useQuery<MyChallenges[]>({
+    queryKey: ["challenges?user=" + userId],
+  });
+
+  const finishedChallenges = myChallenges?.filter(
+    (challenge) => challenge.books_read.length === challenge.book_ids.length,
+  );
+
+  const unfinishedChallenges = myChallenges?.filter(
+    (challenge) => challenge.books_read.length < challenge.book_ids.length,
+  );
+
+  const readBooks = data?.filter((book) => book.status === "read");
+  const wantToReadBooks = data?.filter((book) => book.status === "wantToRead");
+  const currentlyReadingBooks = data?.filter(
+    (book) => book.status === "reading",
+  );
 
   const bookGenresData: Array<{ genre: string; value: number }> = [];
 
@@ -178,6 +198,116 @@ export default function Stats() {
                     <Tooltip />
                     <Legend />
                   </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Leido VS Leyendo VS Por leer</CardTitle>
+              <CardDescription>
+                Cantidad de libros leidos, leyendo y por leer
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={[
+                      {
+                        name: "Leidos",
+                        libros: readBooks?.length ?? 0,
+                      },
+                      {
+                        name: "Leyendo",
+                        libros: currentlyReadingBooks?.length ?? 0,
+                      },
+                      {
+                        name: "Por leer",
+                        libros: wantToReadBooks?.length ?? 0,
+                      },
+                    ]}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                    barSize={70}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="libros" fill="#8884d8">
+                      {[
+                        {
+                          name: "Leidos",
+                          value: readBooks?.length ?? 0,
+                        },
+                        {
+                          name: "Leyendo",
+                          value: currentlyReadingBooks?.length ?? 0,
+                        },
+                        {
+                          name: "Por leer",
+                          value: wantToReadBooks?.length ?? 0,
+                        },
+                      ].map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Challenges</CardTitle>
+              <CardDescription>
+                Cantidad de challenges completados y no completados
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={[
+                      {
+                        name: "Completados",
+                        challenges: finishedChallenges?.length ?? 0,
+                      },
+                      {
+                        name: "No completados",
+                        challenges: unfinishedChallenges?.length ?? 0,
+                      },
+                    ]}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                    barSize={70}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="challenges" fill="#8884d8">
+                      {[
+                        {
+                          name: "Completados",
+                          value: finishedChallenges?.length ?? 0,
+                        },
+                        {
+                          name: "No completados",
+                          value: unfinishedChallenges?.length ?? 0,
+                        },
+                      ].map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
                 </ResponsiveContainer>
               </div>
             </CardContent>
