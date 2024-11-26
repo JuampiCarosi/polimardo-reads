@@ -61,7 +61,7 @@ const handler: NextApiHandler = async (req, res) => {
     }
 
     const promise = books.map(async (book) => {
-      const { data, error } = await supabase.from("challenges_books").insert({
+      const { error } = await supabase.from("challenges_books").insert({
         challenge_id: challengeId,
         book_id: book,
       });
