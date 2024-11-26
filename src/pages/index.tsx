@@ -25,15 +25,26 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import router from "next/router";
-import { type BookWithBlob } from "./api/books/recommended";
+import { type BookWithBlob } from "./api/books/recommended/favoriteGenres";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { Badge } from "@/components/ui/badge";
 import { getServerSidePropsWithAuth } from "@/lib/with-auth";
+import { boolean } from "zod";
+import { useState } from "react";
 
 export default function Home() {
-  const { data, isLoading, refetch, isFetching } = useQuery<BookWithBlob[]>({
-    queryKey: ["books", "recommended"],
+  const [genreRecommendation, setGenreRecommendation] = useState<boolean>(true);
+  const [favouriteBooksRecommendation, setFavouriteBooksRecommendation] = useState<boolean>(false);
+
+  const { data: favoriteGenresData, isLoading: isLoadingFavoriteGenres, refetch: refetchFavoriteGenres, isFetching: isFetchingFavoriteGenres } = useQuery<BookWithBlob[]>({
+    queryKey: ["books", "recommended", "favoriteGenres"],
     refetchOnWindowFocus: false,
+  });
+
+  const { data: favoriteBooksData, isLoading: isLoadingFavoriteBooks, refetch: refetchFavoriteBooks, isFetching: isFetchingFavoriteBooks } = useQuery<BookWithBlob[]>({
+    queryKey: ["books", "recommended", "favoriteBooks"],
+    refetchOnWindowFocus: false,
+    enabled: false,
   });
 
   return (
@@ -54,21 +65,42 @@ export default function Home() {
             vos!
           </h3>
           <Card className="pt-2">
-            <div className="flex justify-end pr-3 pt-1">
-              <Button disabled={isFetching} onClick={() => refetch()} size="sm">
-                {isFetching ? (
+            <div className="gap-3 flex justify-end pr-3 pt-1">
+              <Button disabled={isFetchingFavoriteGenres} onClick={async () => {
+                await refetchFavoriteGenres()
+                setFavouriteBooksRecommendation(false);
+                setGenreRecommendation(true)
+              }} size="sm">
+                {isFetchingFavoriteGenres ? (
                   <>
                     <span>Buscando nuevas </span>
                     <LoadingSpinner />
                   </>
                 ) : (
-                  "Pedir nuevas"
+                  "Por género"
+                )}
+              </Button>
+              <Button disabled={isFetchingFavoriteBooks} onClick={async () => {
+                await refetchFavoriteBooks();
+                setGenreRecommendation(false);
+                setFavouriteBooksRecommendation(true);
+
+              }} size="sm">
+                {isFetchingFavoriteBooks ? (
+                  <>
+                    <span>Buscando nuevas </span>
+                    <LoadingSpinner />
+                  </>
+                ) : (
+                  "Por libros que me gustaron"
                 )}
               </Button>
             </div>
 
+
+
             <CardContent>
-              {isLoading ? (
+              {isLoadingFavoriteGenres ? (
                 <div className="flex items-center justify-center gap-2 pt-4 text-center text-sm font-medium text-slate-500">
                   <span>Analizando tus preferencias </span>
                   <LoadingSpinner />
@@ -83,11 +115,25 @@ export default function Home() {
                       <TableHead>Géneros</TableHead>
                     </TableRow>
                   </TableHeader>
-                  <TableBody>
-                    {data?.map((item) => (
+                  {genreRecommendation && (<TableBody>
+                    {favoriteGenresData?.map((item) => (
                       <BookDialog key={item.isbn} item={item} />
                     ))}
-                  </TableBody>
+                  </TableBody>)}
+                  {favouriteBooksRecommendation && (
+                    <TableBody>
+                      {favoriteBooksData && favoriteBooksData.length > 0 ? (
+                        favoriteBooksData.map((item) => (
+                          <BookDialog key={item.isbn} item={item} />
+                        ))
+                      ) : (
+                        <div className="flex items-center gap-2 pt-4 text-center text-sm font-medium text-slate-500">
+                        <span>No hay suficientes reseñas para recomendar libros.</span>
+                        </div>
+                      )}
+                    </TableBody>
+                  )}
+
                 </Table>
               )}
             </CardContent>

@@ -1,7 +1,7 @@
 import { getServerAuthSession } from "@/server/auth";
 import { supabase } from "@/server/supabase";
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { getCoverBlob, type BookRaw } from "./[id]";
+import { getCoverBlob, type BookRaw } from "../[id]";
 
 export type BookWithBlob = BookRaw & { cover_blob?: string };
 
