@@ -57,6 +57,8 @@ export default function Home() {
     enabled: typeof id === "string",
   });
 
+  console.log("book", book);
+
   const postReviewMutation = useMutation({
     onSuccess: async ({ added_to_library }) => {
       await Promise.allSettled([refetchBooks(), refetchReviews()]);
@@ -149,14 +151,20 @@ export default function Home() {
                 <span className="text-slate-600">#{book?.isbn}</span>
               </CardTitle>
               <CardDescription>
-                <a
-                  href={`https://www.wikipedia.org/wiki/${book?.author}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-slate-500 hover:underline"
-                >
-                  {book?.author}
-                </a>
+                <span className="text-slate-500">
+                  <a
+                    href={
+                      book?.hasWiki
+                        ? `https://www.wikipedia.org/wiki/${book?.author.replaceAll("(Goodreads Author)", "").replaceAll(" ", "_")}`
+                        : `https://en.wikipedia.org/w/index.php?search=${book?.author}`
+                    }
+                    target="_blank"
+                    rel="noreferrer"
+                    className="hover:underline"
+                  >
+                    {book?.author}
+                  </a>
+                </span>
               </CardDescription>
               <div className="flex flex-wrap items-center gap-1 pt-2">
                 {book?.genres.map((genre) => (

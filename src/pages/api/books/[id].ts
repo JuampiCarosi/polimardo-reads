@@ -22,6 +22,7 @@ export type Book = BookRaw & {
   status: "reading" | "read" | "wantToRead" | null;
   selfRating: number | null;
   cover_blob?: string;
+  hasWiki?: boolean;
 };
 
 const schema = z.object({
@@ -60,12 +61,17 @@ const handler: NextApiHandler = async (req, res) => {
     return res.status(404).json({ error: "Book not found" });
   }
 
+  const wiki = await fetch(
+    `https://www.wikipedia.org/wiki/${data[0]?.author.replaceAll("(Goodreads Author)", "").replaceAll(" ", "_")}`,
+  );
+
   const book = {
     ...data[0]!,
     status: data[0]?.books_library[0]?.status ?? null,
     selfRating: data[0]?.books_ratings[0]?.rating ?? null,
     genres: data[0]?.genres.replace(/[\[\]']/g, "").split(",") ?? [],
     cover_blob: await getCoverBlob(data[0]),
+    hasWiki: wiki.status === 200,
   };
 
   res.status(200).json(book satisfies Book);
