@@ -20,16 +20,16 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 import { type GroupInfo } from "@/pages/api/groups/[id]";
-import { type Discussion } from "@/pages/api/groups/[id]/discussions/[discussionId]";
 import { format } from "date-fns";
 import { MessageSquare } from "lucide-react";
 import { useRouter } from "next/router";
 import React, { use } from "react";
 import { useMutation, useQuery } from "react-query";
 import { toast } from "sonner";
-import { ForumInfo } from "@/pages/api/forums/[id]";
+import { type ForumInfo } from "@/pages/api/forums/[id]";
 import { Pill } from "@/components/pill";
 import { useSession } from "next-auth/react";
+import { type Discussion } from "@/pages/api/forums/[id]/discussions/[discussionId]";
 
 export default function Discusion() {
   const [newComment, setNewComment] = React.useState("");
@@ -40,11 +40,10 @@ export default function Discusion() {
     enabled: typeof discussionId === "string" && typeof id === "string",
   });
 
-  const {data: forumData} = useQuery<ForumInfo>({
+  const { data: forumData } = useQuery<ForumInfo>({
     queryKey: ["forums", id as string],
     enabled: typeof id === "string",
   });
-  
 
   const postCommentMutation = useMutation({
     onSuccess: async () => {
@@ -136,12 +135,11 @@ export default function Discusion() {
                     <div className="flex items-center justify-between">
                       <h3 className="text-sm font-medium text-slate-900">
                         {comment.user_name}
-                        {forumData?.created_by === comment.created_by && (<Pill
-                        color="green">
-                          Autor del foro
-                        </Pill>)}
+                        {forumData?.created_by === comment.created_by && (
+                          <Pill color="green">Autor del foro</Pill>
+                        )}
                       </h3>
-                        
+
                       <p className="text-xs text-slate-500">
                         {format(comment.created_at, "dd-MM-yyyy")}
                       </p>
@@ -157,25 +155,23 @@ export default function Discusion() {
         </ScrollArea>
         {forumData?.status && (
           <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            postCommentMutation.mutate();
-          }}
-          className="mt-4"
-        >
-          <Textarea
-            placeholder="Add a comment..."
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            className="mb-4 bg-white"
-          />
-          <Button disabled={postCommentMutation.isLoading} type="submit">
-            Post Comment
-          </Button>
-        </form>)
- 
-        }
-        
+            onSubmit={(e) => {
+              e.preventDefault();
+              postCommentMutation.mutate();
+            }}
+            className="mt-4"
+          >
+            <Textarea
+              placeholder="Add a comment..."
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              className="mb-4 bg-white"
+            />
+            <Button disabled={postCommentMutation.isLoading} type="submit">
+              Post Comment
+            </Button>
+          </form>
+        )}
       </div>
     </div>
   );

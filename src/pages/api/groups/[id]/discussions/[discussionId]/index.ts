@@ -1,24 +1,8 @@
+import { type Discussion } from "@/pages/api/forums/[id]/discussions/[discussionId]";
 import { getServerAuthSession } from "@/server/auth";
 import { supabase } from "@/server/supabase";
 import { type NextApiHandler } from "next";
 import { z } from "zod";
-
-export type Discussion = {
-  id: string;
-  title: string;
-  description: string;
-  created_at: string;
-  user_name: string;
-  comments: Array<{
-    id: string;
-    created_at: string;
-    user_id: string;
-    discussion_id: string;
-    comment: string;
-    user_name: string;
-    user_img: string;
-  }>;
-};
 
 const handler: NextApiHandler = async (req, res) => {
   if (req.method === "GET") {

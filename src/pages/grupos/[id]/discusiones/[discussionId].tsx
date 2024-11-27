@@ -19,8 +19,8 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { getServerSidePropsWithAuth } from "@/lib/with-auth";
+import { type Discussion } from "@/pages/api/forums/[id]/discussions/[discussionId]";
 import { type GroupInfo } from "@/pages/api/groups/[id]";
-import { type Discussion } from "@/pages/api/groups/[id]/discussions/[discussionId]";
 import { format } from "date-fns";
 import { MessageSquare } from "lucide-react";
 import { useRouter } from "next/router";

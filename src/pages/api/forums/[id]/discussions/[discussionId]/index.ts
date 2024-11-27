@@ -12,8 +12,8 @@ export type Discussion = {
   comments: Array<{
     id: string;
     created_at: string;
-    created_by: string;
-    user_id: string;
+    created_by?: string;
+    user_id?: string;
     discussion_id: string;
     comment: string;
     user_name: string;
