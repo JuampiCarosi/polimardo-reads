@@ -32,6 +32,7 @@ const handler: NextApiHandler = async (req, res) => {
       return res.status(500).json({ error: error.message });
     }
 
+
     res.status(200).json(data satisfies Friendship[]);
     return;
   }

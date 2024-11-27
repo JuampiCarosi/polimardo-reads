@@ -930,6 +930,16 @@ export type Database = {
           participant_count: number
         }[]
       }
+      get_challenges_joined_by_friends: {
+        Args: {
+          friends: string[]
+        }
+        Returns: {
+          challenge_name: string
+          user_id: string
+          joined_at: string
+        }[]
+      }
       get_discussion_comments: {
         Args: {
           input_discussion_id: string
@@ -1023,6 +1033,17 @@ export type Database = {
           is_added: boolean
         }[]
       }
+      get_friends_ratings: {
+        Args: {
+          friends: string[]
+        }
+        Returns: {
+          title: string
+          user_id: string
+          rating: number
+          created_at: string
+        }[]
+      }
       get_group_info: {
         Args: {
           input_group_id: string
@@ -1043,6 +1064,17 @@ export type Database = {
           title: string
           member_count: number
           discussions_count: number
+        }[]
+      }
+      get_library_books_from_friends: {
+        Args: {
+          friends: string[]
+        }
+        Returns: {
+          title: string
+          user_id: string
+          status: string
+          created_at: string
         }[]
       }
       get_list_books: {

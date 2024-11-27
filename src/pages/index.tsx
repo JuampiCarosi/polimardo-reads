@@ -31,6 +31,10 @@ import { Badge } from "@/components/ui/badge";
 import { getServerSidePropsWithAuth } from "@/lib/with-auth";
 import { boolean } from "zod";
 import { useState } from "react";
+import { Feed } from "./api/feed";
+import { Friendship } from "./api/myFriends";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
 
 export default function Home() {
   const [genreRecommendation, setGenreRecommendation] = useState<boolean>(true);
@@ -47,6 +51,29 @@ export default function Home() {
     enabled: false,
   });
 
+  const { data: feed } = useQuery<Feed[]>({
+    queryKey: ["feed"],
+    refetchOnWindowFocus: false,
+  });
+
+  const { data: myFriends } = useQuery<Friendship[]>({
+    queryKey: ["myFriends"],
+  })
+
+  const getFriendName = (friendId: string) => {
+    console.log(friendId);
+    const friend = myFriends?.find(friend => friend.user_id === friendId);
+    return friend?.user_name;
+  }
+
+  const getFriendImage = (friendId: string) => {
+    const friend = myFriends?.find(friend => friend.user_id === friendId);
+    return friend?.user_image;
+  }
+
+
+
+
   return (
     <>
       <Head>
@@ -59,7 +86,64 @@ export default function Home() {
           href={"/busqueda"}
           className="flex w-full select-none items-center justify-center gap-1 pt-4 text-sm font-medium text-blue-700/90"
         ></Link>
+
         <div className="mx-auto mt-4 w-full max-w-4xl">
+          <h3 className="text- pb-3 pl-2 font-medium text-slate-900">
+            Enterate de las últimas novedades de tus amigos!
+          </h3>
+
+          <Card className="pt-2">
+            <div className="grid grid-cols-1 lg:gap-1">
+              {feed?.map((item) => {
+                const getActivityText = (activity: string) => {
+                  switch (activity) {
+                    case "createdChallenge":
+                      return `${getFriendName(item.friend_id)} creó el desafío: "${item.activity_id}"`;
+                    case "joinedChallenge":
+                      return `${getFriendName(item.friend_id)} se unió al desafío: "${item.activity_id}"`;
+                    case "reading":
+                      return `${getFriendName(item.friend_id)} comenzó a leer: "${item.activity_id}"`;
+                    case "read":
+                      return `${getFriendName(item.friend_id)} leyó por completo: "${item.activity_id}"`;
+                    case "wantToRead":
+                      return `${getFriendName(item.friend_id)} quiere leer: "${item.activity_id}"`;
+                    default:
+                      if (activity.includes("ratedBook")) {
+                        const rating = activity.split(" ")[1];
+                        return `${getFriendName(item.friend_id)} calificó: "${item.activity_id}" con ${rating} estrellas`;
+                      }
+                      return null;
+                  }
+                };
+
+                const activityText = getActivityText(item.activity);
+
+                if (!activityText) return null;
+
+                return (
+                  <div key={item.activity_id}>
+                    <div 
+                    className="flex items-center justify-between rounded-lg p-2 hover:bg-slate-50">  
+                    <div className="flex items-center gap-3">
+                      <Avatar>
+                        <AvatarImage src={getFriendImage(item.friend_id) ?? undefined} />
+                      </Avatar>
+                      <div>
+                        <div className="font-medium">{activityText}</div>
+                      </div>
+                    </div>
+                    </div>
+                    <Separator></Separator>
+
+                    </div>
+                );
+              })}
+            </div>
+          </Card>
+        </div>
+
+
+        <div className="mx-auto mt-4 w-full max-w-4xl py-8">
           <h3 className="text- pb-3 pl-2 font-medium text-slate-900">
             No sabes que leer? Mira nuestras recomendaciones personalizadas para
             vos!
@@ -128,7 +212,7 @@ export default function Home() {
                         ))
                       ) : (
                         <div className="flex items-center gap-2 pt-4 text-center text-sm font-medium text-slate-500">
-                        <span>No hay suficientes reseñas para recomendar libros.</span>
+                          <span>No hay suficientes reseñas para recomendar libros.</span>
                         </div>
                       )}
                     </TableBody>
