@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { useQuery, useQueryClient } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import Head from "next/head";
 import { getServerAuthSession } from "@/server/auth";
 import { type GetServerSideProps } from "next";
@@ -29,23 +29,36 @@ import { type BookWithBlob } from "./api/books/recommended/favoriteGenres";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { Badge } from "@/components/ui/badge";
 import { getServerSidePropsWithAuth } from "@/lib/with-auth";
-import { boolean } from "zod";
 import { useState } from "react";
-import { Feed } from "./api/feed";
-import { Friendship } from "./api/myFriends";
+import { type Feed } from "./api/feed";
+import { type Friendship } from "./api/myFriends";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
+import { useSession } from "next-auth/react";
+import { Heart } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { type Likes } from "./api/feed/likes/[text]";
 
 export default function Home() {
   const [genreRecommendation, setGenreRecommendation] = useState<boolean>(true);
-  const [favouriteBooksRecommendation, setFavouriteBooksRecommendation] = useState<boolean>(false);
+  const [favouriteBooksRecommendation, setFavouriteBooksRecommendation] =
+    useState<boolean>(false);
 
-  const { data: favoriteGenresData, isLoading: isLoadingFavoriteGenres, refetch: refetchFavoriteGenres, isFetching: isFetchingFavoriteGenres } = useQuery<BookWithBlob[]>({
+  const {
+    data: favoriteGenresData,
+    isLoading: isLoadingFavoriteGenres,
+    refetch: refetchFavoriteGenres,
+    isFetching: isFetchingFavoriteGenres,
+  } = useQuery<BookWithBlob[]>({
     queryKey: ["books", "recommended", "favoriteGenres"],
     refetchOnWindowFocus: false,
   });
 
-  const { data: favoriteBooksData, isLoading: isLoadingFavoriteBooks, refetch: refetchFavoriteBooks, isFetching: isFetchingFavoriteBooks } = useQuery<BookWithBlob[]>({
+  const {
+    data: favoriteBooksData,
+    isLoading: isLoadingFavoriteBooks,
+    refetch: refetchFavoriteBooks,
+    isFetching: isFetchingFavoriteBooks,
+  } = useQuery<BookWithBlob[]>({
     queryKey: ["books", "recommended", "favoriteBooks"],
     refetchOnWindowFocus: false,
     enabled: false,
@@ -55,24 +68,6 @@ export default function Home() {
     queryKey: ["feed"],
     refetchOnWindowFocus: false,
   });
-
-  const { data: myFriends } = useQuery<Friendship[]>({
-    queryKey: ["myFriends"],
-  })
-
-  const getFriendName = (friendId: string) => {
-    console.log(friendId);
-    const friend = myFriends?.find(friend => friend.user_id === friendId);
-    return friend?.user_name;
-  }
-
-  const getFriendImage = (friendId: string) => {
-    const friend = myFriends?.find(friend => friend.user_id === friendId);
-    return friend?.user_image;
-  }
-
-
-
 
   return (
     <>
@@ -92,56 +87,10 @@ export default function Home() {
             Enterate de las últimas novedades de tus amigos!
           </h3>
 
-          <Card className="pt-2">
-            <div className="grid grid-cols-1 lg:gap-1">
-              {feed?.map((item) => {
-                const getActivityText = (activity: string) => {
-                  switch (activity) {
-                    case "createdChallenge":
-                      return `${getFriendName(item.friend_id)} creó el desafío: "${item.activity_id}"`;
-                    case "joinedChallenge":
-                      return `${getFriendName(item.friend_id)} se unió al desafío: "${item.activity_id}"`;
-                    case "reading":
-                      return `${getFriendName(item.friend_id)} comenzó a leer: "${item.activity_id}"`;
-                    case "read":
-                      return `${getFriendName(item.friend_id)} leyó por completo: "${item.activity_id}"`;
-                    case "wantToRead":
-                      return `${getFriendName(item.friend_id)} quiere leer: "${item.activity_id}"`;
-                    default:
-                      if (activity.includes("ratedBook")) {
-                        const rating = activity.split(" ")[1];
-                        return `${getFriendName(item.friend_id)} calificó: "${item.activity_id}" con ${rating} estrellas`;
-                      }
-                      return null;
-                  }
-                };
-
-                const activityText = getActivityText(item.activity);
-
-                if (!activityText) return null;
-
-                return (
-                  <div key={item.activity_id}>
-                    <div 
-                    className="flex items-center justify-between rounded-lg p-2 hover:bg-slate-50">  
-                    <div className="flex items-center gap-3">
-                      <Avatar>
-                        <AvatarImage src={getFriendImage(item.friend_id) ?? undefined} />
-                      </Avatar>
-                      <div>
-                        <div className="font-medium">{activityText}</div>
-                      </div>
-                    </div>
-                    </div>
-                    <Separator></Separator>
-
-                    </div>
-                );
-              })}
-            </div>
-          </Card>
+          <div className="space-y-5">
+            {feed?.map((item, i) => <FeedItem key={i} item={item} />)}
+          </div>
         </div>
-
 
         <div className="mx-auto mt-4 w-full max-w-4xl py-8">
           <h3 className="text- pb-3 pl-2 font-medium text-slate-900">
@@ -149,12 +98,16 @@ export default function Home() {
             vos!
           </h3>
           <Card className="pt-2">
-            <div className="gap-3 flex justify-end pr-3 pt-1">
-              <Button disabled={isFetchingFavoriteGenres} onClick={async () => {
-                await refetchFavoriteGenres()
-                setFavouriteBooksRecommendation(false);
-                setGenreRecommendation(true)
-              }} size="sm">
+            <div className="flex justify-end gap-3 pr-3 pt-1">
+              <Button
+                disabled={isFetchingFavoriteGenres}
+                onClick={async () => {
+                  await refetchFavoriteGenres();
+                  setFavouriteBooksRecommendation(false);
+                  setGenreRecommendation(true);
+                }}
+                size="sm"
+              >
                 {isFetchingFavoriteGenres ? (
                   <>
                     <span>Buscando nuevas </span>
@@ -164,12 +117,15 @@ export default function Home() {
                   "Por género"
                 )}
               </Button>
-              <Button disabled={isFetchingFavoriteBooks} onClick={async () => {
-                await refetchFavoriteBooks();
-                setGenreRecommendation(false);
-                setFavouriteBooksRecommendation(true);
-
-              }} size="sm">
+              <Button
+                disabled={isFetchingFavoriteBooks}
+                onClick={async () => {
+                  await refetchFavoriteBooks();
+                  setGenreRecommendation(false);
+                  setFavouriteBooksRecommendation(true);
+                }}
+                size="sm"
+              >
                 {isFetchingFavoriteBooks ? (
                   <>
                     <span>Buscando nuevas </span>
@@ -180,8 +136,6 @@ export default function Home() {
                 )}
               </Button>
             </div>
-
-
 
             <CardContent>
               {isLoadingFavoriteGenres ? (
@@ -199,11 +153,13 @@ export default function Home() {
                       <TableHead>Géneros</TableHead>
                     </TableRow>
                   </TableHeader>
-                  {genreRecommendation && (<TableBody>
-                    {favoriteGenresData?.map((item) => (
-                      <BookDialog key={item.isbn} item={item} />
-                    ))}
-                  </TableBody>)}
+                  {genreRecommendation && (
+                    <TableBody>
+                      {favoriteGenresData?.map((item) => (
+                        <BookDialog key={item.isbn} item={item} />
+                      ))}
+                    </TableBody>
+                  )}
                   {favouriteBooksRecommendation && (
                     <TableBody>
                       {favoriteBooksData && favoriteBooksData.length > 0 ? (
@@ -212,12 +168,13 @@ export default function Home() {
                         ))
                       ) : (
                         <div className="flex items-center gap-2 pt-4 text-center text-sm font-medium text-slate-500">
-                          <span>No hay suficientes reseñas para recomendar libros.</span>
+                          <span>
+                            No hay suficientes reseñas para recomendar libros.
+                          </span>
                         </div>
                       )}
                     </TableBody>
                   )}
-
                 </Table>
               )}
             </CardContent>
@@ -232,7 +189,7 @@ function BookDialog({ item }: { item: BookWithBlob }) {
   const queryClient = useQueryClient();
 
   return (
-    <Dialog key={item.id}>
+    <Dialog>
       <DialogTrigger asChild>
         <TableRow className="cursor-pointer">
           <TableCell>
@@ -312,6 +269,131 @@ function BookDialog({ item }: { item: BookWithBlob }) {
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function FeedItem({ item }: { item: Feed }) {
+  const session = useSession();
+  const userId = session.data?.user.id;
+
+  const { data: myFriends } = useQuery<Friendship[]>({
+    queryKey: ["myFriends"],
+  });
+
+  const getFriendName = (friendId: string) => {
+    const friend = myFriends?.find(
+      (friend) => friend.user_id === friendId || friend.friend_id === friendId,
+    );
+
+    if (userId === friend?.user_id) {
+      return friend?.friend_name;
+    } else {
+      return friend?.user_name;
+    }
+  };
+
+  const getFriendImage = (friendId: string) => {
+    const friend = myFriends?.find(
+      (friend) => friend.user_id === friendId || friend.friend_id === friendId,
+    );
+
+    if (userId === friend?.user_id) {
+      return friend?.friend_image;
+    } else {
+      return friend?.user_image;
+    }
+  };
+
+  const getActivityText = (activity: string) => {
+    switch (activity) {
+      case "createdChallenge":
+        return `Creó el desafío: "${item.activity_id}"`;
+      case "joinedChallenge":
+        return `Se unió al desafío: "${item.activity_id}"`;
+      case "reading":
+        return `Comenzó a leer: "${item.activity_id}"`;
+      case "read":
+        return `Leyó por completo: "${item.activity_id}"`;
+      case "wantToRead":
+        return `Quiere leer: "${item.activity_id}"`;
+      default:
+        if (activity.includes("ratedBook")) {
+          const rating = activity.split(" ")[1];
+          return `Calificó: "${item.activity_id}" con ${rating} estrellas`;
+        }
+        return null;
+    }
+  };
+
+  const activityText = getActivityText(item.activity);
+
+  const queryClient = useQueryClient();
+
+  const { data } = useQuery<Likes>({
+    queryKey: ["feed", "likes", activityText],
+  });
+
+  const likeMutation = useMutation(
+    async () => {
+      queryClient.setQueryData<Likes | undefined>(
+        ["feed", "likes", activityText],
+        (prev) => {
+          if (!prev) return prev;
+
+          return {
+            liked: !prev.liked,
+            likesCount: prev.liked ? prev.likesCount - 1 : prev.likesCount + 1,
+          };
+        },
+      );
+      if (data?.liked) {
+        await fetch(`/api/feed/likes/${activityText}`, {
+          method: "DELETE",
+        });
+      } else {
+        await fetch(`/api/feed/likes/${activityText}`, {
+          method: "POST",
+        });
+      }
+    },
+    {
+      onSuccess: async () => {
+        void queryClient.invalidateQueries(["feed", "likes", activityText]);
+      },
+    },
+  );
+
+  if (!activityText) return null;
+  const friendImage = getFriendImage(item.friend_id);
+  return (
+    <div className="rounded-lg border border-slate-200 bg-white p-4 pt-2 shadow-lg shadow-slate-200">
+      <div className="flex items-center justify-between rounded-lg p-2">
+        <div className="flex items-center gap-3">
+          <Avatar className="size-8">
+            <AvatarImage src={friendImage} />
+            <AvatarFallback>
+              {getFriendName(item.friend_id)?.charAt(0)}
+            </AvatarFallback>
+          </Avatar>
+          <div className="text-sm text-slate-500">
+            {getFriendName(item.friend_id)}
+          </div>
+        </div>
+      </div>
+      <div className="pl-12">
+        <div>
+          <div className="text-slate-800">{activityText}</div>
+        </div>
+        <div className="flex items-center gap-1 pt-2">
+          <Heart
+            onClick={() => !likeMutation.isLoading && likeMutation.mutate()}
+            className={cn("size-4 text-red-600", data?.liked && "fill-red-600")}
+          />
+
+          <span className="text-slate-500">{data?.likesCount}</span>
+        </div>
+      </div>
+    </div>
   );
 }
 
