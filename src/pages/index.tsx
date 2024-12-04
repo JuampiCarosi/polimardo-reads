@@ -88,6 +88,11 @@ export default function Home() {
           </h3>
 
           <div className="space-y-5">
+            {feed?.length === 0 && (
+              <div className="flex items-center justify-center gap-2 pt-4 text-center text-sm font-medium text-slate-500">
+                <span>No tienes novedades.</span>
+              </div>
+            )}
             {feed?.map((item, i) => <FeedItem key={i} item={item} />)}
           </div>
         </div>
