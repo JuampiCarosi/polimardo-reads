@@ -401,6 +401,7 @@ export const getServerSideProps = getServerSidePropsWithAuth(async (ctx) => {
   const session = await getServerAuthSession(ctx);
 
   if (!session?.user.onboarding_completed) {
+    console.log("redirecting");
     return {
       redirect: {
         destination: "/welcome",
